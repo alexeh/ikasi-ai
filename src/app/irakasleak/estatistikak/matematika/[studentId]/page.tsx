@@ -51,30 +51,31 @@ type MathWordProblemGame = {
 function StudentStatsContent({ studentEmail }: { studentEmail: string }) {
     const firestore = useFirestore();
     const router = useRouter();
+    const { role } = useUserRole();
     const studentName = React.useMemo(() => formatEmailToName(studentEmail), [studentEmail]);
 
     const mentalMathGamesQuery = useMemoFirebase(
       () =>
-        firestore && studentEmail
+        firestore && studentEmail && role === 'admin'
           ? query(
               collection(firestore, 'mentalMathGames'),
               where('studentEmail', '==', studentEmail),
               orderBy('timestamp', 'desc')
             )
           : null,
-      [firestore, studentEmail]
+      [firestore, studentEmail, role]
     );
 
     const wordProblemGamesQuery = useMemoFirebase(
       () =>
-        firestore && studentEmail
+        firestore && studentEmail && role === 'admin'
           ? query(
               collection(firestore, 'mathWordProblemGames'),
               where('studentEmail', '==', studentEmail),
               orderBy('timestamp', 'desc')
             )
           : null,
-      [firestore, studentEmail]
+      [firestore, studentEmail, role]
     );
 
     const { data: mentalMathGames, isLoading: isLoadingMentalMath } = useCollection<MentalMathGame>(mentalMathGamesQuery);
