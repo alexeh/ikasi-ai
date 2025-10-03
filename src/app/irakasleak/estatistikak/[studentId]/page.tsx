@@ -26,27 +26,32 @@ export default function StudentStatisticsPage() {
     const router = useRouter();
     const params = useParams();
 
-    // The studentId is now accessed through the useParams hook
     const studentId = typeof params.studentId === 'string' ? params.studentId : '';
-    const decodedStudentId = decodeURIComponent(studentId);
-    const studentName = formatIdToName(decodedStudentId);
+    const studentName = formatIdToName(studentId);
 
     React.useEffect(() => {
-        // Only redirect if loading is finished and the role is explicitly not admin.
+        // Only redirect if loading is finished and the role is explicitly NOT admin.
         if (!isRoleLoading && role !== 'admin') {
             router.push('/');
         }
     }, [role, isRoleLoading, router]);
 
     // Show a loading spinner while the role is being verified.
-    // This prevents the premature redirect.
-    if (isRoleLoading || role !== 'admin') {
+    // This prevents the premature redirect by waiting for the final role state.
+    if (isRoleLoading) {
         return (
             <div className="container flex h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
             </div>
         );
     }
+    
+    // If after loading the role is not admin, we don't render the page content.
+    // The useEffect above will handle the redirection.
+    if (role !== 'admin') {
+        return null;
+    }
+
 
     return (
         <div className="container py-8">
