@@ -1,3 +1,4 @@
+
 'use client';
 
 import * as React from 'react';
@@ -12,8 +13,6 @@ import { useFirestore, useMemoFirebase } from '@/firebase';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-
 
 const formatIdToEmail = (id: string) => {
     return id.replace(/_/g, '.').replace(/\.eus$/, '@aldapeta.eus');
@@ -24,7 +23,6 @@ const formatEmailToName = (email: string) => {
     const namePart = email.split('@')[0];
     return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
 }
-
 
 type MentalMathGame = {
     id: string;
@@ -49,66 +47,37 @@ type MathWordProblemGame = {
     }
 }
 
-
-export default function StudentMathStatsPage() {
-    const { role, isLoading: isRoleLoading } = useUserRole();
-    const router = useRouter();
+function StudentStats({ studentId, studentEmail }: { studentId: string, studentEmail: string }) {
     const firestore = useFirestore();
-    const params = useParams();
-    const studentId = params.studentId as string;
-
-    const studentEmail = React.useMemo(() => formatIdToEmail(studentId), [studentId]);
+    const router = useRouter();
     const studentName = React.useMemo(() => formatEmailToName(studentEmail), [studentEmail]);
-    
+
     const mentalMathGamesQuery = useMemoFirebase(
       () =>
-        firestore && studentEmail && role === 'admin'
+        firestore && studentEmail
           ? query(
               collection(firestore, 'mentalMathGames'),
               where('studentEmail', '==', studentEmail),
               orderBy('timestamp', 'desc')
             )
           : null,
-      [firestore, studentEmail, role]
+      [firestore, studentEmail]
     );
 
     const wordProblemGamesQuery = useMemoFirebase(
       () =>
-        firestore && studentEmail && role === 'admin'
+        firestore && studentEmail
           ? query(
               collection(firestore, 'mathWordProblemGames'),
               where('studentEmail', '==', studentEmail),
               orderBy('timestamp', 'desc')
             )
           : null,
-      [firestore, studentEmail, role]
+      [firestore, studentEmail]
     );
 
     const { data: mentalMathGames, isLoading: isLoadingMentalMath } = useCollection<MentalMathGame>(mentalMathGamesQuery);
     const { data: wordProblemGames, isLoading: isLoadingWordProblems } = useCollection<MathWordProblemGame>(wordProblemGamesQuery);
-
-
-    if (isRoleLoading) {
-        return (
-            <div className="container flex h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            </div>
-        );
-    }
-
-    if (role !== 'admin') {
-         return (
-            <div className="container flex flex-col h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8 text-center">
-                <h1 className="text-2xl font-bold">Sarrera debekatua</h1>
-                <p className="text-muted-foreground mt-2">
-                    Ez duzu baimenik orri hau ikusteko.
-                </p>
-                <Button onClick={() => router.push('/')} variant="outline" className="mt-4">
-                    Itzuli hasierara
-                </Button>
-            </div>
-        );
-    }
 
     const chartData = mentalMathGames?.map(game => ({
         date: format(game.timestamp.toDate(), 'dd/MM'),
@@ -216,5 +185,37 @@ export default function StudentMathStatsPage() {
             )}
          </div>
     );
+}
 
+
+export default function StudentMathStatsPage() {
+    const { role, isLoading: isRoleLoading } = useUserRole();
+    const router = useRouter();
+    const params = useParams();
+    const studentId = params.studentId as string;
+    const studentEmail = React.useMemo(() => formatIdToEmail(studentId), [studentId]);
+
+    if (isRoleLoading) {
+        return (
+            <div className="container flex h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    if (role !== 'admin') {
+         return (
+            <div className="container flex flex-col h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8 text-center">
+                <h1 className="text-2xl font-bold">Sarrera debekatua</h1>
+                <p className="text-muted-foreground mt-2">
+                    Ez duzu baimenik orri hau ikusteko.
+                </p>
+                <Button onClick={() => router.push('/')} variant="outline" className="mt-4">
+                    Itzuli hasierara
+                </Button>
+            </div>
+        );
+    }
+
+    return <StudentStats studentId={studentId} studentEmail={studentEmail} />;
 }
