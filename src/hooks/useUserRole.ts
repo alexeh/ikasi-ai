@@ -1,10 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser, useFirestore } from '@/firebase';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { useDoc } from '@/firebase/firestore/use-doc';
-import { useMemoFirebase } from '@/firebase/provider';
 
 type UserRole = 'admin' | 'student';
 
@@ -39,7 +38,7 @@ export function useUserRole(): { role: UserRole | null; isLoading: boolean; emai
   }, []);
 
   const roleDocRef = useMemoFirebase(
-    () => (simulatedUser ? doc(firestore, 'roles_admin', simulatedUser.uid) : null),
+    () => (firestore && simulatedUser ? doc(firestore, 'roles_admin', simulatedUser.uid) : null),
     [firestore, simulatedUser]
   );
   
