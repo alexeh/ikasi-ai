@@ -88,7 +88,7 @@ export default function StudentListPage() {
                 <div>
                     <h1 className="text-3xl font-headline font-bold">Ikasleen Zerrenda</h1>
                     <p className="mt-2 text-muted-foreground">
-                        Hau da ikasleen zerrenda.
+                        Hau da ikasleen zerrenda. Estatistikak ikusteko aukera desaktibatu da.
                     </p>
                 </div>
             </div>
