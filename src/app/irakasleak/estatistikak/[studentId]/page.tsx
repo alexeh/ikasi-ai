@@ -36,8 +36,7 @@ const formatEmailToName = (email: string) => {
   return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
 };
 
-export default function StudentStatsPage({ params }: { params: { studentId: string } }) {
-  const studentEmail = decodeURIComponent(params.studentId);
+function StudentStats({ studentEmail }: { studentEmail: string }) {
   const studentName = formatEmailToName(studentEmail);
   const { role, isLoading: isRoleLoading } = useUserRole();
   const router = useRouter();
@@ -179,4 +178,10 @@ export default function StudentStatsPage({ params }: { params: { studentId: stri
       )}
     </div>
   );
+}
+
+
+export default function StudentStatsPage({ params }: { params: { studentId: string } }) {
+  const studentEmail = decodeURIComponent(params.studentId);
+  return <StudentStats studentEmail={studentEmail} />;
 }
