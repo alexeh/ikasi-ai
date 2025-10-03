@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useRouter } from 'next/navigation';
-import { Loader2, User, ArrowLeft } from 'lucide-react';
+import { Loader2, User, ArrowLeft, ShieldAlert } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -48,6 +48,11 @@ const getLastName = (email: string) => {
     return names.length > 1 ? names[1] : names[0];
 }
 
+const formatEmailToId = (email: string) => {
+    if (!email) return '';
+    return email.replace('@', '_').replace(/\./g, '_');
+}
+
 export default function StudentListPage() {
     const { role, isLoading: isRoleLoading } = useUserRole();
     const router = useRouter();
@@ -63,11 +68,12 @@ export default function StudentListPage() {
     if (role !== 'admin') {
          return (
             <div className="container flex flex-col h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8 text-center">
-                <h1 className="text-2xl font-bold">Sarrera debekatua</h1>
+                <ShieldAlert className="h-12 w-12 text-destructive" />
+                <h1 className="text-2xl font-bold mt-4">Sarrera debekatua</h1>
                 <p className="text-muted-foreground mt-2">
                     Ez duzu baimenik orri hau ikusteko.
                 </p>
-                <Button onClick={() => router.push('/')} variant="outline" className="mt-4">
+                <Button onClick={() => router.push('/')} variant="outline" className="mt-6">
                     Itzuli hasierara
                 </Button>
             </div>
@@ -88,24 +94,26 @@ export default function StudentListPage() {
                 <div>
                     <h1 className="text-3xl font-headline font-bold">Ikasleen Zerrenda</h1>
                     <p className="mt-2 text-muted-foreground">
-                        Hau da ikasleen zerrenda.
+                        Hau da ikasleen zerrenda. Sakatu ikasle baten gainean bere estatistikak ikusteko.
                     </p>
                 </div>
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {students.map((studentEmail, index) => (
-                    <Card key={studentEmail}>
-                        <CardHeader>
-                            <div className="flex items-start gap-4">
-                                <User className="mt-1 h-8 w-8 text-primary"/>
-                                <div>
-                                    <CardTitle>{index + 1}. {formatEmailToName(studentEmail)}</CardTitle>
-                                    <CardDescription>{studentEmail}</CardDescription>
+                {students.map((studentEmail) => (
+                     <Link href={`/irakasleak/estatistikak/matematika/${formatEmailToId(studentEmail)}`} key={studentEmail}>
+                        <Card className="cursor-pointer transition-all hover:shadow-lg hover:-translate-y-1">
+                            <CardHeader>
+                                <div className="flex items-start gap-4">
+                                    <User className="mt-1 h-8 w-8 text-primary"/>
+                                    <div>
+                                        <CardTitle>{formatEmailToName(studentEmail)}</CardTitle>
+                                        <CardDescription>{studentEmail}</CardDescription>
+                                    </div>
                                 </div>
-                            </div>
-                        </CardHeader>
-                    </Card>
+                            </CardHeader>
+                        </Card>
+                    </Link>
                 ))}
             </div>
         </div>
