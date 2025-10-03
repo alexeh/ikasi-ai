@@ -6,8 +6,10 @@ import { collection, query, where } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { FileText, Loader2 } from 'lucide-react';
+import { FileText, Loader2, PlusCircle, BarChart } from 'lucide-react';
 import { useMemoFirebase } from '@/firebase';
+import { useUserRole } from '@/hooks/useUserRole';
+import { Button } from '@/components/ui/button';
 
 type ReadingDocument = {
   id: string;
@@ -17,60 +19,98 @@ type ReadingDocument = {
 
 export default function IdatzizkoUlermenaPage() {
   const firestore = useFirestore();
+  const { role, isLoading: isRoleLoading } = useUserRole();
 
   const documentsQuery = useMemoFirebase(
     () =>
-      firestore
+      firestore && role === 'student'
         ? query(
             collection(firestore, 'readingDocuments'),
             where('language', '==', 'euskera')
           )
         : null,
-    [firestore]
+    [firestore, role]
   );
 
-  const { data: documents, isLoading } = useCollection<ReadingDocument>(documentsQuery);
+  const { data: documents, isLoading: isDocumentsLoading } = useCollection<ReadingDocument>(documentsQuery);
+
+  const isLoading = isRoleLoading || isDocumentsLoading;
 
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-headline font-bold">Idatzizko Ulermena</h1>
-      <p className="mt-2 text-muted-foreground">
-        Aukeratu testu bat irakurtzeko eta galderak erantzuteko.
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+            <h1 className="text-3xl font-headline font-bold">Idatzizko Ulermena</h1>
+            <p className="mt-2 text-muted-foreground">
+                {role === 'admin' 
+                    ? 'Kudeatu irakurgaiak edo ikusi estatistikak.'
+                    : 'Aukeratu testu bat irakurtzeko eta galderak erantzuteko.'
+                }
+            </p>
+        </div>
+        <Button variant="outline">
+            <BarChart className="mr-2 h-4 w-4" />
+            Estatistikak
+        </Button>
+      </div>
+
 
       {isLoading && (
         <div className="mt-8 flex items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="ml-2">Testuak kargatzen...</p>
+          <p className="ml-2">Kargatzen...</p>
         </div>
       )}
-
-      {!isLoading && documents?.length === 0 && (
-        <div className="mt-8 rounded-md border-2 border-dashed border-border p-8 text-center">
-          <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-          <h3 className="mt-4 text-lg font-semibold">
-            Ez dago dokumenturik eskuragarri
-          </h3>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Momentu honetan ez dago irakurgaiarik. Laster gehituko dira.
-          </p>
-        </div>
-      )}
-
-      <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {documents?.map((doc) => (
-          <Link href={`/euskera/irakurketa/${doc.id}`} key={doc.id}>
-            <Card className="flex h-full transform-gpu flex-col transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
-              <CardHeader>
-                <CardTitle>{doc.title}</CardTitle>
-                <CardDescription>
-                  Sakatu irakurtzen hasteko
-                </CardDescription>
-              </CardHeader>
+      
+      {!isLoading && role === 'admin' && (
+         <div className="mt-8">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Irakaslearen panela</CardTitle>
+                    <CardDescription>Hemen irakurgai berriak gehitu ditzakezu ikasleentzat.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Button asChild>
+                        <Link href="/irakasleak/gehitu">
+                            <PlusCircle className="mr-2 h-4 w-4" />
+                            Gehitu dokumentu berria
+                        </Link>
+                    </Button>
+                </CardContent>
             </Card>
-          </Link>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {!isLoading && role === 'student' && (
+        <>
+            {documents?.length === 0 && (
+                <div className="mt-8 rounded-md border-2 border-dashed border-border p-8 text-center">
+                <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+                <h3 className="mt-4 text-lg font-semibold">
+                    Ez dago dokumenturik eskuragarri
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                    Momentu honetan ez dago irakurgaiarik. Laster gehituko dira.
+                </p>
+                </div>
+            )}
+
+            <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {documents?.map((doc) => (
+                <Link href={`/euskera/irakurketa/${doc.id}`} key={doc.id}>
+                    <Card className="flex h-full transform-gpu flex-col transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
+                    <CardHeader>
+                        <CardTitle>{doc.title}</CardTitle>
+                        <CardDescription>
+                        Sakatu irakurtzen hasteko
+                        </CardDescription>
+                    </CardHeader>
+                    </Card>
+                </Link>
+                ))}
+            </div>
+        </>
+      )}
     </div>
   );
 }

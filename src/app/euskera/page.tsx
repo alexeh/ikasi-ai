@@ -3,7 +3,8 @@
 import * as React from 'react';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, BarChart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const miniApps = [
   {
@@ -21,10 +22,18 @@ const miniApps = [
 export default function EuskeraHomePage() {
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-headline font-bold">Euskera</h1>
-      <p className="mt-2 text-muted-foreground">
-        Aukeratu jarduera bat hasteko.
-      </p>
+      <div className="flex items-center justify-between">
+        <div>
+            <h1 className="text-3xl font-headline font-bold">Euskera</h1>
+            <p className="mt-2 text-muted-foreground">
+                Aukeratu jarduera bat hasteko.
+            </p>
+        </div>
+        <Button variant="outline">
+            <BarChart className="mr-2 h-4 w-4" />
+            Estatistikak
+        </Button>
+      </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {miniApps.map((app) => (
