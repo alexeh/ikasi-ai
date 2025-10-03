@@ -9,7 +9,6 @@ import { collection, query, where, orderBy } from 'firebase/firestore';
 import { useFirestore, useMemoFirebase } from '@/firebase';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 import {
   ChartContainer,
