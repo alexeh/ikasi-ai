@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore } from '@/firebase';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 
 type UserRole = 'admin' | 'student';
 
@@ -48,6 +49,7 @@ export function useUserRole(): { role: UserRole | null; isLoading: boolean; emai
 
     if (!firebaseUser || !simulatedUser) {
       setRole(null);
+      setIsLoading(false);
       return;
     }
     
@@ -57,6 +59,8 @@ export function useUserRole(): { role: UserRole | null; isLoading: boolean; emai
     } else {
       setRole('student');
     }
+    setIsLoading(false);
+
   }, [firebaseUser, isFirebaseUserLoading, simulatedUser]);
 
   return { role, isLoading, email: simulatedUser?.email || null };
