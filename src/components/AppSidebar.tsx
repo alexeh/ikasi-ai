@@ -76,7 +76,13 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const auth = useAuth();
   const [isStatsOpen, setIsStatsOpen] = useState(false);
 
-  const students = allowedUsers.filter(email => email !== 'jarambarri@aldapeta.eus');
+  const students = allowedUsers
+    .filter(email => email !== 'jarambarri@aldapeta.eus')
+    .sort((a, b) => {
+        const lastNameA = a.split('@')[0].split('.')[1] || '';
+        const lastNameB = b.split('@')[0].split('.')[1] || '';
+        return lastNameA.localeCompare(lastNameB);
+    });
 
   useEffect(() => {
     // If we are not loading and the user is logged in, but we are on the login page,
@@ -158,11 +164,11 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
                     <CollapsibleContent className="mt-1 space-y-1 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
                       <div className="pl-6">
                         <SidebarMenu>
-                           {students.map(studentEmail => (
+                           {students.map((studentEmail, index) => (
                              <SidebarMenuItem key={studentEmail}>
                                <SidebarMenuButton asChild variant="ghost" size="sm" isActive={pathname.includes('estatistikak')}>
                                   <Link href="/irakasleak/estatistikak">
-                                    <UserIcon className="h-3 w-3 mr-2" />
+                                    <span className="w-6 text-right mr-2 text-muted-foreground">{index + 1}.</span>
                                     {formatEmailToName(studentEmail)}
                                   </Link>
                                </SidebarMenuButton>
