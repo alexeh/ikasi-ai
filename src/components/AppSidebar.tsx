@@ -35,7 +35,8 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const { role, email, isLoading: isRoleLoading } = useUserRole();
+  // We get the email, but we won't use the role for conditional rendering here to avoid DB queries.
+  const { email, isLoading: isRoleLoading } = useUserRole();
   const auth = useAuth();
   
   useEffect(() => {
@@ -100,10 +101,6 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-            {/* The role check here was causing re-renders and executing queries. 
-                We rely on the page itself to protect its content.
-                So we show the link to every logged in user.
-             */}
             <SidebarSeparator />
             {adminMenuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
