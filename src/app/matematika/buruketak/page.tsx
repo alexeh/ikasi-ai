@@ -12,24 +12,32 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Puzzle, Play, Award, RefreshCw, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Puzzle, Play, Award, RefreshCw, Loader2, CheckCircle, XCircle, ArrowLeft, Scale, Banknote, Clock } from 'lucide-react';
 import {
   generateMathProblem,
   type BuruketakInput,
   type BuruketakOutput,
 } from '@/ai/flows/buruketak-flow';
 
+type Topic = 'deskonposaketa' | 'dirua' | 'denbora neurriak';
 type Level = 'easy' | 'medium' | 'hard';
-type GameState = 'selecting' | 'playing' | 'answered';
+type GameState = 'selecting_topic' | 'selecting_level' | 'playing' | 'answered';
 
 export default function BuruketakPage() {
+  const [selectedTopic, setSelectedTopic] = React.useState<Topic | null>(null);
   const [selectedLevel, setSelectedLevel] = React.useState<Level | null>(null);
-  const [gameState, setGameState] = React.useState<GameState>('selecting');
+  const [gameState, setGameState] = React.useState<GameState>('selecting_topic');
   const [problemData, setProblemData] = React.useState<BuruketakOutput | null>(null);
   const [userAnswer, setUserAnswer] = React.useState('');
   const [isCorrect, setIsCorrect] = React.useState<boolean | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
   const answerInputRef = React.useRef<HTMLInputElement>(null);
+
+  const topics = {
+    deskonposaketa: { name: 'Deskonposaketa', description: 'Zenbakiak landu.', icon: <Scale/> },
+    dirua: { name: 'Dirua', description: 'Euroekin eragiketak.', icon: <Banknote/> },
+    'denbora neurriak': { name: 'Denbora Neurriak', description: 'Orduak eta minutuak.', icon: <Clock/> },
+  };
 
   const levels = {
     easy: { name: 'Erraza', description: 'Problema sinpleak.' },
@@ -38,12 +46,18 @@ export default function BuruketakPage() {
   };
 
   React.useEffect(() => {
-    if (gameState === 'playing') {
+    if (gameState === 'playing' && !isLoading) {
       answerInputRef.current?.focus();
     }
-  }, [problemData, gameState]);
+  }, [problemData, gameState, isLoading]);
+
+  const handleTopicSelect = (topic: Topic) => {
+    setSelectedTopic(topic);
+    setGameState('selecting_level');
+  }
 
   const generateProblem = async (level: Level) => {
+    if (!selectedTopic) return;
     setSelectedLevel(level);
     setGameState('playing');
     setIsLoading(true);
@@ -51,7 +65,7 @@ export default function BuruketakPage() {
     setUserAnswer('');
     setIsCorrect(null);
     try {
-      const input: BuruketakInput = { level };
+      const input: BuruketakInput = { level, topic: selectedTopic };
       const result = await generateMathProblem(input);
       setProblemData(result);
     } catch (error) {
@@ -62,8 +76,15 @@ export default function BuruketakPage() {
   };
 
   const resetGame = () => {
+    setSelectedTopic(null);
     setSelectedLevel(null);
-    setGameState('selecting');
+    setGameState('selecting_topic');
+    setProblemData(null);
+    setIsCorrect(null);
+  };
+  
+  const backToLevelSelection = () => {
+    setGameState('selecting_level');
     setProblemData(null);
     setIsCorrect(null);
   };
@@ -88,7 +109,7 @@ export default function BuruketakPage() {
         <div className="container py-8">
             <Card className="mx-auto w-full max-w-2xl">
                 <CardHeader>
-                  <CardTitle className="text-2xl">Maila: {levels[selectedLevel!].name}</CardTitle>
+                  <CardTitle className="text-2xl">Gaia: {topics[selectedTopic!].name} - Maila: {levels[selectedLevel!].name}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {isLoading ? (
@@ -132,7 +153,7 @@ export default function BuruketakPage() {
                   )}
                 </CardContent>
                 <CardFooter className="flex justify-between">
-                    <Button onClick={resetGame} variant="outline">
+                    <Button onClick={backToLevelSelection} variant="outline">
                         Maila aldatu
                     </Button>
                     {gameState === 'answered' && (
@@ -147,32 +168,78 @@ export default function BuruketakPage() {
     )
   }
 
+  if (gameState === 'selecting_level' && selectedTopic) {
+    return (
+        <div className="container py-8">
+            <div className="flex flex-col items-center text-center">
+                <div className="flex items-center gap-4">
+                     <Button onClick={() => setGameState('selecting_topic')} variant="ghost" size="icon" className="mb-4">
+                        <ArrowLeft className="h-6 w-6"/>
+                    </Button>
+                    <div className="text-left">
+                        <h1 className="mt-4 text-4xl font-headline font-bold">{topics[selectedTopic].name}</h1>
+                        <p className="mt-2 text-lg text-muted-foreground">
+                            Aukeratu zailtasun maila bat hasteko.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div className="mt-12 grid gap-6 md:grid-cols-3">
+                {(Object.keys(levels) as Level[]).map((level) => (
+                    <Card
+                        key={level}
+                        className="cursor-pointer transition-all hover:border-primary hover:shadow-lg"
+                        onClick={() => generateProblem(level)}
+                    >
+                        <CardHeader>
+                        <CardTitle>{levels[level].name}</CardTitle>
+                        <CardDescription>{levels[level].description}</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                        <Button className="w-full">
+                            <Play className="mr-2" />
+                            Hasi
+                        </Button>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    )
+  }
+
   return (
     <div className="container py-8">
       <div className="flex flex-col items-center text-center">
         <Puzzle className="h-16 w-16 text-primary" />
         <h1 className="mt-4 text-4xl font-headline font-bold">Buruketak</h1>
         <p className="mt-2 text-lg text-muted-foreground">
-          Aukeratu zailtasun maila bat eta hasi problemak ebazten!
+          Aukeratu gai bat eta hasi problemak ebazten!
         </p>
       </div>
       <div className="mt-12 grid gap-6 md:grid-cols-3">
-        {(Object.keys(levels) as Level[]).map((level) => (
+        {(Object.keys(topics) as Topic[]).map((topic) => (
           <Card
-            key={level}
-            className="cursor-pointer transition-all hover:border-primary hover:shadow-lg"
-            onClick={() => generateProblem(level)}
+            key={topic}
+            className="cursor-pointer transition-all hover:border-primary hover:shadow-lg flex flex-col"
+            onClick={() => handleTopicSelect(topic)}
           >
-            <CardHeader>
-              <CardTitle>{levels[level].name}</CardTitle>
-              <CardDescription>{levels[level].description}</CardDescription>
+            <CardHeader className="flex-1">
+                <div className="flex items-center gap-3">
+                    <div className="bg-primary/10 p-3 rounded-md">
+                        {topics[topic].icon}
+                    </div>
+                    <div>
+                        <CardTitle>{topics[topic].name}</CardTitle>
+                        <CardDescription>{topics[topic].description}</CardDescription>
+                    </div>
+                </div>
             </CardHeader>
-            <CardContent>
-              <Button className="w-full">
-                <Play className="mr-2" />
-                Hasi
-              </Button>
-            </CardContent>
+             <CardFooter>
+                <Button className="w-full" variant="secondary">
+                    Aukeratu
+                </Button>
+            </CardFooter>
           </Card>
         ))}
       </div>

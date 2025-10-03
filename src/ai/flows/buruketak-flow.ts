@@ -14,6 +14,9 @@ const BuruketakInputSchema = z.object({
   level: z
     .enum(['easy', 'medium', 'hard'])
     .describe('The difficulty level of the math problem.'),
+  topic: z
+    .enum(['deskonposaketa', 'dirua', 'denbora neurriak'])
+    .describe('The topic of the math problem.'),
 });
 export type BuruketakInput = z.infer<typeof BuruketakInputSchema>;
 
@@ -34,17 +37,27 @@ const prompt = ai.definePrompt({
   input: { schema: BuruketakInputSchema },
   output: { schema: BuruketakOutputSchema },
   prompt: `You are an expert in creating math word problems for primary school children in Basque (Euskera).
-Your task is to generate a single math word problem based on the provided difficulty level. The problem should be engaging and appropriate for a 6 to 8-year-old child.
+Your task is to generate a single math word problem based on the provided difficulty level and topic. The problem should be engaging and appropriate for a 6 to 8-year-old child.
 The final answer must be a single number.
 
+Topic: {{{topic}}}
 Difficulty Level: {{{level}}}
 
-Here are some examples based on difficulty:
-- Easy: Simple addition or subtraction with small numbers. (e.g., "Anak 5 goxoki ditu eta 3 gehiago ematen dizkiote. Zenbat goxoki ditu orain?")
-- Medium: Addition/subtraction with larger numbers, or simple multiplication. (e.g., "Autobus batean 25 pertsona doaz. Geltoki batean 8 jaitsi eta 5 igo dira. Zenbat pertsona daude orain autobusean?")
-- Hard: Multi-step problems involving a mix of operations, including simple division. (e.g., "Maddiok 3 kutxa erosi ditu. Kutxa bakoitzak 10 pegatina ditu. Pegatina guztiak bere 5 lagunen artean banatu nahi ditu. Zenbat pegatina jasoko ditu lagun bakoitzak?")
+Here are some examples based on topic and difficulty:
+- Topic: deskonposaketa (decomposition)
+  - Easy: "Zenbat unitate dira 3 hamarreko eta 4 unitate?" (Answer: 34)
+  - Medium: "Deskonposatu 56 zenbakia hamarrekoetan eta unitateetan." (Answer: 50 + 6 or similar, but the final answer should be a number if possible, maybe ask "Zenbat hamarreko ditu 56 zenbakiak?" -> 5) Let's rephrase. "Idatzi 4 hamarreko eta 8 unitatek osatzen duten zenbakia." (Answer: 48)
+  - Hard: "125 zenbakian, zenbat balio du 2 zifrak?" (Answer: 20)
+- Topic: dirua (money)
+  - Easy: "5 euroko billete batekin 2 euroko jostailu bat erosten baduzu, zenbat diru geratzen zaizu?" (Answer: 3)
+  - Medium: "3 txanpon dituzu, bata 2 eurokoa, bestea euro 1ekoa eta bestea 50 zentimokoa. Zenbat diru duzu guztira zentimotan?" (Answer: 350)
+  - Hard: "10 euro dituzu. 3,50 euroko liburu bat eta 1,20 euroko boligrafo bat erosten dituzu. Zenbat diru geratzen zaizu?" (Answer: 5.30)
+- Topic: denbora neurriak (time measures)
+  - Easy: "Ordu laurden bat zenbat minutu dira?" (Answer: 15)
+  - Medium: "Filme bat 17:00etan hasten da eta 90 minutu irauten du. Zer ordutan amaituko da?" (Answer: 18:30, maybe just ask for the hour: 18) Let's rephrase. "Egun batek 24 ordu ditu. Zenbat ordu dira 3 egun?" (Answer: 72)
+  - Hard: "Goizeko 9:30etan etxetik atera naiz eta 10:15etan iritsi naiz eskolara. Zenbat minutu eman ditut bidean?" (Answer: 45)
 
-Generate a new problem now.
+Generate a new problem now. Ensure the problem strictly adheres to the chosen topic and difficulty.
 `,
 });
 
