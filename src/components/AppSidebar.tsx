@@ -156,32 +156,10 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
             {role === 'admin' && (
               <>
                 <SidebarSeparator />
-                <SidebarMenuItem>
-                  <Collapsible open={isStatsOpen} onOpenChange={setIsStatsOpen}>
-                    <CollapsibleTrigger asChild>
-                       <button className={cn("peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-all hover:bg-green-100 dark:hover:bg-green-900/50 focus-visible:ring-2 active:bg-green-200 dark:active:bg-green-900/80", isStatsOpen && "bg-green-100 dark:bg-green-900/50")}>
-                        <ShieldCheck />
-                        Estatistikak
-                        <ChevronDown className={cn("ml-auto h-4 w-4 transition-transform", isStatsOpen && "rotate-180")}/>
-                      </button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="mt-1 space-y-1 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
-                      <div className="pl-6">
-                        <SidebarMenu>
-                           {students.map((studentEmail, index) => (
-                             <SidebarMenuItem key={studentEmail}>
-                               <SidebarMenuButton asChild variant="ghost" size="sm" isActive={pathname.includes(formatEmailToId(studentEmail))}>
-                                  <Link href={`/irakasleak/estatistikak/${formatEmailToId(studentEmail)}`}>
-                                    <span className="w-6 text-right mr-2 text-muted-foreground">{index + 1}.</span>
-                                    {formatEmailToName(studentEmail)}
-                                  </Link>
-                               </SidebarMenuButton>
-                             </SidebarMenuItem>
-                           ))}
-                        </SidebarMenu>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
+                 <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive={pathname.startsWith('/irakasleak/ikasleak')}>
+                        <Link href="/irakasleak/ikasleak"><UserIcon />Ikasleak</Link>
+                    </SidebarMenuButton>
                 </SidebarMenuItem>
               </>
             )}
