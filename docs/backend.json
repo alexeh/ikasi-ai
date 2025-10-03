@@ -196,6 +196,59 @@
         "duration",
         "timestamp"
       ]
+    },
+    "MathWordProblemGame": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MathWordProblemGame",
+      "type": "object",
+      "description": "Represents a single math word problem ('buruketa') session.",
+      "properties": {
+        "studentId": {
+          "type": "string",
+          "description": "The unique ID of the student who attempted the problem."
+        },
+        "studentEmail": {
+          "type": "string",
+          "description": "The email of the student, for easier identification in statistics.",
+          "format": "email"
+        },
+        "level": {
+          "type": "string",
+          "description": "The difficulty level of the problem.",
+          "enum": ["easy", "medium", "hard"]
+        },
+        "problem": {
+          "type": "string",
+          "description": "The text of the word problem that was presented."
+        },
+        "correctAnswer": {
+          "type": "number",
+          "description": "The correct numerical answer."
+        },
+        "userAnswer": {
+          "type": "number",
+          "description": "The answer provided by the student."
+        },
+        "isCorrect": {
+          "type": "boolean",
+          "description": "Whether the student's answer was correct."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The server timestamp when the problem was answered.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "studentId",
+        "studentEmail",
+        "level",
+        "problem",
+        "correctAnswer",
+        "userAnswer",
+        "isCorrect",
+        "timestamp"
+      ]
     }
   },
   "auth": {
@@ -300,8 +353,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/mathWordProblemGames/{gameId}",
+        "definition": {
+          "entityName": "MathWordProblemGame",
+          "schema": {
+            "$ref": "#/backend/entities/MathWordProblemGame"
+          },
+          "description": "Stores the results of each math word problem game session. Admins can read all game documents for statistical analysis, while students can only write their own results.",
+          "params": [
+            {
+              "name": "gameId",
+              "description": "The unique ID of the game session."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "The Firestore data structure is designed to support the synchronization of data between Firebase and a local MySQL database, focusing on admin review and approval before synchronization. The structure prioritizes authorization independence, clarity, and security. It leverages structural segregation to ensure that documents within a collection share the same security requirements, and path-based ownership for private user data. The Admin entity and AdminReview entities are used to provide an extra layer of control, so data stored on MySQL is not blindly synced. The structure will enable list operations and maintains the integrity of ownership. I've added a new collection for `readingDocuments` to store the texts for the comprehension exercises. I've also added the `mentalMathGames` collection to store student game results for statistical analysis by the teacher."
+    "reasoning": "The Firestore data structure is designed to support the synchronization of data between Firebase and a local MySQL database, focusing on admin review and approval before synchronization. The structure prioritizes authorization independence, clarity, and security. It leverages structural segregation to ensure that documents within a collection share the same security requirements, and path-based ownership for private user data. The Admin entity and AdminReview entities are used to provide an extra layer of control, so data stored on MySQL is not blindly synced. The structure will enable list operations and maintains the integrity of ownership. I've added a new collection for `readingDocuments` to store the texts for the comprehension exercises. I've also added the `mentalMathGames` collection to store student game results for statistical analysis by the teacher. A new `mathWordProblemGames` collection has been added to store the results of the 'Buruketak' (word problems) mini-app."
   }
 }
