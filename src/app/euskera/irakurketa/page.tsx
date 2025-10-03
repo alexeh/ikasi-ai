@@ -4,7 +4,7 @@ import * as React from 'react';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, where } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardDescription, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import Link from 'next/link';
 import { FileText, Loader2, PlusCircle, BarChart } from 'lucide-react';
 import { useMemoFirebase } from '@/firebase';
@@ -48,10 +48,14 @@ export default function IdatzizkoUlermenaPage() {
                 }
             </p>
         </div>
-        <Button variant="outline">
-            <BarChart className="mr-2 h-4 w-4" />
-            Estatistikak
-        </Button>
+        {role === 'admin' && (
+            <Button asChild variant="outline">
+                <Link href="/irakasleak/estatistikak">
+                    <BarChart className="mr-2 h-4 w-4" />
+                    Estatistikak
+                </Link>
+            </Button>
+        )}
       </div>
 
 
