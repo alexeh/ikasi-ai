@@ -1,37 +1,54 @@
 'use client';
 
 import * as React from 'react';
-import Link from 'next/link';
 import { useUserRole } from '@/hooks/useUserRole';
-import { useRouter, useParams } from 'next/navigation';
-import { Loader2, ArrowRight, Calculator, Book, Languages } from 'lucide-react';
-import { Card, CardHeader, CardTitle } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
+import { Loader2, User, BarChart } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
-const formatIdToName = (id: string) => {
-    if (!id) return '';
-    // Replaces all underscores back to dots except the one for the @ symbol
-    const email = id.replace(/_/g, '.').replace('aldapeta.eus', '@aldapeta.eus');
-    const namePart = email.split('@')[0];
-    return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
-};
-
-const subjects = [
-    { title: 'Matematika', href: '/irakasleak/estatistikak/matematika', icon: <Calculator className="h-6 w-6 text-primary" /> },
-    { title: 'Euskera', href: '#', icon: <Book className="h-6 w-6 text-primary" /> },
-    { title: 'Gaztelania', href: '#', icon: <Languages className="h-6 w-6 text-primary" /> },
+const allowedUsers = [
+  'jarambarri@aldapeta.eus',
+  'alejandro.hernandez@aldapeta.eus',
+  'alma.ruizdearcaute@aldapeta.eus',
+  'amets.olaizola@aldapeta.eus',
+  'daniel.irazusta@aldapeta.eus',
+  'diego.valcarce@aldapeta.eus',
+  'elia.virto@aldapeta.eus',
+  'julen.povieda@aldapeta.eus',
+  'lola.altolaguirre@aldapeta.eus',
+  'lucia.benali@aldapeta.eus',
+  'lucia.manzano@aldapeta.eus',
+  'luis.oliveira@aldapeta.eus',
+  'lukas.usarraga@aldapeta.eus',
+  'manuela.demora@aldapeta.eus',
+  'marina.ortuzar@aldapeta.eus',
+  'martin.aizpurua@aldapeta.eus',
+  'martin.ceceaga@aldapeta.eus',
+  'martin.contreras@aldapeta.eus',
+  'martin.cuenca@aldapeta.eus',
+  'martin.garcia@aldapeta.eus',
+  'martin.iturralde@aldapeta.eus',
+  'oto.fermin@aldapeta.eus',
+  'sara.padilla@aldapeta.eus',
+  'simon.fernandez@aldapeta.eus',
 ];
 
-export default function StudentStatisticsPage() {
+// Simple function to format email to name
+const formatEmailToName = (email: string) => {
+    const namePart = email.split('@')[0];
+    return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
+}
+
+const formatEmailToId = (email: string) => {
+    return email.replace(/[@.]/g, '_');
+}
+
+export default function IkasleakPage() {
     const { role, isLoading: isRoleLoading } = useUserRole();
     const router = useRouter();
-    const params = useParams();
 
-    const studentId = typeof params.studentId === 'string' ? params.studentId : '';
-    const studentName = formatIdToName(studentId);
-
-    // --- Render Logic ---
-
-    // 1. While the role is being determined, show a full-page loader.
     if (isRoleLoading) {
         return (
             <div className="container flex h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8">
@@ -39,8 +56,7 @@ export default function StudentStatisticsPage() {
             </div>
         );
     }
-    
-    // 2. If loading is done but the role is NOT 'admin', show an "access denied" message.
+
     if (role !== 'admin') {
          return (
             <div className="container flex flex-col h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8 text-center">
@@ -55,31 +71,40 @@ export default function StudentStatisticsPage() {
         );
     }
     
-    // 3. If loading is done and the role is 'admin', render the page content.
+    const students = allowedUsers.filter(email => email !== 'jarambarri@aldapeta.eus');
+    
     return (
         <div className="container py-8">
-            <h1 className="text-3xl font-headline font-bold">
-                {studentName} ikaslearen estatistikak
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-                Aukeratu irakasgai bat bere aurrerapena ikusteko.
-            </p>
+            <div className="flex items-center justify-between">
+                <div>
+                    <h1 className="text-3xl font-headline font-bold">Ikasleak</h1>
+                    <p className="mt-2 text-muted-foreground">
+                        Hemen zure ikasleen zerrenda ikus dezakezu.
+                    </p>
+                </div>
+            </div>
 
-            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {subjects.map((subject) => (
-                    <Link href={`${subject.href}/${studentId}`} key={subject.title}>
-                        <Card className="flex h-full transform-gpu flex-col justify-between transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
-                            <CardHeader>
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        {subject.icon}
-                                        <CardTitle>{subject.title}</CardTitle>
-                                    </div>
-                                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
+            <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {students.map(studentEmail => (
+                    <Card key={studentEmail}>
+                        <CardHeader>
+                            <div className="flex items-center gap-4">
+                                <User className="h-8 w-8 text-primary"/>
+                                <div>
+                                    <CardTitle>{formatEmailToName(studentEmail)}</CardTitle>
+                                    <CardDescription>{studentEmail}</CardDescription>
                                 </div>
-                            </CardHeader>
-                        </Card>
-                    </Link>
+                            </div>
+                        </CardHeader>
+                        <CardFooter>
+                            <Button asChild className="w-full" variant="outline">
+                                <Link href={`/irakasleak/estatistikak/matematika/${formatEmailToId(studentEmail)}`}>
+                                    <BarChart className="mr-2 h-4 w-4" />
+                                    Ikusi estatistikak
+                                </Link>
+                            </Button>
+                        </CardFooter>
+                    </Card>
                 ))}
             </div>
         </div>
