@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useParams, useRouter } from 'next/navigation';
-import { Loader2, ArrowLeft, BrainCircuit, Puzzle, CheckCircle, XCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, BrainCircuit, Puzzle, CheckCircle, XCircle, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { format } from 'date-fns';
 
 const formatIdToEmail = (id: string) => {
+    if (!id) return '';
     return id.replace(/_/g, '.').replace(/\.eus$/, '@aldapeta.eus');
 }
 
@@ -47,7 +48,7 @@ type MathWordProblemGame = {
     }
 }
 
-function StudentStats({ studentId, studentEmail }: { studentId: string, studentEmail: string }) {
+function StudentStatsContent({ studentEmail }: { studentEmail: string }) {
     const firestore = useFirestore();
     const router = useRouter();
     const studentName = React.useMemo(() => formatEmailToName(studentEmail), [studentEmail]);
@@ -79,11 +80,13 @@ function StudentStats({ studentId, studentEmail }: { studentId: string, studentE
     const { data: mentalMathGames, isLoading: isLoadingMentalMath } = useCollection<MentalMathGame>(mentalMathGamesQuery);
     const { data: wordProblemGames, isLoading: isLoadingWordProblems } = useCollection<MathWordProblemGame>(wordProblemGamesQuery);
 
-    const chartData = mentalMathGames?.map(game => ({
-        date: format(game.timestamp.toDate(), 'dd/MM'),
-        Zuzenak: game.score,
-        Okerrak: game.incorrectAnswers,
-    })).reverse();
+    const chartData = React.useMemo(() => 
+        mentalMathGames?.map(game => ({
+            date: format(game.timestamp.toDate(), 'dd/MM'),
+            Zuzenak: game.score,
+            Okerrak: game.incorrectAnswers,
+        })).reverse() || [],
+    [mentalMathGames]);
 
     const isLoading = isLoadingMentalMath || isLoadingWordProblems;
 
@@ -206,7 +209,8 @@ export default function StudentMathStatsPage() {
     if (role !== 'admin') {
          return (
             <div className="container flex flex-col h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8 text-center">
-                <h1 className="text-2xl font-bold">Sarrera debekatua</h1>
+                <ShieldAlert className="h-12 w-12 text-destructive" />
+                <h1 className="text-2xl font-bold mt-4">Sarrera debekatua</h1>
                 <p className="text-muted-foreground mt-2">
                     Ez duzu baimenik orri hau ikusteko.
                 </p>
@@ -217,5 +221,5 @@ export default function StudentMathStatsPage() {
         );
     }
 
-    return <StudentStats studentId={studentId} studentEmail={studentEmail} />;
+    return <StudentStatsContent studentEmail={studentEmail} />;
 }
