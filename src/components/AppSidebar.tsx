@@ -9,6 +9,7 @@ import {
   LogOut,
   Loader2,
   User as UserIcon,
+  Users,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -34,7 +35,7 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const { email, isLoading: isRoleLoading } = useUserRole();
+  const { role, email, isLoading: isRoleLoading } = useUserRole();
   const auth = useAuth();
   
   useEffect(() => {
@@ -71,6 +72,10 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
     { href: '/gaztelania', icon: <Languages />, label: 'Gaztelania' },
     { href: '/informatika', icon: <Laptop />, label: 'Informatika' },
   ];
+  
+  const adminMenuItems = [
+    { href: '/ikasleak', icon: <Users />, label: 'Ikasleak' },
+  ]
 
   return (
     <SidebarProvider>
@@ -94,6 +99,17 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
                   <Link href={item.href}>{item.icon}{item.label}</Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+            ))}
+            {role === 'admin' && <SidebarSeparator />}
+            {role === 'admin' && adminMenuItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith(item.href)}
+                    >
+                    <Link href={item.href}>{item.icon}{item.label}</Link>
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
             ))}
           </SidebarMenu>
         </SidebarContent>
