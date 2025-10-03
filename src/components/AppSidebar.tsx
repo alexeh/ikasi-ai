@@ -10,7 +10,6 @@ import {
   LogOut,
   Loader2,
   User as UserIcon,
-  ChevronDown,
   Users,
 } from 'lucide-react';
 import {
@@ -31,47 +30,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useEffect, useState } from 'react';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { cn } from '@/lib/utils';
-
-
-const allowedUsers = [
-  'jarambarri@aldapeta.eus',
-  'alejandro.hernandez@aldapeta.eus',
-  'alma.ruizdearcaute@aldapeta.eus',
-  'amets.olaizola@aldapeta.eus',
-  'daniel.irazusta@aldapeta.eus',
-  'diego.valcarce@aldapeta.eus',
-  'elia.virto@aldapeta.eus',
-  'julen.povieda@aldapeta.eus',
-  'lola.altolaguirre@aldapeta.eus',
-  'lucia.benali@aldapeta.eus',
-  'lucia.manzano@aldapeta.eus',
-  'luis.oliveira@aldapeta.eus',
-  'lukas.usarraga@aldapeta.eus',
-  'manuela.demora@aldapeta.eus',
-  'marina.ortuzar@aldapeta.eus',
-  'martin.aizpurua@aldapeta.eus',
-  'martin.ceceaga@aldapeta.eus',
-  'martin.contreras@aldapeta.eus',
-  'martin.cuenca@aldapeta.eus',
-  'martin.garcia@aldapeta.eus',
-  'martin.iturralde@aldapeta.eus',
-  'oto.fermin@aldapeta.eus',
-  'sara.padilla@aldapeta.eus',
-  'simon.fernandez@aldapeta.eus',
-];
-
-const formatEmailToName = (email: string) => {
-    const namePart = email.split('@')[0];
-    return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
-}
-
-const formatEmailToId = (email: string) => {
-    return email.replace(/[@.]/g, '_');
-}
-
+import { useEffect } from 'react';
 
 export default function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -81,20 +40,15 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const auth = useAuth();
   
   useEffect(() => {
-    // If we are not loading and the user is logged in, but we are on the login page,
-    // redirect them to the main app area.
     if (!isUserLoading && user && pathname === '/') {
       router.push('/euskera');
     }
-    // If we are not loading and there is NO user, but we are NOT on the login page,
-    // force a redirect to the login page.
     if (!isUserLoading && !user && pathname !== '/') {
         router.push('/');
     }
   }, [user, isUserLoading, pathname, router]);
 
   const handleSignOut = async () => {
-    // Also clear our simulated user from local storage
     localStorage.removeItem('simulated_user');
     if (auth) {
       await signOut(auth);
@@ -102,9 +56,7 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
     router.push('/');
   };
   
-  // Don't render sidebar on login page
   if (pathname === '/') {
-     // While loading auth state on the login page, show a loader.
     if (isUserLoading || user) {
         return (
           <div className="flex h-screen w-screen items-center justify-center">
@@ -192,7 +144,6 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
         <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6">
           <SidebarTrigger className="md:hidden" />
           <div className="flex-1">
-            {/* You can add a page title here if needed */}
           </div>
         </header>
         {isUserLoading || isRoleLoading ? (
