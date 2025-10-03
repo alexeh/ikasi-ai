@@ -10,6 +10,7 @@ import {
   LogOut,
   Loader2,
   User as UserIcon,
+  ChevronDown,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -29,7 +30,43 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { cn } from '@/lib/utils';
+
+
+const allowedUsers = [
+  'jarambarri@aldapeta.eus',
+  'alejandro.hernandez@aldapeta.eus',
+  'alma.ruizdearcaute@aldapeta.eus',
+  'amets.olaizola@aldapeta.eus',
+  'daniel.irazusta@aldapeta.eus',
+  'diego.valcarce@aldapeta.eus',
+  'elia.virto@aldapeta.eus',
+  'julen.povieda@aldapeta.eus',
+  'lola.altolaguirre@aldapeta.eus',
+  'lucia.benali@aldapeta.eus',
+  'lucia.manzano@aldapeta.eus',
+  'luis.oliveira@aldapeta.eus',
+  'lukas.usarraga@aldapeta.eus',
+  'manuela.demora@aldapeta.eus',
+  'marina.ortuzar@aldapeta.eus',
+  'martin.aizpurua@aldapeta.eus',
+  'martin.ceceaga@aldapeta.eus',
+  'martin.contreras@aldapeta.eus',
+  'martin.cuenca@aldapeta.eus',
+  'martin.garcia@aldapeta.eus',
+  'martin.iturralde@aldapeta.eus',
+  'oto.fermin@aldapeta.eus',
+  'sara.padilla@aldapeta.eus',
+  'simon.fernandez@aldapeta.eus',
+];
+
+const formatEmailToName = (email: string) => {
+    const namePart = email.split('@')[0];
+    return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
+}
+
 
 export default function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -37,6 +74,9 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const { user, isUserLoading } = useUser();
   const { role, isLoading: isRoleLoading, email } = useUserRole();
   const auth = useAuth();
+  const [isStatsOpen, setIsStatsOpen] = useState(false);
+
+  const students = allowedUsers.filter(email => email !== 'jarambarri@aldapeta.eus');
 
   useEffect(() => {
     // If we are not loading and the user is logged in, but we are on the login page,
@@ -80,10 +120,6 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
     { href: '/informatika', icon: <Laptop />, label: 'Informatika' },
   ];
 
-  const adminMenuItems = [
-    { href: '/irakasleak', icon: <ShieldCheck />, label: 'Irakasleak' },
-  ];
-
   return (
     <SidebarProvider>
       <Sidebar>
@@ -110,16 +146,33 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
             {role === 'admin' && (
               <>
                 <SidebarSeparator />
-                {adminMenuItems.map((item) => (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname.startsWith(item.href)}
-                    >
-                      <Link href={item.href}>{item.icon}{item.label}</Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
+                <SidebarMenuItem>
+                  <Collapsible open={isStatsOpen} onOpenChange={setIsStatsOpen}>
+                    <CollapsibleTrigger asChild>
+                       <button className={cn("peer/menu-button flex w-full items-center gap-2 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-all hover:bg-green-100 dark:hover:bg-green-900/50 focus-visible:ring-2 active:bg-green-200 dark:active:bg-green-900/80", isStatsOpen && "bg-green-100 dark:bg-green-900/50")}>
+                        <ShieldCheck />
+                        Estatistikak
+                        <ChevronDown className={cn("ml-auto h-4 w-4 transition-transform", isStatsOpen && "rotate-180")}/>
+                      </button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="mt-1 space-y-1 data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
+                      <div className="pl-6">
+                        <SidebarMenu>
+                           {students.map(studentEmail => (
+                             <SidebarMenuItem key={studentEmail}>
+                               <SidebarMenuButton asChild variant="ghost" size="sm" isActive={pathname.includes('estatistikak')}>
+                                  <Link href="/irakasleak/estatistikak">
+                                    <UserIcon className="h-3 w-3 mr-2" />
+                                    {formatEmailToName(studentEmail)}
+                                  </Link>
+                               </SidebarMenuButton>
+                             </SidebarMenuItem>
+                           ))}
+                        </SidebarMenu>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </SidebarMenuItem>
               </>
             )}
           </SidebarMenu>
