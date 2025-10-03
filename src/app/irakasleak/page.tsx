@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowRight, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const panelItems = [
@@ -14,7 +14,7 @@ const panelItems = [
     title: 'Ikasleen Estatistikak',
     description: 'Ikusi ikasle bakoitzaren aurrerapena eta emaitzak.',
     href: '/irakasleak/estatistikak',
-    icon: <Users />
+    icon: <Users />,
   },
 ];
 
