@@ -8,7 +8,7 @@ import { useDoc } from '@/firebase/firestore/use-doc';
 type UserRole = 'admin' | 'student';
 
 // This is a temporary solution for the simplified login
-const getSimulatedUser = (): { uid: string, email: string } | null => {
+const getSimulatedUser = (): { uid: string; email: string } | null => {
     if (typeof window === 'undefined') return null;
     const email = localStorage.getItem('simulated_user');
     if (!email) return null;
@@ -23,11 +23,13 @@ const getSimulatedUser = (): { uid: string, email: string } | null => {
 export function useUserRole(): { role: UserRole | null; isLoading: boolean; email: string | null } {
   const { user: firebaseUser, isUserLoading: isFirebaseUserLoading } = useUser();
   const firestore = useFirestore();
-  const [simulatedUser, setSimulatedUser] = useState(getSimulatedUser());
+  const [simulatedUser, setSimulatedUser] = useState<{ uid: string; email: string } | null>(null);
 
   useEffect(() => {
-    // This effect runs on the client and keeps the simulated user in sync
-    // if the local storage changes for any reason.
+    // This effect runs ONLY on the client, after the initial render.
+    // This avoids the hydration mismatch.
+    setSimulatedUser(getSimulatedUser());
+
     const handleStorageChange = () => {
         setSimulatedUser(getSimulatedUser());
     }
