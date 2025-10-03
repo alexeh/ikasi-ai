@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { Loader2, PlusCircle, BarChart, Users } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function IrakasleakPage() {
     const { role, isLoading } = useUserRole();
