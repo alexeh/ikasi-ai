@@ -65,21 +65,6 @@ export default function IrakasleakPage() {
                         </Button>
                     </CardContent>
                 </Card>
-                 <Card>
-                    <CardHeader>
-                        <CardTitle>Estatistikak ikusi</CardTitle>
-                        <CardDescription>Ikusi ikasleen emaitzak eta progresioa.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col space-y-2">
-                         <Button asChild variant="outline">
-                            <Link href="/irakasleak/estatistikak">
-                                <BarChart className="mr-2 h-4 w-4" />
-                                Kalkulu Mentalaren estatistikak
-                            </Link>
-                        </Button>
-                        {/* Aquí se podrían añadir más botones para otras estadísticas */}
-                    </CardContent>
-                </Card>
             </div>
         </div>
     );
