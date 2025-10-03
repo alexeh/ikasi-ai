@@ -35,6 +35,26 @@ const prompt = ai.definePrompt({
   input: { schema: StoryStarterInputSchema },
   output: { schema: StoryStarterOutputSchema },
   prompt: `Eres un cuentacuentos para niños de primaria. Tu tarea es empezar una historia corta y emocionante en Euskera sobre el tema proporcionado. Escribe solo los primeros párrafos, dejando claro que la historia no está terminada, para que el niño pueda continuarla. El tema es: {{{topic}}}`,
+  config: {
+    safetySettings: [
+      {
+        category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+        threshold: 'BLOCK_NONE',
+      },
+       {
+        category: 'HARM_CATEGORY_HATE_SPEECH',
+        threshold: 'BLOCK_NONE',
+      },
+       {
+        category: 'HARM_CATEGORY_HARASSMENT',
+        threshold: 'BLOCK_NONE',
+      },
+       {
+        category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+        threshold: 'BLOCK_NONE',
+      },
+    ],
+  }
 });
 
 const storyStarterFlow = ai.defineFlow(
