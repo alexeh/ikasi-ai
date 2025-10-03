@@ -1,93 +1,164 @@
 /**
  * @file Firestore Security Rules
- * @description This ruleset provides open access to all data for prototyping purposes, effectively disabling security measures.
+ * @description This ruleset enforces a role-based access control model with ownership constraints for specific data collections.
  *
- * Core Philosophy: All read and write operations are allowed for all users, authenticated or not. This is NOT a secure configuration and should only be used for initial development and prototyping.
+ * Data Structure:
+ * - /sync_logs/{syncLogId}: Stores synchronization logs. Admin roles determine access.
+ * - /admin_reviews/{adminReviewId}: Stores admin reviews of sync logs. Linked to SyncLog and Admin entities.
+ * - /admins/{adminId}: Stores administrator user profiles. Access control based on user ID.
+ * - /roles_admin/{adminId}: Collection representing admin roles. Existence of a document indicates admin status.
+ * - /readingDocuments/{documentId}: Stores reading comprehension documents. Publicly readable.
+ * - /mentalMathGames/{gameId}: Stores mental math game results. Admins can read all, students can write their own.
+ * - /mathWordProblemGames/{gameId}: Stores math word problem game results. Admins can read all, students can write their own.
  *
- * Data Structure: The database contains collections for sync logs, admin reviews, admins, admin roles, reading documents, mental math games, and math word problem games.
+ * Key Security Decisions:
+ * - Admin privileges are determined by the presence of a document in the `/roles_admin/{adminId}` collection.
+ * - Read-only access to `readingDocuments` is granted to all users.
+ * - Students can only create game results in `mentalMathGames` and `mathWordProblemGames` with their own ID.
+ * - Data validation is minimal, focusing on ownership and relational integrity.
  *
- * Key Security Decisions: All security measures have been disabled.
+ * Denormalization for Authorization:
+ * - The `adminId` is denormalized into the `AdminReview` documents to enable independent authorization checks.
  *
+ * Structural Segregation:
+ * - Private user data (admin profiles) and public data (reading documents) are stored in separate collections with distinct access controls.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Allows any user to read, create, update, or delete sync logs.
+     * @description Grants admin roles to sync logs.
      * @path /sync_logs/{syncLogId}
-     * @allow (get, list, create, update, delete)
-     * @principle Disables all security for rapid prototyping.
+     * @allow (get, list) if isAdmin()
+     * @allow (create, update, delete) if false
+     * @deny (get, list) if !isAdmin()
+     * @principle Enforces admin-only access to sync logs.
      */
     match /sync_logs/{syncLogId} {
-      allow get, list: if true;
-      allow create, update, delete: if true;
+      allow get, list: if isAdmin();
+      allow create, update, delete: if false;
     }
 
     /**
-     * @description Allows any user to read, create, update, or delete admin reviews.
+     * @description Grants admin roles to admin reviews.
      * @path /admin_reviews/{adminReviewId}
-     * @allow (get, list, create, update, delete)
-     * @principle Disables all security for rapid prototyping.
+     * @allow (get, list) if isAdmin()
+     * @allow create: if isAdmin() && request.resource.data.adminId == request.auth.uid;
+     * @allow update, delete: if isAdmin() && resource.data.adminId == request.auth.uid && resource != null;
+     * @deny (get, list) if !isAdmin()
+     * @deny create if !isAdmin()
+     * @principle Enforces admin-only access to admin reviews.
      */
     match /admin_reviews/{adminReviewId} {
-      allow get, list: if true;
-      allow create, update, delete: if true;
+      allow get, list: if isAdmin();
+      allow create: if isAdmin() && request.resource.data.adminId == request.auth.uid;
+      allow update, delete: if isAdmin() && resource.data.adminId == request.auth.uid && resource != null;
     }
 
     /**
-     * @description Allows any user to read, create, update, or delete admin profiles.
+     * @description Grants access to admins to their own profiles.
      * @path /admins/{adminId}
-     * @allow (get, list, create, update, delete)
-     * @principle Disables all security for rapid prototyping.
+     * @allow (get, list) if isOwner(adminId)
+     * @allow create: if isOwner(adminId) ;
+     * @allow update: if isOwner(adminId) && resource.data.id == adminId && resource != null;
+     * @allow delete: if isExistingOwner(adminId);
+     * @deny (get, list) if !isOwner(adminId)
+     * @deny create if !isOwner(adminId)
+     * @deny update if !isOwner(adminId)
+     * @deny delete if !isExistingOwner(adminId)
+     * @principle Enforces document ownership for admin profiles.
      */
     match /admins/{adminId} {
-      allow get, list: if true;
-      allow create, update, delete: if true;
+      allow get: if isOwner(adminId);
+      allow list: if isOwner(adminId);
+      allow create: if isOwner(adminId) ;
+      allow update: if isOwner(adminId) && resource.data.id == adminId && resource != null;
+      allow delete: if isExistingOwner(adminId);
     }
 
     /**
-     * @description Allows any user to read, create, update, or delete admin roles.
+     * @description Defines admin roles. Existence of a document indicates admin status.
      * @path /roles_admin/{adminId}
-     * @allow (get, list, create, update, delete)
-     * @principle Disables all security for rapid prototyping.
+     * @allow get: if isAdmin();
+     * @allow list: if isAdmin();
+     * @allow create: if isAdmin();
+     * @allow update: if false;
+     * @allow delete: if isAdmin();
+     * @deny get, list if !isAdmin();
+     * @deny create if !isAdmin();
+     * @deny update if true;
+     * @deny delete if !isAdmin();
+     * @principle Admin roles are determined by the presence of a document with their ID.
      */
     match /roles_admin/{adminId} {
-      allow get, list: if true;
-      allow create, update, delete: if true;
+      allow get, list: if isAdmin();
+      allow create: if isAdmin();
+      allow update: if false;
+      allow delete: if isAdmin();
     }
 
     /**
-     * @description Allows any user to read, create, update, or delete reading documents.
+     * @description Grants read-only access to reading documents for all users.
      * @path /readingDocuments/{documentId}
-     * @allow (get, list, create, update, delete)
-     * @principle Disables all security for rapid prototyping.
+     * @allow get, list: if true
+     * @allow create, update, delete: if false;
+     * @deny create, update, delete if true;
+     * @principle Grants public read access to reading documents.
      */
     match /readingDocuments/{documentId} {
       allow get, list: if true;
-      allow create, update, delete: if true;
+      allow create, update, delete: if false;
     }
 
     /**
-     * @description Allows any user to read, create, update, or delete mental math game results.
+     * @description Allows admins to read all game documents, and students to write their own results.
      * @path /mentalMathGames/{gameId}
-     * @allow (get, list, create, update, delete)
-     * @principle Disables all security for rapid prototyping.
+     * @allow get, list: if isAdmin()
+     * @allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+     * @allow update, delete: if false;
+     * @deny (get, list) if !isAdmin()
+     * @deny create if !(isSignedIn() && request.resource.data.studentId == request.auth.uid);
+     * @deny update, delete if true;
+     * @principle Restricts write access to a user's own game results, admins can read all.
      */
     match /mentalMathGames/{gameId} {
-      allow get, list: if true;
-      allow create, update, delete: if true;
+      allow get, list: if isAdmin();
+      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+      allow update, delete: if false;
     }
 
     /**
-     * @description Allows any user to read, create, update, or delete math word problem game results.
+     * @description Allows admins to read all game documents, and students to write their own results for math word problems.
      * @path /mathWordProblemGames/{gameId}
-     * @allow (get, list, create, update, delete)
-     * @principle Disables all security for rapid prototyping.
+     * @allow get, list: if isAdmin()
+     * @allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+     * @allow update, delete: if false;
+     * @deny (get, list) if !isAdmin()
+     * @deny create if !(isSignedIn() && request.resource.data.studentId == request.auth.uid);
+     * @deny update, delete if true;
+     * @principle Restricts write access to a user's own game results, admins can read all.
      */
     match /mathWordProblemGames/{gameId} {
-      allow get, list: if true;
-      allow create, update, delete: if true;
+      allow get, list: if isAdmin();
+      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+
+    function isExistingOwner(userId) {
+        return isOwner(userId) && resource != null;
+    }
+
+    function isAdmin() {
+      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
     }
   }
 }
