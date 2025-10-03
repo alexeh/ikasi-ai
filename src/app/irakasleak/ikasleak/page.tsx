@@ -49,13 +49,7 @@ export default function IkasleakPage() {
     const { role, isLoading: isRoleLoading } = useUserRole();
     const router = useRouter();
 
-    React.useEffect(() => {
-        if (!isRoleLoading && role !== 'admin') {
-            router.push('/');
-        }
-    }, [role, isRoleLoading, router]);
-
-    if (isRoleLoading || role !== 'admin') {
+    if (isRoleLoading) {
         return (
             <div className="container flex h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -63,6 +57,20 @@ export default function IkasleakPage() {
         );
     }
 
+    if (role !== 'admin') {
+         return (
+            <div className="container flex flex-col h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8 text-center">
+                <h1 className="text-2xl font-bold">Sarrera debekatua</h1>
+                <p className="text-muted-foreground mt-2">
+                    Ez duzu baimenik orri hau ikusteko.
+                </p>
+                <button onClick={() => router.push('/')} className="mt-4 text-primary underline">
+                    Itzuli hasierara
+                </button>
+            </div>
+        );
+    }
+    
     const students = allowedUsers.filter(email => email !== 'jarambarri@aldapeta.eus');
     
     return (
