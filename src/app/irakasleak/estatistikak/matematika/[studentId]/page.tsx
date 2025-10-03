@@ -46,6 +46,7 @@ export default function StudentMathStatisticsPage() {
     const studentId = typeof params.studentId === 'string' ? params.studentId : '';
     const studentName = formatIdToName(studentId);
 
+    // This correctly derives the student's email from the URL parameter (studentId)
     const studentEmail = studentId.replace(/_/g, '.').replace('aldapeta.eus', '@aldapeta.eus');
 
     const gamesQuery = useMemoFirebase(
@@ -64,7 +65,7 @@ export default function StudentMathStatisticsPage() {
     
     const isLoading = isRoleLoading || isGamesLoading;
 
-    if (isLoading) {
+    if (isRoleLoading) {
         return (
             <div className="container flex h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -109,34 +110,40 @@ export default function StudentMathStatisticsPage() {
                     <CardDescription>Jokatutako partida guztien zerrenda.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Data</TableHead>
-                                <TableHead>Maila</TableHead>
-                                <TableHead className="text-right">Zuzenak</TableHead>
-                                <TableHead className="text-right">Okerrak</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {games && games.length > 0 ? (
-                                games.map((game) => (
-                                    <TableRow key={game.id}>
-                                        <TableCell>{game.timestamp.toDate().toLocaleDateString('eu-ES')}</TableCell>
-                                        <TableCell>{levelTranslations[game.level] || game.level}</TableCell>
-                                        <TableCell className="text-right font-medium text-green-600">{game.score}</TableCell>
-                                        <TableCell className="text-right font-medium text-red-600">{game.incorrectAnswers}</TableCell>
-                                    </TableRow>
-                                ))
-                            ) : (
+                    {isLoading ? (
+                         <div className="flex items-center justify-center h-24">
+                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                        </div>
+                    ) : (
+                        <Table>
+                            <TableHeader>
                                 <TableRow>
-                                    <TableCell colSpan={4} className="h-24 text-center">
-                                        Ikasle honek ez du oraindik jokatu.
-                                    </TableCell>
+                                    <TableHead>Data</TableHead>
+                                    <TableHead>Maila</TableHead>
+                                    <TableHead className="text-right">Zuzenak</TableHead>
+                                    <TableHead className="text-right">Okerrak</TableHead>
                                 </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                            </TableHeader>
+                            <TableBody>
+                                {games && games.length > 0 ? (
+                                    games.map((game) => (
+                                        <TableRow key={game.id}>
+                                            <TableCell>{game.timestamp.toDate().toLocaleDateString('eu-ES')}</TableCell>
+                                            <TableCell>{levelTranslations[game.level] || game.level}</TableCell>
+                                            <TableCell className="text-right font-medium text-green-600">{game.score}</TableCell>
+                                            <TableCell className="text-right font-medium text-red-600">{game.incorrectAnswers}</TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={4} className="h-24 text-center">
+                                            Ikasle honek ez du oraindik jokatu.
+                                        </TableCell>
+                                    </TableRow>
+                                )}
+                            </TableBody>
+                        </Table>
+                    )}
                 </CardContent>
             </Card>
         </div>
