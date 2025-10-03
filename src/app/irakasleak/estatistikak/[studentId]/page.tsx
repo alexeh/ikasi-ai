@@ -29,18 +29,10 @@ export default function StudentStatisticsPage() {
     const studentId = typeof params.studentId === 'string' ? params.studentId : '';
     const studentName = formatIdToName(studentId);
 
-    // This effect handles the redirection logic.
-    React.useEffect(() => {
-        // If loading is finished and the role is explicitly NOT admin, then redirect.
-        if (!isRoleLoading && role !== 'admin') {
-            router.push('/');
-        }
-    }, [role, isRoleLoading, router]);
-
     // --- Render Logic ---
 
     // 1. While the role is being determined, show a full-page loader.
-    // This prevents any content from rendering prematurely and causing redirects.
+    // This prevents any content from rendering prematurely.
     if (isRoleLoading) {
         return (
             <div className="container flex h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8">
@@ -50,8 +42,6 @@ export default function StudentStatisticsPage() {
     }
     
     // 2. After loading, if the role is confirmed to be 'admin', render the page content.
-    // If the role is NOT 'admin', this part will not be reached, and the useEffect above
-    // will handle the redirection.
     if (role === 'admin') {
         return (
             <div className="container py-8">
@@ -83,11 +73,17 @@ export default function StudentStatisticsPage() {
         );
     }
     
-    // 3. If the code reaches here, it means loading is done but the role is not 'admin'.
-    // We return a loader (or null) while the redirection from the useEffect takes place.
+    // 3. If loading is done and the role is NOT 'admin', show an "access denied" message.
+    // This prevents the redirect loop.
     return (
-        <div className="container flex h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <div className="container flex flex-col h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8 text-center">
+            <h1 className="text-2xl font-bold">Sarrera debekatua</h1>
+            <p className="text-muted-foreground mt-2">
+                Ez duzu baimenik orri hau ikusteko.
+            </p>
+            <button onClick={() => router.push('/')} className="mt-4 text-primary underline">
+                Itzuli hasierara
+            </button>
         </div>
     );
 }
