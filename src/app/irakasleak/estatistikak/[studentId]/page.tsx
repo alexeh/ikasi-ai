@@ -6,7 +6,7 @@ import { useUserRole } from '@/hooks/useUserRole';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { useFirestore } from '@/firebase';
 import { collection, query, where, orderBy, Timestamp } from 'firebase/firestore';
-import { Loader2, ArrowLeft, BrainCircuit, Puzzle, BarChart, ShieldAlert } from 'lucide-react';
+import { Loader2, ArrowLeft, BrainCircuit, Puzzle, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { useMemoFirebase } from '@/firebase';
@@ -36,7 +36,8 @@ const formatEmailToName = (email: string) => {
   return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
 };
 
-export default function StudentStatsPage({ params }: { params: { studentId: string } }) {
+export default function StudentStatsPage({ params: paramsProp }: { params: { studentId: string } }) {
+  const params = React.use(paramsProp as any) as { studentId: string };
   const studentEmail = decodeURIComponent(params.studentId);
   const studentName = formatEmailToName(studentEmail);
   const { role, isLoading: isRoleLoading } = useUserRole();
@@ -161,7 +162,7 @@ export default function StudentStatsPage({ params }: { params: { studentId: stri
                   {wordProblemGames.map(game => (
                     <li key={game.id} className="flex justify-between items-center rounded-md border p-3">
                       <div>
-                        <p className="font-semibold capitalize">{game.topic} ({game.level})</p>
+                        <p className="font-semibold capitalize">{game.level}</p>
                         <p className="text-sm text-muted-foreground">{new Date(game.timestamp.toDate()).toLocaleString()}</p>
                       </div>
                       <span className={`font-bold ${game.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
