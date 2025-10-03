@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useUserRole } from '@/hooks/useUserRole';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { Loader2, ArrowLeft, BarChart, Trophy, Clock, XCircle } from 'lucide-react';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { collection, query, where, orderBy } from 'firebase/firestore';
@@ -77,11 +77,12 @@ type MentalMathGame = {
 }
 
 
-export default function StudentMathStatsPage({ params }: { params: { studentId: string } }) {
+export default function StudentMathStatsPage() {
     const { role, isLoading: isRoleLoading } = useUserRole();
     const router = useRouter();
     const firestore = useFirestore();
-    const studentId = params.studentId;
+    const params = useParams();
+    const studentId = params.studentId as string;
 
     const studentEmail = React.useMemo(() => formatIdToEmail(studentId), [studentId]);
     const studentName = React.useMemo(() => formatEmailToName(studentEmail), [studentEmail]);
