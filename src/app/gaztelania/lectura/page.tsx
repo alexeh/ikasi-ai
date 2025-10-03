@@ -48,10 +48,14 @@ export default function ComprensionLectoraPage() {
                     }
                 </p>
             </div>
-            <Button variant="outline">
-                <BarChart className="mr-2 h-4 w-4" />
-                Estadísticas
-            </Button>
+            {role === 'admin' && (
+              <Button asChild variant="outline">
+                  <Link href="/irakasleak/estatistikak">
+                      <BarChart className="mr-2 h-4 w-4" />
+                      Estatistikak
+                  </Link>
+              </Button>
+            )}
         </div>
 
        {isLoading && (
