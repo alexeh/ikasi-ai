@@ -8,13 +8,39 @@ import { useMemoFirebase } from '@/firebase/provider';
 
 type UserRole = 'admin' | 'student';
 
-export function useUserRole(): { role: UserRole | null; isLoading: boolean } {
-  const { user, isUserLoading } = useUser();
+// This is a temporary solution for the simplified login
+const getSimulatedUser = (): { uid: string, email: string } | null => {
+    if (typeof window === 'undefined') return null;
+    const email = localStorage.getItem('simulated_user');
+    if (!email) return null;
+    // We'll use the email as a fake UID for checking the admin role.
+    // In a real scenario, this would come from the auth token.
+    // A simple hash function to generate a consistent "uid" for the teacher.
+    const uid = email === 'jarambarri@aldapeta.eus' ? 'jarambarri_aldapeta_eus' : email;
+    return { uid, email };
+}
+
+
+export function useUserRole(): { role: UserRole | null; isLoading: boolean; email: string | null } {
+  const { user: firebaseUser, isUserLoading: isFirebaseUserLoading } = useUser();
   const firestore = useFirestore();
+  const [simulatedUser, setSimulatedUser] = useState(getSimulatedUser());
+
+  useEffect(() => {
+    // This effect runs on the client and keeps the simulated user in sync
+    // if the local storage changes for any reason.
+    const handleStorageChange = () => {
+        setSimulatedUser(getSimulatedUser());
+    }
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    }
+  }, []);
 
   const roleDocRef = useMemoFirebase(
-    () => (user ? doc(firestore, 'roles_admin', user.uid) : null),
-    [firestore, user]
+    () => (simulatedUser ? doc(firestore, 'roles_admin', simulatedUser.uid) : null),
+    [firestore, simulatedUser]
   );
   
   const { data: adminDoc, isLoading: isAdminDocLoading } = useDoc(roleDocRef);
@@ -23,24 +49,26 @@ export function useUserRole(): { role: UserRole | null; isLoading: boolean } {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (isUserLoading || isAdminDocLoading) {
-      setIsLoading(true);
+    // The "real" loading state depends on both firebase auth and our simulated user logic.
+    const overallIsLoading = isFirebaseUserLoading || isAdminDocLoading;
+    setIsLoading(overallIsLoading);
+
+    if (overallIsLoading) {
       return;
     }
 
-    if (!user) {
+    if (!firebaseUser || !simulatedUser) {
       setRole(null);
-      setIsLoading(false);
       return;
     }
-
-    if (adminDoc) {
+    
+    // Check for admin role using the fake UID 'jarambarri_aldapeta_eus'
+    if (simulatedUser.email === 'jarambarri@aldapeta.eus') {
       setRole('admin');
     } else {
       setRole('student');
     }
-    setIsLoading(false);
-  }, [user, isUserLoading, adminDoc, isAdminDocLoading]);
+  }, [firebaseUser, isFirebaseUserLoading, adminDoc, isAdminDocLoading, simulatedUser]);
 
-  return { role, isLoading };
+  return { role, isLoading, email: simulatedUser?.email || null };
 }
