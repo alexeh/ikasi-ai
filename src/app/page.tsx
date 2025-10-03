@@ -1,28 +1,31 @@
 'use client';
 
-import * as React from 'react';
-import { GraduationCap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '@/firebase';
+import { LoginForm } from '@/components/LoginForm';
+import { Loader2 } from 'lucide-react';
 
-export default function Home() {
+export default function LoginPage() {
   const router = useRouter();
+  const { user, isUserLoading } = useUser();
 
-  React.useEffect(() => {
-    // Redirect to a default subject page, for example Euskera
-    router.push('/euskera');
-  }, [router]);
-
-  return (
-    <div className="flex flex-1 items-center justify-center p-8">
-      <div className="text-center">
-        <GraduationCap className="mx-auto h-24 w-24 text-primary" />
-        <h1 className="mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-          Ongi etorri Ikasgelara!
-        </h1>
-        <p className="mt-6 text-lg leading-8 text-muted-foreground">
-          Aukeratu irakasgai bat hasteko.
-        </p>
+  if (isUserLoading) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
-    </div>
-  );
+    );
+  }
+
+  if (user) {
+    router.push('/euskera');
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="ml-4">Redirigiendo...</p>
+      </div>
+    );
+  }
+
+  return <LoginForm />;
 }
