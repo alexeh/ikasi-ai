@@ -8,6 +8,7 @@ import {
   Laptop,
   ShieldCheck,
   LogOut,
+  Loader2,
 } from 'lucide-react';
 import {
   SidebarProvider,
