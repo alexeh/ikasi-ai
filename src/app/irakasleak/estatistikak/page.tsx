@@ -57,9 +57,9 @@ export default function EstatistikakPage() {
         <div className="container py-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-headline font-bold">Estatistikak</h1>
+                    <h1 className="text-3xl font-headline font-bold">Estatistikak Orokorrak</h1>
                     <p className="mt-2 text-muted-foreground">
-                        Hemen ikasleen emaitzak ikus ditzakezu.
+                        Hemen ikasle guztien emaitzak batera ikus ditzakezu.
                     </p>
                 </div>
             </div>
