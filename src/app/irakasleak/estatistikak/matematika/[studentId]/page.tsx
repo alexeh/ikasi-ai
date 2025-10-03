@@ -47,7 +47,7 @@ export default function StudentMathStatisticsPage() {
     const studentName = formatIdToName(studentId);
 
     // This correctly derives the student's email from the URL parameter (studentId)
-    const studentEmail = studentId.replace(/_/g, '.').replace('aldapeta.eus', '@aldapeta.eus');
+    const studentEmail = studentId ? studentId.replace(/_/g, '.').replace('aldapeta.eus', '@aldapeta.eus') : null;
 
     const gamesQuery = useMemoFirebase(
         () => 
@@ -63,7 +63,7 @@ export default function StudentMathStatisticsPage() {
 
     const { data: games, isLoading: isGamesLoading } = useCollection<MentalMathGame>(gamesQuery);
     
-    const isLoading = isRoleLoading || isGamesLoading;
+    const isLoading = isRoleLoading || (role === 'admin' && studentEmail && isGamesLoading);
 
     if (isRoleLoading) {
         return (
