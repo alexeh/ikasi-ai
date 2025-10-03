@@ -29,7 +29,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useUserRole } from '@/hooks/useUserRole';
 
 

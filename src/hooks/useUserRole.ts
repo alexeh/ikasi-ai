@@ -5,7 +5,6 @@ import { useUser } from '@/firebase';
 
 type UserRole = 'admin' | 'student';
 
-// This is a temporary solution for the simplified login
 const getSimulatedUserEmail = (): string | null => {
   if (typeof window === 'undefined') return null;
   return localStorage.getItem('simulated_user');
@@ -23,11 +22,11 @@ export function useUserRole(): {
 
   useEffect(() => {
     const handleStorageChange = () => {
-      setEmail(getSimulatedUserEmail());
+      const storedEmail = getSimulatedUserEmail();
+      setEmail(storedEmail);
     };
-    
-    // Set initial email
-    handleStorageChange();
+
+    handleStorageChange(); // Initial check
 
     window.addEventListener('storage', handleStorageChange);
     return () => {
@@ -42,11 +41,8 @@ export function useUserRole(): {
     }
 
     if (email) {
-      if (email === 'jarambarri@aldapeta.eus') {
-        setRole('admin');
-      } else {
-        setRole('student');
-      }
+      // Determine role based on email without any database queries
+      setRole(email === 'jarambarri@aldapeta.eus' ? 'admin' : 'student');
     } else {
       setRole(null);
     }
