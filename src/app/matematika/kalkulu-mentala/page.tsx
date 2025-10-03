@@ -13,6 +13,11 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { BrainCircuit, Play, Timer, Award, RefreshCw } from 'lucide-react';
+import { useFirestore, useUser } from '@/firebase';
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { useUserRole } from '@/hooks/useUserRole';
+import { FirestorePermissionError } from '@/firebase/errors';
+import { errorEmitter } from '@/firebase/error-emitter';
 
 type Level = 'easy' | 'medium' | 'hard';
 type GameState = 'selecting' | 'playing' | 'finished';
@@ -86,8 +91,40 @@ export default function KalkuluMentalaPage() {
   const [problem, setProblem] = React.useState<Problem | null>(null);
   const [userAnswer, setUserAnswer] = React.useState('');
   const [score, setScore] = React.useState(0);
+  const [problemsAttempted, setProblemsAttempted] = React.useState(0);
   const [timeLeft, setTimeLeft] = React.useState(60);
   const answerInputRef = React.useRef<HTMLInputElement>(null);
+
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const { email } = useUserRole();
+
+  const endGame = React.useCallback(() => {
+    setGameState('finished');
+    if (user && selectedLevel && firestore && problemsAttempted > 0) {
+      const collectionRef = collection(firestore, 'mentalMathGames');
+      const gameData = {
+        studentId: user.uid,
+        studentEmail: email,
+        level: selectedLevel,
+        score: score,
+        problemsAttempted: problemsAttempted,
+        incorrectAnswers: problemsAttempted - score,
+        duration: 60,
+        timestamp: serverTimestamp(),
+      };
+
+      addDoc(collectionRef, gameData).catch((serverError) => {
+        const permissionError = new FirestorePermissionError({
+          path: collectionRef.path,
+          operation: 'create',
+          requestResourceData: gameData,
+        });
+        errorEmitter.emit('permission-error', permissionError);
+        console.error('Error saving game result:', serverError);
+      });
+    }
+  }, [user, selectedLevel, firestore, problemsAttempted, score, email]);
 
 
   const levels = {
@@ -101,9 +138,9 @@ export default function KalkuluMentalaPage() {
       const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
       return () => clearInterval(timer);
     } else if (timeLeft === 0 && gameState === 'playing') {
-      setGameState('finished');
+      endGame();
     }
-  }, [gameState, timeLeft]);
+  }, [gameState, timeLeft, endGame]);
   
   React.useEffect(() => {
     if (gameState === 'playing') {
@@ -115,6 +152,7 @@ export default function KalkuluMentalaPage() {
     setSelectedLevel(level);
     setGameState('playing');
     setScore(0);
+    setProblemsAttempted(0);
     setTimeLeft(60);
     setProblem(generateProblem(level));
     setUserAnswer('');
@@ -124,6 +162,7 @@ export default function KalkuluMentalaPage() {
     setSelectedLevel(null);
     setGameState('selecting');
     setScore(0);
+    setProblemsAttempted(0);
     setTimeLeft(60);
     setProblem(null);
   };
@@ -132,6 +171,7 @@ export default function KalkuluMentalaPage() {
     e.preventDefault();
     if (!problem || userAnswer === '') return;
 
+    setProblemsAttempted((p) => p + 1);
     if (parseInt(userAnswer, 10) === problem.answer) {
       setScore((s) => s + 1);
     }
