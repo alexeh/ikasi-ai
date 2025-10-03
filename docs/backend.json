@@ -292,7 +292,7 @@
           "schema": {
             "$ref": "#/backend/entities/MentalMathGame"
           },
-          "description": "Stores the results of each mental math game session. Admins can read all documents to generate statistics, while students can only write their own results.",
+          "description": "Stores the results of each mental math game session. Admins can read all game documents for statistical analysis, while students can only write their own results.",
           "params": [
             {
               "name": "gameId",
