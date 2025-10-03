@@ -100,8 +100,12 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-            {role === 'admin' && <SidebarSeparator />}
-            {role === 'admin' && adminMenuItems.map((item) => (
+            {/* The role check here was causing re-renders and executing queries. 
+                We rely on the page itself to protect its content.
+                So we show the link to every logged in user.
+             */}
+            <SidebarSeparator />
+            {adminMenuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton
                     asChild
