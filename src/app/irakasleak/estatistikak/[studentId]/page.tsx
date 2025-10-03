@@ -16,7 +16,7 @@ const formatIdToName = (id: string) => {
 };
 
 const subjects = [
-    { title: 'Matematika', href: '#', icon: <Calculator className="h-6 w-6 text-primary" /> },
+    { title: 'Matematika', href: '/irakasleak/estatistikak/matematika', icon: <Calculator className="h-6 w-6 text-primary" /> },
     { title: 'Euskera', href: '#', icon: <Book className="h-6 w-6 text-primary" /> },
     { title: 'Gaztelania', href: '#', icon: <Languages className="h-6 w-6 text-primary" /> },
 ];
@@ -32,7 +32,6 @@ export default function StudentStatisticsPage() {
     // --- Render Logic ---
 
     // 1. While the role is being determined, show a full-page loader.
-    // This prevents any content from rendering prematurely.
     if (isRoleLoading) {
         return (
             <div className="container flex h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8">
@@ -41,49 +40,48 @@ export default function StudentStatisticsPage() {
         );
     }
     
-    // 2. After loading, if the role is confirmed to be 'admin', render the page content.
-    if (role === 'admin') {
-        return (
-            <div className="container py-8">
-                <h1 className="text-3xl font-headline font-bold">
-                    {studentName} ikaslearen estatistikak
-                </h1>
-                <p className="mt-2 text-muted-foreground">
-                    Aukeratu irakasgai bat bere aurrerapena ikusteko.
+    // 2. If loading is done but the role is NOT 'admin', show an "access denied" message.
+    if (role !== 'admin') {
+         return (
+            <div className="container flex flex-col h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8 text-center">
+                <h1 className="text-2xl font-bold">Sarrera debekatua</h1>
+                <p className="text-muted-foreground mt-2">
+                    Ez duzu baimenik orri hau ikusteko.
                 </p>
-
-                <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {subjects.map((subject) => (
-                        <Link href={`${subject.href}/${studentId}`} key={subject.title}>
-                            <Card className="flex h-full transform-gpu flex-col justify-between transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
-                                <CardHeader>
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            {subject.icon}
-                                            <CardTitle>{subject.title}</CardTitle>
-                                        </div>
-                                        <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                                    </div>
-                                </CardHeader>
-                            </Card>
-                        </Link>
-                    ))}
-                </div>
+                <button onClick={() => router.push('/')} className="mt-4 text-primary underline">
+                    Itzuli hasierara
+                </button>
             </div>
         );
     }
     
-    // 3. If loading is done and the role is NOT 'admin', show an "access denied" message.
-    // This prevents the redirect loop.
+    // 3. If loading is done and the role is 'admin', render the page content.
     return (
-        <div className="container flex flex-col h-[calc(100vh-theme(spacing.14))] items-center justify-center py-8 text-center">
-            <h1 className="text-2xl font-bold">Sarrera debekatua</h1>
-            <p className="text-muted-foreground mt-2">
-                Ez duzu baimenik orri hau ikusteko.
+        <div className="container py-8">
+            <h1 className="text-3xl font-headline font-bold">
+                {studentName} ikaslearen estatistikak
+            </h1>
+            <p className="mt-2 text-muted-foreground">
+                Aukeratu irakasgai bat bere aurrerapena ikusteko.
             </p>
-            <button onClick={() => router.push('/')} className="mt-4 text-primary underline">
-                Itzuli hasierara
-            </button>
+
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {subjects.map((subject) => (
+                    <Link href={`${subject.href}/${studentId}`} key={subject.title}>
+                        <Card className="flex h-full transform-gpu flex-col justify-between transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
+                            <CardHeader>
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        {subject.icon}
+                                        <CardTitle>{subject.title}</CardTitle>
+                                    </div>
+                                    <ArrowRight className="h-5 w-5 text-muted-foreground" />
+                                </div>
+                            </CardHeader>
+                        </Card>
+                    </Link>
+                ))}
+            </div>
         </div>
     );
 }
