@@ -6,7 +6,7 @@ import { collection, query, orderBy } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useRouter } from 'next/navigation';
-import { BarChart, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useMemoFirebase } from '@/firebase';
@@ -20,6 +20,12 @@ type MentalMathGame = {
     timestamp: {
         toDate: () => Date;
     };
+};
+
+const levelTranslations: { [key: string]: string } = {
+    easy: 'Erraza',
+    medium: 'Normala',
+    hard: 'Zaila',
 };
 
 export default function EstatistikakPage() {
@@ -85,10 +91,10 @@ export default function EstatistikakPage() {
                                 games.map((game) => (
                                     <TableRow key={game.id}>
                                         <TableCell className="font-medium">{game.studentEmail}</TableCell>
-                                        <TableCell>{game.timestamp.toDate().toLocaleDateString()}</TableCell>
-                                        <TableCell>{game.level}</TableCell>
-                                        <TableCell className="text-right text-green-600">{game.score}</TableCell>
-                                        <TableCell className="text-right text-red-600">{game.incorrectAnswers}</TableCell>
+                                        <TableCell>{game.timestamp.toDate().toLocaleDateString('eu-ES')}</TableCell>
+                                        <TableCell>{levelTranslations[game.level] || game.level}</TableCell>
+                                        <TableCell className="text-right font-medium text-green-600">{game.score}</TableCell>
+                                        <TableCell className="text-right font-medium text-red-600">{game.incorrectAnswers}</TableCell>
                                     </TableRow>
                                 ))
                             ) : (
