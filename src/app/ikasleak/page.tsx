@@ -42,6 +42,16 @@ const formatEmailToName = (email: string) => {
     return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
 }
 
+// Function to extract last name for sorting
+const getLastName = (email: string) => {
+    if (!email) return '';
+    const namePart = email.split('@')[0];
+    const names = namePart.split('.');
+    // Assuming the second part is the last name
+    return names.length > 1 ? names[1] : names[0];
+}
+
+
 const formatEmailToId = (email: string) => {
     if (!email) return '';
     return email.replace(/[@.]/g, '_');
@@ -73,7 +83,9 @@ export default function IkasleakPage() {
         );
     }
     
-    const students = allowedUsers.filter(email => email !== 'jarambarri@aldapeta.eus');
+    const students = allowedUsers
+      .filter(email => email !== 'jarambarri@aldapeta.eus')
+      .sort((a, b) => getLastName(a).localeCompare(getLastName(b)));
     
     return (
         <div className="container py-8">
@@ -87,13 +99,13 @@ export default function IkasleakPage() {
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {students.map(studentEmail => (
+                {students.map((studentEmail, index) => (
                     <Card key={studentEmail}>
                         <CardHeader>
-                            <div className="flex items-center gap-4">
-                                <User className="h-8 w-8 text-primary"/>
+                            <div className="flex items-start gap-4">
+                                <User className="mt-1 h-8 w-8 text-primary"/>
                                 <div>
-                                    <CardTitle>{formatEmailToName(studentEmail)}</CardTitle>
+                                    <CardTitle>{index + 1}. {formatEmailToName(studentEmail)}</CardTitle>
                                     <CardDescription>{studentEmail}</CardDescription>
                                 </div>
                             </div>
