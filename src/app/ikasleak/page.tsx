@@ -112,7 +112,7 @@ export default function IkasleakPage() {
                         </CardHeader>
                         <CardFooter>
                             <Button asChild className="w-full">
-                                <Link href={`/ikasleak/estatistikak/matematika/${formatEmailToId(studentEmail)}`}>
+                                <Link href={`/ikasleak`}>
                                     <BarChart className="mr-2 h-4 w-4" />
                                     Ikusi estatistikak
                                 </Link>

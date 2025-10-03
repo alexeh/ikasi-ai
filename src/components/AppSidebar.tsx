@@ -26,18 +26,23 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useUserRole } from '@/hooks/useUserRole';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+// This is a temporary solution for the simplified login
+const getSimulatedUserEmail = (): string | null => {
+    if (typeof window === 'undefined') return null;
+    return localStorage.getItem('simulated_user');
+}
+
 
 export default function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  // We get the email, but we won't use the role for conditional rendering here to avoid DB queries.
-  const { email, isLoading: isRoleLoading } = useUserRole();
   const auth = useAuth();
+  const [email, setEmail] = useState<string | null>(null);
   
   useEffect(() => {
     if (!isUserLoading && user && pathname === '/') {
@@ -47,6 +52,19 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
         router.push('/');
     }
   }, [user, isUserLoading, pathname, router]);
+
+  useEffect(() => {
+    setEmail(getSimulatedUserEmail());
+
+    const handleStorageChange = () => {
+        setEmail(getSimulatedUserEmail());
+    }
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    }
+  }, []);
+
 
   const handleSignOut = async () => {
     localStorage.removeItem('simulated_user');
@@ -78,6 +96,8 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
     { href: '/ikasleak', icon: <Users />, label: 'Ikasleak' },
   ]
 
+  const isAdmin = email === 'jarambarri@aldapeta.eus';
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -101,17 +121,21 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-            <SidebarSeparator />
-            {adminMenuItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith(item.href)}
-                    >
-                    <Link href={item.href}>{item.icon}{item.label}</Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-            ))}
+            {isAdmin && (
+                <>
+                    <SidebarSeparator />
+                    {adminMenuItems.map((item) => (
+                        <SidebarMenuItem key={item.href}>
+                            <SidebarMenuButton
+                            asChild
+                            isActive={pathname.startsWith(item.href)}
+                            >
+                            <Link href={item.href}>{item.icon}{item.label}</Link>
+                            </SidebarMenuButton>
+                        </SidebarMenuItem>
+                    ))}
+                </>
+            )}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -140,7 +164,7 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
           <div className="flex-1">
           </div>
         </header>
-        {isUserLoading || isRoleLoading ? (
+        {isUserLoading ? (
             <div className="flex flex-1 items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
