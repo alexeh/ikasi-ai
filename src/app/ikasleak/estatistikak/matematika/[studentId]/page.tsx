@@ -82,8 +82,9 @@ export default function StudentMathStatsPage({ params }: { params: { studentId: 
     const { role, isLoading: isRoleLoading } = useUserRole();
     const router = useRouter();
     const firestore = useFirestore();
+    const { studentId } = params;
 
-    const studentEmail = React.useMemo(() => formatIdToEmail(params.studentId), [params.studentId]);
+    const studentEmail = React.useMemo(() => formatIdToEmail(studentId), [studentId]);
     const studentName = React.useMemo(() => formatEmailToName(studentEmail), [studentEmail]);
 
     const gamesQuery = useMemoFirebase(
