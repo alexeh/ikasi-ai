@@ -156,11 +156,21 @@ export const useFirebaseApp = (): FirebaseApp => {
 
 type MemoFirebase <T> = T & {__memo?: boolean};
 
-export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T | (MemoFirebase<T>) {
+export function useMemoFirebase<T>(factory: () => T, deps: DependencyList): T {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoized = useMemo(factory, deps);
   
-  if(typeof memoized !== 'object' || memoized === null) return memoized;
-  (memoized as MemoFirebase<T>).__memo = true;
+  if (memoized && typeof memoized === 'object' && !('__memo' in memoized)) {
+    try {
+      Object.defineProperty(memoized, '__memo', {
+        value: true,
+        enumerable: false,
+        configurable: false,
+      });
+    } catch (e) {
+      // This can fail on frozen objects. We can ignore it.
+    }
+  }
   
   return memoized;
 }
