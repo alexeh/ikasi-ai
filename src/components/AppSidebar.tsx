@@ -11,6 +11,7 @@ import {
   Loader2,
   User as UserIcon,
   ChevronDown,
+  Users,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -78,16 +79,7 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const { user, isUserLoading } = useUser();
   const { role, isLoading: isRoleLoading, email } = useUserRole();
   const auth = useAuth();
-  const [isStatsOpen, setIsStatsOpen] = useState(pathname.startsWith('/irakasleak/estatistikak'));
-
-  const students = allowedUsers
-    .filter(email => email !== 'jarambarri@aldapeta.eus')
-    .sort((a, b) => {
-        const lastNameA = a.split('@')[0].split('.')[1] || a;
-        const lastNameB = b.split('@')[0].split('.')[1] || b;
-        return lastNameA.localeCompare(lastNameB);
-    });
-
+  
   useEffect(() => {
     // If we are not loading and the user is logged in, but we are on the login page,
     // redirect them to the main app area.
@@ -156,9 +148,20 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
             {role === 'admin' && (
               <>
                 <SidebarSeparator />
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname.startsWith('/irakasleak')}
+                  >
+                    <Link href="/irakasleak">
+                      <ShieldCheck />
+                      Irakasleak
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
                  <SidebarMenuItem>
                     <SidebarMenuButton asChild isActive={pathname.startsWith('/irakasleak/ikasleak')}>
-                        <Link href="/irakasleak/ikasleak"><UserIcon />Ikasleak</Link>
+                        <Link href="/irakasleak/ikasleak"><Users />Ikasleak</Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
               </>
