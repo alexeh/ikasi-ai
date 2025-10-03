@@ -1,4 +1,6 @@
 import { config } from 'dotenv';
 config();
 
-import '@/ai/flows/analyze-sync-operation.ts';
+// Import your flows here
+// e.g. import '@/ai/flows/example-flow.ts';
+import '@/ai/flows/story-starter-flow';
