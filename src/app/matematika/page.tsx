@@ -1,6 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
-import { BarChart, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useUserRole } from '@/hooks/useUserRole';
