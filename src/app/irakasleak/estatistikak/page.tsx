@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useRouter } from 'next/navigation';
-import { Loader2, User, BarChart, ArrowLeft } from 'lucide-react';
+import { Loader2, User, ArrowLeft } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -48,11 +48,6 @@ const getLastName = (email: string) => {
     return names.length > 1 ? names[1] : names[0];
 }
 
-const formatEmailToId = (email: string) => {
-    if (!email) return '';
-    return email.replace(/[@.]/g, '_');
-}
-
 export default function StudentListPage() {
     const { role, isLoading: isRoleLoading } = useUserRole();
     const router = useRouter();
@@ -93,7 +88,7 @@ export default function StudentListPage() {
                 <div>
                     <h1 className="text-3xl font-headline font-bold">Ikasleen Zerrenda</h1>
                     <p className="mt-2 text-muted-foreground">
-                        Hautatu ikasle bat bere estatistikak ikusteko.
+                        Hau da ikasleen zerrenda.
                     </p>
                 </div>
             </div>
@@ -110,14 +105,6 @@ export default function StudentListPage() {
                                 </div>
                             </div>
                         </CardHeader>
-                        <CardFooter>
-                            <Button asChild className="w-full">
-                                <Link href={`/irakasleak/estatistikak/matematika/${formatEmailToId(studentEmail)}`}>
-                                    <BarChart className="mr-2 h-4 w-4" />
-                                    Ikusi estatistikak
-                                </Link>
-                            </Button>
-                        </CardFooter>
                     </Card>
                 ))}
             </div>
