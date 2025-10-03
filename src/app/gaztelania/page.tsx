@@ -11,6 +11,11 @@ const miniApps = [
     description: 'Crea el inicio de una historia y continúa escribiendo.',
     href: '/gaztelania/el-cuentacuentos',
   },
+  {
+    title: 'Comprensión Lectora',
+    description: 'Lee textos y responde a las preguntas.',
+    href: '/gaztelania/lectura',
+  },
 ];
 
 export default function GaztelaniaHomePage() {
