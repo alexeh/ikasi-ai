@@ -6,11 +6,9 @@ import {
   GraduationCap,
   Languages,
   Laptop,
-  ShieldCheck,
   LogOut,
   Loader2,
   User as UserIcon,
-  Users,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -36,7 +34,7 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const { role, isLoading: isRoleLoading, email } = useUserRole();
+  const { email, isLoading: isRoleLoading } = useUserRole();
   const auth = useAuth();
   
   useEffect(() => {
@@ -97,27 +95,6 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-            {role === 'admin' && (
-              <>
-                <SidebarSeparator />
-                <SidebarMenuItem>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname.startsWith('/irakasleak')}
-                  >
-                    <Link href="/irakasleak">
-                      <ShieldCheck />
-                      Irakasleak
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-                 <SidebarMenuItem>
-                    <SidebarMenuButton asChild isActive={pathname.startsWith('/irakasleak/ikasleak')}>
-                        <Link href="/irakasleak/ikasleak"><Users />Ikasleak</Link>
-                    </SidebarMenuButton>
-                </SidebarMenuItem>
-              </>
-            )}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
