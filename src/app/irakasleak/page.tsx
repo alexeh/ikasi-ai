@@ -2,8 +2,7 @@
 import { useUserRole } from '@/hooks/useUserRole';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Loader2, PlusCircle, BarChart, BookOpen, BrainCircuit, Languages, Laptop } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Loader2, PlusCircle, BarChart, Users } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -36,7 +35,21 @@ export default function IrakasleakPage() {
                 </div>
             </div>
             
-            <div className="mt-8 grid gap-6 md:grid-cols-2">
+            <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Ikasleak</CardTitle>
+                        <CardDescription>Ikusi zure ikasleen zerrenda eta haien estatistikak.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Button asChild>
+                            <Link href="/irakasleak/ikasleak">
+                                <Users className="mr-2 h-4 w-4" />
+                                Ikusi ikasleak
+                            </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
                 <Card>
                     <CardHeader>
                         <CardTitle>Edukia kudeatu</CardTitle>
@@ -51,7 +64,7 @@ export default function IrakasleakPage() {
                         </Button>
                     </CardContent>
                 </Card>
-                <Card>
+                 <Card>
                     <CardHeader>
                         <CardTitle>Estatistikak ikusi</CardTitle>
                         <CardDescription>Ikusi ikasleen emaitzak eta progresioa.</CardDescription>
@@ -59,7 +72,7 @@ export default function IrakasleakPage() {
                     <CardContent className="flex flex-col space-y-2">
                          <Button asChild variant="outline">
                             <Link href="/irakasleak/estatistikak">
-                                <BrainCircuit className="mr-2 h-4 w-4" />
+                                <BarChart className="mr-2 h-4 w-4" />
                                 Kalkulu Mentalaren estatistikak
                             </Link>
                         </Button>
