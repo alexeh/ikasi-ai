@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { BarChart, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useUserRole } from '@/hooks/useUserRole';
 
 const miniApps = [
   {
@@ -14,6 +15,7 @@ const miniApps = [
 
 
 export default function MatematikaPage() {
+  const { role } = useUserRole();
   return (
     <div className="container py-8">
         <div className="flex items-center justify-between">
@@ -23,10 +25,14 @@ export default function MatematikaPage() {
                     Hemen Matematikako ariketak aurkituko dituzu.
                 </p>
             </div>
-            <Button variant="outline">
-                <BarChart className="mr-2 h-4 w-4" />
-                Estatistikak
-            </Button>
+            {role === 'admin' && (
+              <Button asChild variant="outline">
+                <Link href="/irakasleak/estatistikak">
+                  <BarChart className="mr-2 h-4 w-4" />
+                  Estatistikak
+                </Link>
+              </Button>
+            )}
         </div>
 
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
