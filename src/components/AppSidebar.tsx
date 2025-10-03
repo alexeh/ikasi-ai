@@ -29,6 +29,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
+import { useEffect } from 'react';
 
 export default function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -36,6 +37,19 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const { user, isUserLoading } = useUser();
   const { role, isLoading: isRoleLoading, email } = useUserRole();
   const auth = useAuth();
+
+  useEffect(() => {
+    // If we are not loading and the user is logged in, but we are on the login page,
+    // redirect them to the main app area.
+    if (!isUserLoading && user && pathname === '/') {
+      router.push('/euskera');
+    }
+    // If we are not loading and there is NO user, but we are NOT on the login page,
+    // force a redirect to the login page.
+    if (!isUserLoading && !user && pathname !== '/') {
+        router.push('/');
+    }
+  }, [user, isUserLoading, pathname, router]);
 
   const handleSignOut = async () => {
     // Also clear our simulated user from local storage
@@ -48,6 +62,14 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   
   // Don't render sidebar on login page
   if (pathname === '/') {
+     // While loading auth state on the login page, show a loader.
+    if (isUserLoading || user) {
+        return (
+          <div className="flex h-screen w-screen items-center justify-center">
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+          </div>
+        );
+    }
     return <>{children}</>;
   }
 
