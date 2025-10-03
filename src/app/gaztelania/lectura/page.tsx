@@ -43,19 +43,11 @@ export default function ComprensionLectoraPage() {
                 <h1 className="text-3xl font-headline font-bold">Comprensión Lectora</h1>
                 <p className="mt-2 text-muted-foreground">
                     {role === 'admin'
-                        ? 'Gestiona las lecturas o consulta las estadísticas.'
+                        ? 'Gestiona las lecturas.'
                         : 'Elige un texto para leer y responder a las preguntas.'
                     }
                 </p>
             </div>
-            {role === 'admin' && (
-              <Button asChild variant="outline">
-                  <Link href="/irakasleak/estatistikak">
-                      <BarChart className="mr-2 h-4 w-4" />
-                      Estatistikak
-                  </Link>
-              </Button>
-            )}
         </div>
 
        {isLoading && (

@@ -43,19 +43,11 @@ export default function IdatzizkoUlermenaPage() {
             <h1 className="text-3xl font-headline font-bold">Idatzizko Ulermena</h1>
             <p className="mt-2 text-muted-foreground">
                 {role === 'admin' 
-                    ? 'Kudeatu irakurgaiak edo ikusi estatistikak.'
+                    ? 'Kudeatu irakurgaiak.'
                     : 'Aukeratu testu bat irakurtzeko eta galderak erantzuteko.'
                 }
             </p>
         </div>
-        {role === 'admin' && (
-            <Button asChild variant="outline">
-                <Link href="/irakasleak/estatistikak">
-                    <BarChart className="mr-2 h-4 w-4" />
-                    Estatistikak
-                </Link>
-            </Button>
-        )}
       </div>
 
 

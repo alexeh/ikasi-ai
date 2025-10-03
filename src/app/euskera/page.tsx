@@ -31,14 +31,6 @@ export default function EuskeraHomePage() {
                 Aukeratu jarduera bat hasteko.
             </p>
         </div>
-        {role === 'admin' && (
-          <Button asChild variant="outline">
-            <Link href="/irakasleak/estatistikak">
-              <BarChart className="mr-2 h-4 w-4" />
-              Estatistikak
-            </Link>
-          </Button>
-        )}
       </div>
 
       <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
