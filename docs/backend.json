@@ -122,6 +122,27 @@
         "firstName",
         "lastName"
       ]
+    },
+    "ReadingDocument": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ReadingDocument",
+      "type": "object",
+      "description": "Represents a document for reading comprehension exercises.",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the document."
+        },
+        "content": {
+          "type": "string",
+          "description": "The full text content of the document."
+        },
+        "language": {
+          "type": "string",
+          "description": "The language of the document (e.g., 'euskera', 'gaztelania')."
+        }
+      },
+      "required": ["title", "content", "language"]
     }
   },
   "auth": {
@@ -195,8 +216,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/readingDocuments/{documentId}",
+        "definition": {
+          "entityName": "ReadingDocument",
+          "schema": {
+            "$ref": "#/backend/entities/ReadingDocument"
+          },
+          "description": "Stores reading comprehension documents.",
+          "params": [
+            {
+              "name": "documentId",
+              "description": "The unique ID of the reading document."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "The Firestore data structure is designed to support the synchronization of data between Firebase and a local MySQL database, focusing on admin review and approval before synchronization. The structure prioritizes authorization independence, clarity, and security. It leverages structural segregation to ensure that documents within a collection share the same security requirements, and path-based ownership for private user data. The Admin entity and AdminReview entities are used to provide an extra layer of control, so data stored on MySQL is not blindly synced. The structure will enable list operations and maintains the integrity of ownership."
+    "reasoning": "The Firestore data structure is designed to support the synchronization of data between Firebase and a local MySQL database, focusing on admin review and approval before synchronization. The structure prioritizes authorization independence, clarity, and security. It leverages structural segregation to ensure that documents within a collection share the same security requirements, and path-based ownership for private user data. The Admin entity and AdminReview entities are used to provide an extra layer of control, so data stored on MySQL is not blindly synced. The structure will enable list operations and maintains the integrity of ownership. I've added a new collection for `readingDocuments` to store the texts for the comprehension exercises."
   }
 }
