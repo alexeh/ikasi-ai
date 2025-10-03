@@ -65,8 +65,8 @@ const generateProblem = (level: Level): Problem => {
         operator = '÷';
         return { text: `${num1} ${operator} ${num2}`, answer: result };
       } else if (type < 0.5) { // Multiplication
-        num1 = Math.floor(Math.random() * 9) + 2;
-        num2 = Math.floor(Math.random() * 9) + 2;
+        num1 = Math.floor(Math.random() * 12) + 1;
+        num2 = Math.floor(Math.random() * 12) + 1;
         operator = '×';
         return { text: `${num1} ${operator} ${num2}`, answer: num1 * num2 };
       } else { // 3-digit add/sub

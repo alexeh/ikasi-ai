@@ -2,9 +2,10 @@
 import { useUserRole } from '@/hooks/useUserRole';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Loader2, PlusCircle } from 'lucide-react';
+import { Loader2, PlusCircle, BarChart, BookOpen, BrainCircuit, Languages, Laptop } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function IrakasleakPage() {
     const { role, isLoading } = useUserRole();
@@ -12,7 +13,7 @@ export default function IrakasleakPage() {
 
     useEffect(() => {
         if (!isLoading && role !== 'admin') {
-            router.push('/euskera');
+            router.push('/');
         }
     }, [role, isLoading, router]);
 
@@ -30,17 +31,42 @@ export default function IrakasleakPage() {
                 <div>
                     <h1 className="text-3xl font-headline font-bold">Irakasleen atala</h1>
                     <p className="text-muted-foreground mt-2">
-                        Hemen irakurgaiak kudeatu ahal izango dituzu.
+                        Hemen ikasleen aurrerapena kudeatu eta ikus dezakezu.
                     </p>
                 </div>
-                 <Button asChild>
-                    <Link href="/irakasleak/gehitu">
-                        <PlusCircle />
-                        Gehitu dokumentua
-                    </Link>
-                </Button>
             </div>
-            {/* Aquí iría la lista de documentos existentes para editarlos o borrarlos */}
+            
+            <div className="mt-8 grid gap-6 md:grid-cols-2">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Edukia kudeatu</CardTitle>
+                        <CardDescription>Gehitu irakurgai berriak ikasleentzat.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <Button asChild>
+                            <Link href="/irakasleak/gehitu">
+                                <PlusCircle className="mr-2 h-4 w-4" />
+                                Gehitu dokumentua
+                            </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Estatistikak ikusi</CardTitle>
+                        <CardDescription>Ikusi ikasleen emaitzak eta progresioa.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-col space-y-2">
+                         <Button asChild variant="outline">
+                            <Link href="/irakasleak/estatistikak">
+                                <BrainCircuit className="mr-2 h-4 w-4" />
+                                Kalkulu Mentalaren estatistikak
+                            </Link>
+                        </Button>
+                        {/* Aquí se podrían añadir más botones para otras estadísticas */}
+                    </CardContent>
+                </Card>
+            </div>
         </div>
     );
 }
