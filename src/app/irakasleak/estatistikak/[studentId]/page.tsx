@@ -36,8 +36,7 @@ const formatEmailToName = (email: string) => {
   return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
 };
 
-export default function StudentStatsPage({ params: paramsProp }: { params: { studentId: string } }) {
-  const params = React.use(paramsProp as any) as { studentId: string };
+export default function StudentStatsPage({ params }: { params: { studentId: string } }) {
   const studentEmail = decodeURIComponent(params.studentId);
   const studentName = formatEmailToName(studentEmail);
   const { role, isLoading: isRoleLoading } = useUserRole();
