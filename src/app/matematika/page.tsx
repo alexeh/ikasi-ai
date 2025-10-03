@@ -11,6 +11,11 @@ const miniApps = [
     description: 'Entrenatu zure burua matematikako eragiketekin.',
     href: '/matematika/kalkulu-mentala',
   },
+  {
+    title: 'Buruketak',
+    description: 'Ebatzi zure mailara egokitutako problema matematikoak.',
+    href: '/matematika/buruketak',
+  },
 ];
 
 

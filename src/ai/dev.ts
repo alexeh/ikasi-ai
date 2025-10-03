@@ -7,3 +7,4 @@ config();
 import '@/ai/flows/story-starter-flow';
 import '@/ai/flows/cuentacuentos-flow';
 import '@/ai/flows/reading-comprehension-flow';
+import '@/ai/flows/buruketak-flow';
