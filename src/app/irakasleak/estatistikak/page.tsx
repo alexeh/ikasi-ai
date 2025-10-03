@@ -4,8 +4,10 @@ import * as React from 'react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useRouter } from 'next/navigation';
 import { Loader2, User, ArrowLeft, ShieldAlert } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { BarChart2 } from 'lucide-react';
 
 const allowedUsers = [
   'jarambarri@aldapeta.eus',
@@ -88,24 +90,32 @@ export default function StudentListPage() {
                 <div>
                     <h1 className="text-3xl font-headline font-bold">Ikasleen Zerrenda</h1>
                     <p className="mt-2 text-muted-foreground">
-                        Hau da ikasleen zerrenda. Estatistikak ikusteko aukera desaktibatu da.
+                        Hautatu ikasle bat bere estatistikak ikusteko.
                     </p>
                 </div>
             </div>
 
             <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {students.map((studentEmail) => (
-                     <Card key={studentEmail} className="transition-all">
-                        <CardHeader>
-                            <div className="flex items-start gap-4">
-                                <User className="mt-1 h-8 w-8 text-primary"/>
-                                <div>
-                                    <CardTitle>{formatEmailToName(studentEmail)}</CardTitle>
-                                    <CardDescription>{studentEmail}</CardDescription>
+                    <Link href={`/irakasleak/estatistikak/${encodeURIComponent(studentEmail)}`} key={studentEmail}>
+                        <Card className="flex h-full transform-gpu flex-col transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
+                            <CardHeader>
+                                <div className="flex items-start gap-4">
+                                    <User className="mt-1 h-8 w-8 text-primary"/>
+                                    <div>
+                                        <CardTitle>{formatEmailToName(studentEmail)}</CardTitle>
+                                        <CardDescription>{studentEmail}</CardDescription>
+                                    </div>
                                 </div>
-                            </div>
-                        </CardHeader>
-                    </Card>
+                            </CardHeader>
+                            <CardFooter>
+                                <Button variant="secondary" className="w-full">
+                                    <BarChart2 className="mr-2 h-4 w-4" />
+                                    Ikusi estatistikak
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    </Link>
                 ))}
             </div>
         </div>
