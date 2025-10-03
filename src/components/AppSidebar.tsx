@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   LogOut,
   Loader2,
+  User as UserIcon,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -26,18 +27,19 @@ import {
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useUserRole } from '@/hooks/useUserRole';
-import { useAuth } from '@/firebase';
+import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useUser } from '@/firebase';
 
 export default function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const { role, isLoading: isRoleLoading } = useUserRole();
+  const { role, isLoading: isRoleLoading, email } = useUserRole();
   const auth = useAuth();
 
   const handleSignOut = async () => {
+    // Also clear our simulated user from local storage
+    localStorage.removeItem('simulated_user');
     await signOut(auth);
     router.push('/');
   };
@@ -100,6 +102,14 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
         </SidebarContent>
         <SidebarFooter>
            <SidebarSeparator />
+            {email && (
+              <div className="px-4 py-2 text-xs text-muted-foreground truncate">
+                <div className="flex items-center gap-2">
+                  <UserIcon className="h-4 w-4" />
+                  <span>{email}</span>
+                </div>
+              </div>
+            )}
            <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton onClick={handleSignOut}>

@@ -147,7 +147,6 @@
   },
   "auth": {
     "providers": [
-      "password",
       "anonymous"
     ]
   },
@@ -212,7 +211,7 @@
           "params": [
             {
               "name": "adminId",
-              "description": "The unique ID of the administrator user."
+              "description": "The unique ID of the administrator user. For the simulated user 'jarambarri@aldapeta.eus', the ID will be 'jarambarri_aldapeta_eus'."
             }
           ]
         }
