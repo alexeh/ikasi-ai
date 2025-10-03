@@ -40,7 +40,9 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const handleSignOut = async () => {
     // Also clear our simulated user from local storage
     localStorage.removeItem('simulated_user');
-    await signOut(auth);
+    if (auth) {
+      await signOut(auth);
+    }
     router.push('/');
   };
   
