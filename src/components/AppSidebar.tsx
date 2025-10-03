@@ -67,6 +67,10 @@ const formatEmailToName = (email: string) => {
     return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
 }
 
+const formatEmailToId = (email: string) => {
+    return email.replace(/[@.]/g, '_');
+}
+
 
 export default function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -74,13 +78,13 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const { user, isUserLoading } = useUser();
   const { role, isLoading: isRoleLoading, email } = useUserRole();
   const auth = useAuth();
-  const [isStatsOpen, setIsStatsOpen] = useState(false);
+  const [isStatsOpen, setIsStatsOpen] = useState(pathname.startsWith('/irakasleak/estatistikak'));
 
   const students = allowedUsers
     .filter(email => email !== 'jarambarri@aldapeta.eus')
     .sort((a, b) => {
-        const lastNameA = a.split('@')[0].split('.')[1] || '';
-        const lastNameB = b.split('@')[0].split('.')[1] || '';
+        const lastNameA = a.split('@')[0].split('.')[1] || a;
+        const lastNameB = b.split('@')[0].split('.')[1] || b;
         return lastNameA.localeCompare(lastNameB);
     });
 
@@ -166,8 +170,8 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
                         <SidebarMenu>
                            {students.map((studentEmail, index) => (
                              <SidebarMenuItem key={studentEmail}>
-                               <SidebarMenuButton asChild variant="ghost" size="sm" isActive={pathname.includes('estatistikak')}>
-                                  <Link href="/irakasleak/estatistikak">
+                               <SidebarMenuButton asChild variant="ghost" size="sm" isActive={pathname.includes(formatEmailToId(studentEmail))}>
+                                  <Link href={`/irakasleak/estatistikak/${formatEmailToId(studentEmail)}`}>
                                     <span className="w-6 text-right mr-2 text-muted-foreground">{index + 1}.</span>
                                     {formatEmailToName(studentEmail)}
                                   </Link>
