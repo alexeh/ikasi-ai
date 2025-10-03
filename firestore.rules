@@ -1,186 +1,110 @@
 /**
  * @file Firestore Security Rules
- * @description This ruleset is in PROTOTYPING mode, prioritizing rapid development and flexible data shapes.
- * It enforces authorization but skips detailed schema validation.
- *
- * Core Philosophy:
- *  - Public Read Access: Allows public read access to most collections for prototyping.
- *  - Restricted Writes: Restricts writes based on ownership or admin roles.
- *
- * Data Structure:
- *  - Top-Level Collections: Uses top-level collections for core entities like sync logs, admin reviews, and games.
- *  - Admin Roles: Uses a dedicated `roles_admin/{adminId}` collection for representing admin roles (existence implies admin status).
- *
- * Key Security Decisions:
- *  - Flexible Data: Skips extensive data validation to allow for rapid schema changes.
- *  - Admin-Controlled Sync: Restricts synchronization actions to admin roles only.
- *  - User-Owned Games: Allows students to write their own game results.
- *
- * Denormalization for Authorization:
- *  - Admin Reviews: Includes `adminId` directly in the `/admin_reviews/{adminReviewId}` document to simplify authorization checks.
+ * @description This ruleset grants all permissions to all users, effectively disabling security.
+ *   This is for prototyping purposes only and should never be used in a production environment.
+ * @dataStructure The Firestore database contains collections for sync logs, admin reviews, admins, admin roles, reading documents, mental math games, and math word problem games.
+ * @keySecurityDecisions All read and write operations are allowed for all users.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     /**
-     * @description Grants read access to all and restricts write access to admins only.
+     * @description Allows all operations on sync log documents.
      * @path /sync_logs/{syncLogId}
-     * @allow get, list: if true;
-     * @allow create: if isAdmin();
-     * @allow update: if isAdmin() && resource != null;
-     * @allow delete: if isAdmin() && resource != null;
-     * @deny create: if !isAdmin(); // Example: Non-admin attempts to create a sync log.
-     * @deny update: if !isAdmin(); // Example: Non-admin attempts to update a sync log.
-     * @deny delete: if !isAdmin(); // Example: Non-admin attempts to delete a sync log.
-     * @principle Allows admins to manage sync logs.
+     * @allow (create) Any authenticated user can create a sync log.
+     * @allow (read) Any authenticated user can read a sync log.
+     * @allow (write) Any authenticated user can update or delete a sync log.
+     * @deny (none) No requests are denied.
+     * @principle Disables security for prototyping.
      */
     match /sync_logs/{syncLogId} {
       allow get, list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow create, update, delete: if true;
     }
 
     /**
-     * @description Grants read access to all and restricts write access to admins only.
+     * @description Allows all operations on admin review documents.
      * @path /admin_reviews/{adminReviewId}
-     * @allow get, list: if true;
-     * @allow create: if isAdmin();
-     * @allow update: if isAdmin() && resource != null;
-     * @allow delete: if isAdmin() && resource != null;
-     * @deny create: if !isAdmin(); // Example: Non-admin attempts to create a sync log.
-     * @deny update: if !isAdmin(); // Example: Non-admin attempts to update a sync log.
-     * @deny delete: if !isAdmin(); // Example: Non-admin attempts to delete a sync log.
-     * @principle Allows admins to manage sync logs.
+     * @allow (create) Any authenticated user can create an admin review.
+     * @allow (read) Any authenticated user can read an admin review.
+     * @allow (write) Any authenticated user can update or delete an admin review.
+     * @deny (none) No requests are denied.
+     * @principle Disables security for prototyping.
      */
     match /admin_reviews/{adminReviewId} {
       allow get, list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow create, update, delete: if true;
     }
 
     /**
-     * @description Allows reading any admin profile and only allows an admin to update their own profile.
+     * @description Allows all operations on admin documents.
      * @path /admins/{adminId}
-     * @allow get, list: if true;
-     * @allow create: if isOwner(adminId);
-     * @allow update: if isOwner(adminId) && resource != null;
-     * @allow delete: if isOwner(adminId) && resource != null;
-     * @deny create: if !isOwner(adminId); // Example: User attempts to create an admin profile with a mismatched ID.
-     * @deny update: if !isOwner(adminId); // Example: User attempts to update an admin profile that isn't theirs.
-     * @deny delete: if !isOwner(adminId); // Example: User attempts to delete an admin profile that isn't theirs.
-     * @principle Enforces ownership for admin profile management.
+     * @allow (create) Any authenticated user can create an admin document.
+     * @allow (read) Any authenticated user can read an admin document.
+     * @allow (write) Any authenticated user can update or delete an admin document.
+     * @deny (none) No requests are denied.
+     * @principle Disables security for prototyping.
      */
     match /admins/{adminId} {
       allow get, list: if true;
-      allow create: if isOwner(adminId);
-      allow update: if isOwner(adminId) && resource != null;
-      allow delete: if isOwner(adminId) && resource != null;
+      allow create, update, delete: if true;
     }
 
     /**
-     * @description Defines admin roles based on document existence. Admins can read all, but only the rule service can create, update, or delete them.
+     * @description Allows all operations on admin role documents.
      * @path /roles_admin/{adminId}
-     * @allow get, list: if true;
-     * @allow create: if false;
-     * @allow update: if false;
-     * @allow delete: if false;
-     * @deny create: if true; // No one can create an admin role
-     * @deny update: if true; // No one can update an admin role
-     * @deny delete: if true; // No one can delete an admin role
-     * @principle Admin roles are managed through document existence only.
+     * @allow (create) Any authenticated user can create an admin role.
+     * @allow (read) Any authenticated user can read an admin role.
+     * @allow (write) Any authenticated user can update or delete an admin role.
+     * @deny (none) No requests are denied.
+     * @principle Disables security for prototyping.
      */
     match /roles_admin/{adminId} {
       allow get, list: if true;
-      allow create: if false;
-      allow update: if false;
-      allow delete: if false;
+      allow create, update, delete: if true;
     }
 
     /**
-     * @description Allows public read access to reading documents.
+     * @description Allows all operations on reading documents.
      * @path /readingDocuments/{documentId}
-     * @allow get, list: if true;
-     * @allow create: if isAdmin();
-     * @allow update: if isAdmin() && resource != null;
-     * @allow delete: if isAdmin() && resource != null;
-     * @deny create: if !isAdmin(); // Example: Non-admin attempts to create a reading document.
-     * @deny update: if !isAdmin(); // Example: Non-admin attempts to update a reading document.
-     * @deny delete: if !isAdmin(); // Example: Non-admin attempts to delete a reading document.
-     * @principle Public read, admin-only write access for reading documents.
+     * @allow (create) Any authenticated user can create a reading document.
+     * @allow (read) Any authenticated user can read a reading document.
+     * @allow (write) Any authenticated user can update or delete a reading document.
+     * @deny (none) No requests are denied.
+     * @principle Disables security for prototyping.
      */
     match /readingDocuments/{documentId} {
       allow get, list: if true;
-      allow create: if isAdmin();
-      allow update: if isAdmin() && resource != null;
-      allow delete: if isAdmin() && resource != null;
+      allow create, update, delete: if true;
     }
 
     /**
-     * @description Allows anyone to read the math game results, but only authenticated users can submit new scores. A user can only update or delete their own game results.
+     * @description Allows all operations on mental math game documents.
      * @path /mentalMathGames/{gameId}
-     * @allow get, list: if true;
-     * @allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
-     * @allow update: if request.auth.uid == resource.data.studentId && resource != null;
-     * @allow delete: if request.auth.uid == resource.data.studentId && resource != null;
-     * @deny create: if !isSignedIn(); // Example: Anonymous user attempts to create a game.
-     * @deny update: if request.auth.uid != resource.data.studentId; // Example: User attempts to update another user's game results.
-     * @deny delete: if request.auth.uid != resource.data.studentId; // Example: User attempts to delete another user's game results.
-     * @principle Allows students to create their own games, and admins to view all.
+     * @allow (create) Any authenticated user can create a mental math game document.
+     * @allow (read) Any authenticated user can read a mental math game document.
+     * @allow (write) Any authenticated user can update or delete a mental math game document.
+     * @deny (none) No requests are denied.
+     * @principle Disables security for prototyping.
      */
     match /mentalMathGames/{gameId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
-      allow update: if request.auth.uid == resource.data.studentId && resource != null;
-      allow delete: if request.auth.uid == resource.data.studentId && resource != null;
+      allow create, update, delete: if true;
     }
 
     /**
-     * @description Allows anyone to read the math word problem game results, but only authenticated users can submit new scores. A user can only update or delete their own game results.
+     * @description Allows all operations on math word problem game documents.
      * @path /mathWordProblemGames/{gameId}
-     * @allow get, list: if true;
-     * @allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
-     * @allow update: if request.auth.uid == resource.data.studentId && resource != null;
-     * @allow delete: if request.auth.uid == resource.data.studentId && resource != null;
-     * @deny create: if !isSignedIn(); // Example: Anonymous user attempts to create a game.
-     * @deny update: if request.auth.uid != resource.data.studentId; // Example: User attempts to update another user's game results.
-     * @deny delete: if request.auth.uid != resource.data.studentId; // Example: User attempts to delete another user's game results.
-     * @principle Allows students to create their own games, and admins to view all.
+     * @allow (create) Any authenticated user can create a math word problem game document.
+     * @allow (read) Any authenticated user can read a math word problem game document.
+     * @allow (write) Any authenticated user can update or delete a math word problem game document.
+     * @deny (none) No requests are denied.
+     * @principle Disables security for prototyping.
      */
     match /mathWordProblemGames/{gameId} {
       allow get, list: if true;
-      allow create: if isSignedIn() && request.resource.data.studentId == request.auth.uid;
-      allow update: if request.auth.uid == resource.data.studentId && resource != null;
-      allow delete: if request.auth.uid == resource.data.studentId && resource != null;
-    }
-
-    // --- Helper Functions ---
-
-    /**
-     * @description Checks if the user is signed in.
-     * @return True if the user is signed in, false otherwise.
-     */
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    /**
-     * @description Checks if the user is the owner of the document.
-     * @param userId The user ID to check against.
-     * @return True if the user is the owner, false otherwise.
-     */
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-
-    /**
-     * @description Checks if the user is an admin by verifying the existence of a document in the /roles_admin/{uid} collection.
-     * @return True if the user is an admin, false otherwise.
-     */
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
+      allow create, update, delete: if true;
     }
   }
 }
