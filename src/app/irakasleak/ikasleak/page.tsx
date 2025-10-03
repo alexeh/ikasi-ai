@@ -41,6 +41,9 @@ const formatEmailToName = (email: string) => {
     return namePart.split('.').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
 }
 
+const formatEmailToId = (email: string) => {
+    return email.replace(/[@.]/g, '_');
+}
 
 export default function IkasleakPage() {
     const { role, isLoading: isRoleLoading } = useUserRole();
@@ -87,7 +90,7 @@ export default function IkasleakPage() {
                         </CardHeader>
                         <CardFooter>
                             <Button asChild className="w-full" variant="outline">
-                                <Link href="/irakasleak/estatistikak">
+                                <Link href={`/irakasleak/estatistikak/${formatEmailToId(studentEmail)}`}>
                                     <BarChart className="mr-2 h-4 w-4" />
                                     Ikusi estatistikak
                                 </Link>
