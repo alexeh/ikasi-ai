@@ -11,6 +11,11 @@ const miniApps = [
     description: 'Sortu istorio baten hasiera eta jarraitu idazten.',
     href: '/euskera/ipuin-kontalaria',
   },
+  {
+    title: 'Idatzizko Ulermena',
+    description: 'Irakurri testuak eta erantzun galderei.',
+    href: '/euskera/irakurketa',
+  },
 ];
 
 export default function EuskeraHomePage() {
