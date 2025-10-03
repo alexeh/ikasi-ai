@@ -1,6 +1,17 @@
+'use client';
+
+import * as React from 'react';
 import { GraduationCap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
+
+  React.useEffect(() => {
+    // Redirect to a default subject page, for example Euskera
+    router.push('/euskera');
+  }, [router]);
+
   return (
     <div className="flex flex-1 items-center justify-center p-8">
       <div className="text-center">

@@ -17,6 +17,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarInset,
+  SidebarTrigger,
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 
@@ -92,7 +93,15 @@ export default function RootLayout({
               </SidebarMenu>
             </SidebarContent>
           </Sidebar>
-          <SidebarInset>{children}</SidebarInset>
+          <SidebarInset>
+            <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-6">
+              <SidebarTrigger className="md:hidden" />
+              <div className="flex-1">
+                {/* You can add a page title here if needed */}
+              </div>
+            </header>
+            {children}
+          </SidebarInset>
         </SidebarProvider>
         <Toaster />
       </body>
