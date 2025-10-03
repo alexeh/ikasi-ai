@@ -12,18 +12,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { GraduationCap, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useRouter } from 'next/navigation';
 
-const users = [
+const allowedUsers = [
   'jarambarri@aldapeta.eus',
   'alejandro.hernandez@aldapeta.eus',
   'alma.ruizdearcaute@aldapeta.eus',
@@ -53,26 +47,39 @@ const users = [
 export function LoginForm() {
   const auth = useAuth();
   const router = useRouter();
-  const [selectedUser, setSelectedUser] = useState('');
+  const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedUser) {
+    
+    if (!email) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Mesedez, idatzi zure helbide elektronikoa.',
+      });
+      return;
+    }
+
+    if (!allowedUsers.includes(email.toLowerCase())) {
         toast({
             variant: "destructive",
-            title: "Error",
-            description: "Mesedez, aukeratu erabiltzaile bat.",
+            title: "Erabiltzaile ezezaguna",
+            description: "Sartutako helbide elektronikoa ez dago baimenduta.",
         });
         return;
     }
+
     setIsLoading(true);
     try {
       // We simulate a login by creating a session tied to the selected email.
       // In a real app, you would use a proper auth method.
-      localStorage.setItem('simulated_user', selectedUser);
-      await signInAnonymously(auth);
+      localStorage.setItem('simulated_user', email);
+      if (auth) {
+        await signInAnonymously(auth);
+      }
       router.push('/euskera');
     } catch (error: any) {
       toast({
@@ -101,27 +108,23 @@ export function LoginForm() {
         <CardHeader>
           <CardTitle className="text-2xl">Sarrera</CardTitle>
           <CardDescription>
-            Aukeratu zure izena zerrendan sartzeko.
+            Idatzi zure helbide elektronikoa sartzeko.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignIn} className="grid gap-4">
             <div className="grid gap-2">
-              <Label htmlFor="user-select">Erabiltzailea</Label>
-              <Select value={selectedUser} onValueChange={setSelectedUser} disabled={isLoading}>
-                <SelectTrigger id="user-select">
-                  <SelectValue placeholder="Aukeratu zure erabiltzailea" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.map((user) => (
-                    <SelectItem key={user} value={user}>
-                      {user}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="email">Helbide elektronikoa</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="zure.izena@aldapeta.eus"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
+              />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading || !selectedUser}>
+            <Button type="submit" className="w-full" disabled={isLoading || !email}>
               {isLoading ? <Loader2 className="animate-spin" /> : 'Sartu'}
             </Button>
           </form>
