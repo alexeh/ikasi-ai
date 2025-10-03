@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser, useFirestore } from '@/firebase';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { useUser } from '@/firebase';
 
 type UserRole = 'admin' | 'student';
 
@@ -54,6 +53,7 @@ export function useUserRole(): { role: UserRole | null; isLoading: boolean; emai
     }
     
     // Determine role based on the simulated user's email
+    // This is now the ONLY place where the role is determined. No DB calls.
     if (simulatedUser.email === 'jarambarri@aldapeta.eus') {
       setRole('admin');
     } else {
