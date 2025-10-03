@@ -56,7 +56,7 @@ export default function StudentStatisticsPage({ params }: { params: { studentId:
 
             <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {subjects.map((subject) => (
-                    <Link href={subject.href} key={subject.title}>
+                    <Link href={`${subject.href}/${params.studentId}`} key={subject.title}>
                         <Card className="flex h-full transform-gpu flex-col justify-between transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
                             <CardHeader>
                                 <div className="flex items-center justify-between">
