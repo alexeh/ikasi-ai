@@ -143,6 +143,59 @@
         }
       },
       "required": ["title", "content", "language"]
+    },
+    "MentalMathGame": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MentalMathGame",
+      "type": "object",
+      "description": "Represents a single game session of the mental math exercise.",
+      "properties": {
+        "studentId": {
+          "type": "string",
+          "description": "The unique ID of the student who played the game."
+        },
+        "studentEmail": {
+          "type": "string",
+          "description": "The email of the student, for easier identification in statistics.",
+          "format": "email"
+        },
+        "level": {
+          "type": "string",
+          "description": "The difficulty level of the game.",
+          "enum": ["easy", "medium", "hard"]
+        },
+        "score": {
+          "type": "number",
+          "description": "The number of correct answers."
+        },
+        "problemsAttempted": {
+          "type": "number",
+          "description": "The total number of problems attempted by the student."
+        },
+        "incorrectAnswers": {
+          "type": "number",
+          "description": "The number of incorrect answers."
+        },
+        "duration": {
+          "type": "number",
+          "description": "The duration of the game in seconds (e.g., 60)."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The server timestamp when the game was completed.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "studentId",
+        "studentEmail",
+        "level",
+        "score",
+        "problemsAttempted",
+        "incorrectAnswers",
+        "duration",
+        "timestamp"
+      ]
     }
   },
   "auth": {
@@ -231,8 +284,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/mentalMathGames/{gameId}",
+        "definition": {
+          "entityName": "MentalMathGame",
+          "schema": {
+            "$ref": "#/backend/entities/MentalMathGame"
+          },
+          "description": "Stores the results of each mental math game session. Admins can read all documents to generate statistics, while students can only write their own results.",
+          "params": [
+            {
+              "name": "gameId",
+              "description": "The unique ID of the game session."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "The Firestore data structure is designed to support the synchronization of data between Firebase and a local MySQL database, focusing on admin review and approval before synchronization. The structure prioritizes authorization independence, clarity, and security. It leverages structural segregation to ensure that documents within a collection share the same security requirements, and path-based ownership for private user data. The Admin entity and AdminReview entities are used to provide an extra layer of control, so data stored on MySQL is not blindly synced. The structure will enable list operations and maintains the integrity of ownership. I've added a new collection for `readingDocuments` to store the texts for the comprehension exercises."
+    "reasoning": "The Firestore data structure is designed to support the synchronization of data between Firebase and a local MySQL database, focusing on admin review and approval before synchronization. The structure prioritizes authorization independence, clarity, and security. It leverages structural segregation to ensure that documents within a collection share the same security requirements, and path-based ownership for private user data. The Admin entity and AdminReview entities are used to provide an extra layer of control, so data stored on MySQL is not blindly synced. The structure will enable list operations and maintains the integrity of ownership. I've added a new collection for `readingDocuments` to store the texts for the comprehension exercises. I've also added the `mentalMathGames` collection to store student game results for statistical analysis by the teacher."
   }
 }
