@@ -60,11 +60,32 @@ export default function StudentMathStatsPage() {
     const studentEmail = React.useMemo(() => formatIdToEmail(studentId), [studentId]);
     const studentName = React.useMemo(() => formatEmailToName(studentEmail), [studentEmail]);
     
-    // TEMPORARY: Return null for data to avoid query issues until rules are fixed.
-    const mentalMathGames: MentalMathGame[] | null = null;
-    const isLoadingMentalMath = false;
-    const wordProblemGames: MathWordProblemGame[] | null = null;
-    const isLoadingWordProblems = false;
+    const mentalMathGamesQuery = useMemoFirebase(
+      () =>
+        firestore && studentEmail
+          ? query(
+              collection(firestore, 'mentalMathGames'),
+              where('studentEmail', '==', studentEmail),
+              orderBy('timestamp', 'desc')
+            )
+          : null,
+      [firestore, studentEmail]
+    );
+
+    const wordProblemGamesQuery = useMemoFirebase(
+      () =>
+        firestore && studentEmail
+          ? query(
+              collection(firestore, 'mathWordProblemGames'),
+              where('studentEmail', '==', studentEmail),
+              orderBy('timestamp', 'desc')
+            )
+          : null,
+      [firestore, studentEmail]
+    );
+
+    const { data: mentalMathGames, isLoading: isLoadingMentalMath } = useCollection<MentalMathGame>(mentalMathGamesQuery);
+    const { data: wordProblemGames, isLoading: isLoadingWordProblems } = useCollection<MathWordProblemGame>(wordProblemGamesQuery);
 
 
     if (isRoleLoading) {
