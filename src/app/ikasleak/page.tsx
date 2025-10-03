@@ -99,7 +99,7 @@ export default function IkasleakPage() {
                             </div>
                         </CardHeader>
                         <CardFooter>
-                            <Button asChild className="w-full" variant="outline">
+                            <Button asChild className="w-full">
                                 <Link href={`/ikasleak/estatistikak/matematika/${formatEmailToId(studentEmail)}`}>
                                     <BarChart className="mr-2 h-4 w-4" />
                                     Ikusi estatistikak
