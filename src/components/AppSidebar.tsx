@@ -10,6 +10,7 @@ import {
   Loader2,
   User as UserIcon,
   Users,
+  Shield,
 } from 'lucide-react';
 import {
   SidebarProvider,
@@ -29,12 +30,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { useEffect, useState } from 'react';
-
-// This is a temporary solution for the simplified login
-const getSimulatedUserEmail = (): string | null => {
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('simulated_user');
-}
+import { useUserRole } from '@/hooks/useUserRole';
 
 
 export default function AppSidebar({ children }: { children: React.ReactNode }) {
@@ -42,7 +38,7 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
-  const [email, setEmail] = useState<string | null>(null);
+  const { role, email } = useUserRole();
   
   useEffect(() => {
     if (!isUserLoading && user && pathname === '/') {
@@ -52,18 +48,6 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
         router.push('/');
     }
   }, [user, isUserLoading, pathname, router]);
-
-  useEffect(() => {
-    setEmail(getSimulatedUserEmail());
-
-    const handleStorageChange = () => {
-        setEmail(getSimulatedUserEmail());
-    }
-    window.addEventListener('storage', handleStorageChange);
-    return () => {
-        window.removeEventListener('storage', handleStorageChange);
-    }
-  }, []);
 
 
   const handleSignOut = async () => {
@@ -93,10 +77,9 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
   ];
   
   const adminMenuItems = [
-    { href: '/ikasleak', icon: <Users />, label: 'Ikasleak' },
+    { href: '/irakasleak', icon: <Shield />, label: 'Irakasleak' },
   ]
 
-  const isAdmin = email === 'jarambarri@aldapeta.eus';
 
   return (
     <SidebarProvider>
@@ -121,7 +104,7 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
                 </SidebarMenuButton>
               </SidebarMenuItem>
             ))}
-            {isAdmin && (
+            {role === 'admin' && (
                 <>
                     <SidebarSeparator />
                     {adminMenuItems.map((item) => (
