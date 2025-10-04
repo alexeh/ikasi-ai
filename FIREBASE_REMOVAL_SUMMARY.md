@@ -85,7 +85,7 @@ All converted to placeholder/stub implementations:
 
 ### 2. Install Supabase Client
 ```bash
-npm install @supabase/supabase-js
+pnpm install @supabase/supabase-js
 ```
 
 ### 3. Create Supabase Client
