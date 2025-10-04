@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUser } from '@/firebase';
 
 type UserRole = 'admin' | 'student';
 
@@ -15,7 +14,6 @@ export function useUserRole(): {
   isLoading: boolean;
   email: string | null;
 } {
-  const { isUserLoading: isFirebaseUserLoading } = useUser();
   const [email, setEmail] = useState<string | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,11 +33,6 @@ export function useUserRole(): {
   }, []);
 
   useEffect(() => {
-    if (isFirebaseUserLoading) {
-      setIsLoading(true);
-      return;
-    }
-
     if (email) {
       // Determine role based on email without any database queries
       setRole(email === 'jarambarri@aldapeta.eus' ? 'admin' : 'student');
@@ -49,7 +42,7 @@ export function useUserRole(): {
     
     setIsLoading(false);
 
-  }, [email, isFirebaseUserLoading]);
+  }, [email]);
 
   return { role, isLoading, email };
 }

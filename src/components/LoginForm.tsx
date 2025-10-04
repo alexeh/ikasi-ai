@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/firebase';
-import { signInAnonymously } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -45,7 +43,6 @@ const allowedUsers = [
 ];
 
 export function LoginForm() {
-  const auth = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -74,12 +71,8 @@ export function LoginForm() {
 
     setIsLoading(true);
     try {
-      // We simulate a login by creating a session tied to the selected email.
-      // In a real app, you would use a proper auth method.
+      // Store the user email in localStorage for session management
       localStorage.setItem('simulated_user', email);
-      if (auth) {
-        await signInAnonymously(auth);
-      }
       router.push('/euskera');
     } catch (error: any) {
       toast({
