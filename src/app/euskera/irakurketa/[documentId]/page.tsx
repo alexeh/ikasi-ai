@@ -7,8 +7,13 @@ import { ArrowLeft, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useRouter } from 'next/navigation';
 
-export default function DocumentDetailPage({ params }: { params: { documentId: string } }) {
+export default function DocumentDetailPage({ params }: { params: Promise<{ documentId: string }> }) {
   const router = useRouter();
+  const [documentId, setDocumentId] = React.useState<string>('');
+
+  React.useEffect(() => {
+    params.then(p => setDocumentId(p.documentId));
+  }, [params]);
 
   return (
     <div className="container py-8">
@@ -22,7 +27,7 @@ export default function DocumentDetailPage({ params }: { params: { documentId: s
         <AlertTitle>Database integration required</AlertTitle>
         <AlertDescription>
           This page requires database integration with Supabase to load and display document content.
-          Document ID: {params.documentId}
+          {documentId && ` Document ID: ${documentId}`}
         </AlertDescription>
       </Alert>
 
