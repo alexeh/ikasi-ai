@@ -30,6 +30,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useUserRole } from '@/hooks/useUserRole';
 import { useUser } from '@/hooks/useUser';
+import { supabase } from '@/lib/supabase';
 
 
 export default function AppSidebar({ children }: { children: React.ReactNode }) {
@@ -49,7 +50,7 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
 
 
   const handleSignOut = async () => {
-    localStorage.removeItem('simulated_user');
+    await supabase.auth.signOut();
     router.push('/');
   };
   

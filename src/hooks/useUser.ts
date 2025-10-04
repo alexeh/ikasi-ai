@@ -1,26 +1,28 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 
 export function useUser() {
   const [user, setUser] = useState<string | null>(null);
   const [isUserLoading, setIsUserLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in via localStorage
-    const storedUser = localStorage.getItem('simulated_user');
-    setUser(storedUser);
-    setIsUserLoading(false);
+    // Get current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user?.email || null);
+      setIsUserLoading(false);
+    });
 
-    // Listen for storage changes
-    const handleStorageChange = () => {
-      const storedUser = localStorage.getItem('simulated_user');
-      setUser(storedUser);
-    };
+    // Listen for auth state changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user?.email || null);
+    });
 
-    window.addEventListener('storage', handleStorageChange);
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      subscription.unsubscribe();
     };
   }, []);
 
