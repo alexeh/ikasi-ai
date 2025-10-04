@@ -14,66 +14,46 @@ import { Input } from '@/components/ui/input';
 import { GraduationCap, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-
-const allowedUsers = [
-  'jarambarri@aldapeta.eus',
-  'alejandro.hernandez@aldapeta.eus',
-  'alma.ruizdearcaute@aldapeta.eus',
-  'amets.olaizola@aldapeta.eus',
-  'daniel.irazusta@aldapeta.eus',
-  'diego.valcarce@aldapeta.eus',
-  'elia.virto@aldapeta.eus',
-  'julen.povieda@aldapeta.eus',
-  'lola.altolaguirre@aldapeta.eus',
-  'lucia.benali@aldapeta.eus',
-  'lucia.manzano@aldapeta.eus',
-  'luis.oliveira@aldapeta.eus',
-  'lukas.usarraga@aldapeta.eus',
-  'manuela.demora@aldapeta.eus',
-  'marina.ortuzar@aldapeta.eus',
-  'martin.aizpurua@aldapeta.eus',
-  'martin.ceceaga@aldapeta.eus',
-  'martin.contreras@aldapeta.eus',
-  'martin.cuenca@aldapeta.eus',
-  'martin.garcia@aldapeta.eus',
-  'martin.iturralde@aldapeta.eus',
-  'oto.fermin@aldapeta.eus',
-  'sara.padilla@aldapeta.eus',
-  'simon.fernandez@aldapeta.eus',
-];
+import { supabase } from '@/lib/supabase';
 
 export function LoginForm() {
   const router = useRouter();
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email) {
+    if (!email || !password) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Mesedez, idatzi zure helbide elektronikoa.',
+        description: 'Mesedez, idatzi zure helbide elektronikoa eta pasahitza.',
       });
       return;
     }
 
-    if (!allowedUsers.includes(email.toLowerCase())) {
-        toast({
-            variant: "destructive",
-            title: "Erabiltzaile ezezaguna",
-            description: "Sartutako helbide elektronikoa ez dago baimenduta.",
-        });
-        return;
-    }
-
     setIsLoading(true);
     try {
-      // Store the user email in localStorage for session management
-      localStorage.setItem('simulated_user', email);
-      router.push('/euskera');
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) {
+        toast({
+          variant: 'destructive',
+          title: 'Errorea saioa hastean',
+          description: 'Helbide elektronikoa edo pasahitza ez dira zuzenak.',
+        });
+        return;
+      }
+
+      if (data.session) {
+        router.push('/euskera');
+      }
     } catch (error: any) {
       toast({
         variant: 'destructive',
@@ -101,7 +81,7 @@ export function LoginForm() {
         <CardHeader>
           <CardTitle className="text-2xl">Sarrera</CardTitle>
           <CardDescription>
-            Idatzi zure helbide elektronikoa sartzeko.
+            Idatzi zure helbide elektronikoa eta pasahitza sartzeko.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -117,7 +97,18 @@ export function LoginForm() {
                 disabled={isLoading}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={isLoading || !email}>
+            <div className="grid gap-2">
+              <Label htmlFor="password">Pasahitza</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={isLoading || !email || !password}>
               {isLoading ? <Loader2 className="animate-spin" /> : 'Sartu'}
             </Button>
           </form>
