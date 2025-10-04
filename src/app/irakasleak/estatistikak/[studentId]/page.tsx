@@ -8,9 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
-export default function StudentStatsPage({ params }: { params: { studentId: string } }) {
+export default function StudentStatsPage({ params }: { params: Promise<{ studentId: string }> }) {
   const router = useRouter();
   const { role, isLoading } = useUserRole();
+  const [studentId, setStudentId] = React.useState<string>('');
+
+  React.useEffect(() => {
+    params.then(p => setStudentId(p.studentId));
+  }, [params]);
 
   if (isLoading) {
     return <div className="container py-8">Loading...</div>;
@@ -44,7 +49,7 @@ export default function StudentStatsPage({ params }: { params: { studentId: stri
         <AlertTitle>Database integration required</AlertTitle>
         <AlertDescription>
           This page requires database integration with Supabase to display student statistics.
-          Student ID: {params.studentId}
+          {studentId && ` Student ID: ${studentId}`}
         </AlertDescription>
       </Alert>
 
