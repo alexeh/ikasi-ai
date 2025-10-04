@@ -27,17 +27,15 @@ import {
 } from '@/components/ui/sidebar';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useAuth, useUser } from '@/firebase';
-import { signOut } from 'firebase/auth';
 import { useEffect } from 'react';
 import { useUserRole } from '@/hooks/useUserRole';
+import { useUser } from '@/hooks/useUser';
 
 
 export default function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const auth = useAuth();
   const { role, email } = useUserRole();
   
   useEffect(() => {
@@ -52,9 +50,6 @@ export default function AppSidebar({ children }: { children: React.ReactNode }) 
 
   const handleSignOut = async () => {
     localStorage.removeItem('simulated_user');
-    if (auth) {
-      await signOut(auth);
-    }
     router.push('/');
   };
   

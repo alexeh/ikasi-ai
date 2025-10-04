@@ -1,13 +1,10 @@
 'use client';
 
 import * as React from 'react';
-import { useCollection } from '@/firebase/firestore/use-collection';
-import { collection, query, where } from 'firebase/firestore';
-import { useFirestore } from '@/firebase';
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
-import { FileText, Loader2 } from 'lucide-react';
-import { useMemoFirebase } from '@/firebase';
+import { FileText, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type ReadingDocument = {
   id: string;
@@ -16,20 +13,8 @@ type ReadingDocument = {
 };
 
 export default function IdatzizkoUlermenaPage() {
-  const firestore = useFirestore();
-  
-  const documentsQuery = useMemoFirebase(
-    () =>
-      firestore
-        ? query(
-            collection(firestore, 'readingDocuments'),
-            where('language', '==', 'euskera')
-          )
-        : null,
-    [firestore]
-  );
-
-  const { data: documents, isLoading: isDocumentsLoading } = useCollection<ReadingDocument>(documentsQuery);
+  // Placeholder data - will be replaced with Supabase integration
+  const documents: ReadingDocument[] = [];
 
   return (
     <div className="container py-8">
@@ -42,43 +27,39 @@ export default function IdatzizkoUlermenaPage() {
         </div>
       </div>
 
+      <Alert className="mt-8">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Database integration required</AlertTitle>
+        <AlertDescription>
+          This page requires database integration with Supabase to display reading documents.
+        </AlertDescription>
+      </Alert>
 
-      {isDocumentsLoading && (
-        <div className="mt-8 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="ml-2">Kargatzen...</p>
+      {documents.length === 0 ? (
+        <div className="mt-8 rounded-md border-2 border-dashed border-border p-8 text-center">
+          <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
+          <h3 className="mt-4 text-lg font-semibold">
+            Ez dago dokumenturik eskuragarri
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Momentu honetan ez dago irakurgaiarik. Laster gehituko dira.
+          </p>
         </div>
-      )}
-
-      {!isDocumentsLoading && (
-        <>
-            {documents?.length === 0 ? (
-                <div className="mt-8 rounded-md border-2 border-dashed border-border p-8 text-center">
-                <FileText className="mx-auto h-12 w-12 text-muted-foreground" />
-                <h3 className="mt-4 text-lg font-semibold">
-                    Ez dago dokumenturik eskuragarri
-                </h3>
-                <p className="mt-2 text-sm text-muted-foreground">
-                    Momentu honetan ez dago irakurgaiarik. Laster gehituko dira.
-                </p>
-                </div>
-            ) : (
-              <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {documents?.map((doc) => (
-                  <Link href={`/euskera/irakurketa/${doc.id}`} key={doc.id}>
-                      <Card className="flex h-full transform-gpu flex-col transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
-                      <CardHeader>
-                          <CardTitle>{doc.title}</CardTitle>
-                          <CardDescription>
-                          Sakatu irakurtzen hasteko
-                          </CardDescription>
-                      </CardHeader>
-                      </Card>
-                  </Link>
-                  ))}
-              </div>
-            )}
-        </>
+      ) : (
+        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {documents.map((doc) => (
+            <Link href={`/euskera/irakurketa/${doc.id}`} key={doc.id}>
+              <Card className="flex h-full transform-gpu flex-col transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
+                <CardHeader>
+                  <CardTitle>{doc.title}</CardTitle>
+                  <CardDescription>
+                    Sakatu irakurtzen hasteko
+                  </CardDescription>
+                </CardHeader>
+              </Card>
+            </Link>
+          ))}
+        </div>
       )}
     </div>
   );

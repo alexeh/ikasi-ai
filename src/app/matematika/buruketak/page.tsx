@@ -18,11 +18,7 @@ import {
   type BuruketakInput,
   type BuruketakOutput,
 } from '@/ai/flows/buruketak-flow';
-import { useFirestore, useUser } from '@/firebase';
 import { useUserRole } from '@/hooks/useUserRole';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { FirestorePermissionError } from '@/firebase/errors';
-import { errorEmitter } from '@/firebase/error-emitter';
 
 type Topic = 'deskonposaketa' | 'dirua' | 'denbora neurriak';
 type Level = 'easy' | 'medium' | 'hard';
@@ -38,8 +34,6 @@ export default function BuruketakPage() {
   const [isLoading, setIsLoading] = React.useState(false);
   const answerInputRef = React.useRef<HTMLInputElement>(null);
 
-  const firestore = useFirestore();
-  const { user } = useUser();
   const { email } = useUserRole();
 
 
@@ -101,34 +95,23 @@ export default function BuruketakPage() {
 
   const handleAnswerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!problemData || userAnswer === '' || !user || !firestore || !selectedLevel || !selectedTopic) return;
+    if (!problemData || userAnswer === '' || !selectedLevel || !selectedTopic) return;
 
     const parsedUserAnswer = parseInt(userAnswer, 10);
     const answerIsCorrect = parsedUserAnswer === problemData.answer;
     setIsCorrect(answerIsCorrect);
     setGameState('answered');
 
-    const collectionRef = collection(firestore, 'mathWordProblemGames');
-    const gameData = {
-        studentId: user.uid,
-        studentEmail: email,
-        level: selectedLevel,
-        topic: selectedTopic,
-        problem: problemData.problem,
-        correctAnswer: problemData.answer,
-        userAnswer: parsedUserAnswer,
-        isCorrect: answerIsCorrect,
-        timestamp: serverTimestamp(),
-    };
-
-    addDoc(collectionRef, gameData).catch((serverError) => {
-      const permissionError = new FirestorePermissionError({
-        path: collectionRef.path,
-        operation: 'create',
-        requestResourceData: gameData,
-      });
-      errorEmitter.emit('permission-error', permissionError);
-      console.error('Error saving game result:', serverError);
+    // Note: Game results are not saved to database yet.
+    // This will be implemented with Supabase integration.
+    console.log('Game result:', {
+      level: selectedLevel,
+      topic: selectedTopic,
+      problem: problemData.problem,
+      correctAnswer: problemData.answer,
+      userAnswer: parsedUserAnswer,
+      isCorrect: answerIsCorrect,
+      studentEmail: email,
     });
   };
 

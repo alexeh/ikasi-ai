@@ -13,11 +13,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { BrainCircuit, Play, Timer, Award, RefreshCw } from 'lucide-react';
-import { useFirestore, useUser } from '@/firebase';
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { useUserRole } from '@/hooks/useUserRole';
-import { FirestorePermissionError } from '@/firebase/errors';
-import { errorEmitter } from '@/firebase/error-emitter';
 
 type Level = 'easy' | 'medium' | 'hard';
 type GameState = 'selecting' | 'playing' | 'finished';
@@ -95,36 +91,23 @@ export default function KalkuluMentalaPage() {
   const [timeLeft, setTimeLeft] = React.useState(60);
   const answerInputRef = React.useRef<HTMLInputElement>(null);
 
-  const firestore = useFirestore();
-  const { user } = useUser();
   const { email } = useUserRole();
 
   const endGame = React.useCallback(() => {
     setGameState('finished');
-    if (user && selectedLevel && firestore && problemsAttempted > 0) {
-      const collectionRef = collection(firestore, 'mentalMathGames');
-      const gameData = {
-        studentId: user.uid,
+    if (selectedLevel && problemsAttempted > 0) {
+      // Note: Game results are not saved to database yet.
+      // This will be implemented with Supabase integration.
+      console.log('Game result:', {
         studentEmail: email,
         level: selectedLevel,
         score: score,
         problemsAttempted: problemsAttempted,
         incorrectAnswers: problemsAttempted - score,
         duration: 60,
-        timestamp: serverTimestamp(),
-      };
-
-      addDoc(collectionRef, gameData).catch((serverError) => {
-        const permissionError = new FirestorePermissionError({
-          path: collectionRef.path,
-          operation: 'create',
-          requestResourceData: gameData,
-        });
-        errorEmitter.emit('permission-error', permissionError);
-        console.error('Error saving game result:', serverError);
       });
     }
-  }, [user, selectedLevel, firestore, problemsAttempted, score, email]);
+  }, [selectedLevel, problemsAttempted, score, email]);
 
 
   const levels = {
