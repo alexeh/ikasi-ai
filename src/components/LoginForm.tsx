@@ -74,7 +74,7 @@ export function LoginForm() {
         <div className="mb-8 text-center">
           <GraduationCap className="mx-auto h-16 w-16 text-primary" />
           <h1 className="mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl font-headline">
-            Ongi etorri Ikasgelara!
+            Ongi etorri Ikasgelara TESTASSZDAESF!
           </h1>
           <p className="mt-2 text-lg text-muted-foreground">
             Hasi saioa zure lana ikusteko.
