@@ -1,30 +1,34 @@
-'use client';
+// src/hooks/useUser.ts
+'use client'
 
-import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase';
+import { useEffect, useState } from 'react'
 
 export function useUser() {
-  const [user, setUser] = useState<string | null>(null);
-  const [isUserLoading, setIsUserLoading] = useState(true);
+  const [user, setUser] = useState<{ email: string } | null>(null)
+  const [isUserLoading, setIsUserLoading] = useState(true)
 
   useEffect(() => {
-    // Get current session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user?.email || null);
-      setIsUserLoading(false);
-    });
+    let cancelled = false
+    const fetchUser = async () => {
+      try {
+        const res = await fetch('/api/auth/students/me', {
+          credentials: 'include',
+        })
+        if (!res.ok) throw new Error('no session')
 
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user?.email || null);
-    });
-
+        const data = await res.json()
+        if (!cancelled) setUser(data.user)
+      } catch {
+        if (!cancelled) setUser(null)
+      } finally {
+        if (!cancelled) setIsUserLoading(false)
+      }
+    }
+    fetchUser()
     return () => {
-      subscription.unsubscribe();
-    };
-  }, []);
+      cancelled = true
+    }
+  }, [])
 
-  return { user, isUserLoading };
+  return { user, isUserLoading }
 }

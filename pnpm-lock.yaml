@@ -120,6 +120,9 @@ importers:
       graphql:
         specifier: ^16.11.0
         version: 16.11.0
+      jose:
+        specifier: ^4.14.4
+        version: 4.15.9
       lucide-react:
         specifier: ^0.475.0
         version: 0.475.0(react@19.2.0)
@@ -11806,8 +11809,7 @@ snapshots:
 
   jiti@1.21.7: {}
 
-  jose@4.15.9:
-    optional: true
+  jose@4.15.9: {}
 
   jose@5.9.6: {}
 
