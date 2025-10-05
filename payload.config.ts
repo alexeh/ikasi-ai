@@ -10,6 +10,8 @@ import { buildConfig } from 'payload';
 import sharp from 'sharp';
 import Admins from "@/cms/collections/admins";
 import Students from "@/cms/collections/students";
+import Gaiak from "@/cms/collections/gaiak";
+import Buruketak from "@/cms/collections/buruketak";
 
 
 const filename = fileURLToPath(import.meta.url);
@@ -28,7 +30,9 @@ export default buildConfig({
     },
     collections: [
         Admins,
-        Students
+        Students,
+        Gaiak,
+        Buruketak,
     ],
     editor: lexicalEditor(),
     secret: process.env.PAYLOAD_SECRET!,
