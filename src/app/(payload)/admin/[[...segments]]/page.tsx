@@ -2,10 +2,9 @@
 /* DO NOT MODIFY IT BECAUSE IT COULD BE REWRITTEN AT ANY TIME. */
 import type { Metadata } from 'next'
 
-import config from '../../../../payload-config'
-import { generatePageMetadata, NotFoundPage } from '@payloadcms/next/views'
-
-import { importMap } from '../admin/importMap'
+import config from '../../../../../payload-config'
+import { RootPage, generatePageMetadata } from '@payloadcms/next/views'
+import { importMap } from '../../importMap'
 
 type Args = {
     params: Promise<{
@@ -19,7 +18,7 @@ type Args = {
 export const generateMetadata = ({ params, searchParams }: Args): Promise<Metadata> =>
     generatePageMetadata({ config, params, searchParams })
 
-const NotFound = ({ params, searchParams }: Args) =>
-    NotFoundPage({ config, importMap, params, searchParams })
+const Page = ({ params, searchParams }: Args) =>
+    RootPage({ config, params, searchParams, importMap })
 
-export default NotFound
+export default Page
