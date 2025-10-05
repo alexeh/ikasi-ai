@@ -48,7 +48,7 @@ export default function ComprensionLectoraPage() {
       ) : (
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {documents.map((doc) => (
-            <Link href={`/gaztelania/lectura/${doc.id}`} key={doc.id}>
+            <Link href={`/src/app/(ikasi-ai)/gaztelania/lectura/${doc.id}`} key={doc.id}>
               <Card className="flex h-full transform-gpu flex-col transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
                 <CardHeader>
                   <CardTitle>{doc.title}</CardTitle>
