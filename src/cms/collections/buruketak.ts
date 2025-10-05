@@ -57,13 +57,13 @@ const Buruketak: CollectionConfig = {
         },
         {
             name: 'erantzun_zuzena',
-            label: 'Erantzun zuzena (Respuesta correcta)',
+            label: 'Erantzun zuzena (Zenbakia izan behar du)',
             type: 'number',
             required: true,
         },
         {
             name: 'azalpena',
-            label: 'Azalpena (Explicación)',
+            label: 'Azalpena (Kontextu gehiago, beharko balitz (etorkizunien ikasliek aukeratzie zaek laguntza gehio ber aldun)',
             type: 'textarea',
         },
         {
