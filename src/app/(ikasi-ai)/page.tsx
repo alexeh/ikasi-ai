@@ -8,3 +8,4 @@ export default function LoginPage() {
   // in the main layout/sidebar component.
   return <LoginForm />;
 }
+
