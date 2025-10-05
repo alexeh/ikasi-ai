@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -13,11 +14,9 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { GraduationCap, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-// import { useRouter } from 'next/navigation';
-// import { supabase } from '@/lib/supabase';
 
 export function LoginForm() {
-  // const router = useRouter();
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -37,31 +36,25 @@ export function LoginForm() {
 
     setIsLoading(true);
     try {
-      // 🔒 Supabase auth temporalmente deshabilitado
-      // const { data, error } = await supabase.auth.signInWithPassword({
-      //   email,
-      //   password,
-      // });
-
-      // if (error) {
-      //   toast({
-      //     variant: 'destructive',
-      //     title: 'Errorea saioa hastean',
-      //     description: 'Helbide elektronikoa edo pasahitza ez dira zuzenak.',
-      //   });
-      //   return;
-      // }
-
-      // router.push('/euskera');
-      toast({
-        title: 'Auth deshabilitada',
-        description: 'Payload auth se integrará más adelante.',
+      const res = await fetch('/api/auth/students/login', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
       });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || 'Helbide edo pasahitza okerra.');
+      }
+
+      toast({ title: 'Ongi etorri!', description: 'Saioa ondo hasi da.' });
+      window.location.href = '/euskera';
     } catch (error: any) {
       toast({
         variant: 'destructive',
-        title: 'Errore bat gertatu da',
-        description: 'Saiatu berriro, mesedez.',
+        title: 'Errorea saioa hastean',
+        description: error?.message ?? 'Saiatu berriro, mesedez.',
       });
       console.error('Login error:', error);
     } finally {
@@ -111,12 +104,22 @@ export function LoginForm() {
                     disabled={isLoading}
                 />
               </div>
+
               <Button
                   type="submit"
                   className="w-full"
                   disabled={isLoading || !email || !password}
               >
                 {isLoading ? <Loader2 className="animate-spin" /> : 'Sartu'}
+              </Button>
+
+              <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full mt-2"
+                  onClick={() => router.push('/signup')}
+              >
+                Ez daukazu konturik? Erregistratu
               </Button>
             </form>
           </CardContent>
