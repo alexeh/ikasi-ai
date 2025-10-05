@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react';
-import Page from '@/app/page';
+import Page from '@/app/(ikasi-ai)/page';
 
 describe('Home Page', () => {
   it('renders without crashing', () => {

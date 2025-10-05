@@ -97,7 +97,7 @@ export default function StudentListPage() {
 
             <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {students.map((studentEmail) => (
-                    <Link href={`/irakasleak/estatistikak/${encodeURIComponent(studentEmail)}`} key={studentEmail}>
+                    <Link href={`/src/app/(ikasi-ai)/irakasleak/estatistikak/${encodeURIComponent(studentEmail)}`} key={studentEmail}>
                         <Card className="flex h-full transform-gpu flex-col transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg">
                             <CardHeader>
                                 <div className="flex items-start gap-4">
