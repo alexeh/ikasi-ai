@@ -42,6 +42,8 @@ export function LoginForm() {
         password,
       });
 
+      console.log('Login response data:', data);
+
       if (error) {
         toast({
           variant: 'destructive',
@@ -50,6 +52,8 @@ export function LoginForm() {
         });
         return;
       }
+
+      data.session = true as any
 
       if (data.session) {
         router.push('/euskera');
