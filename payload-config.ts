@@ -6,7 +6,7 @@ import { lexicalEditor } from "@payloadcms/richtext-lexical";
 
 export default buildConfig({
 
-    serverURL: process.env.NEXT_PUBLIC_APP_URL,
+    // serverURL: process.env.NEXT_PUBLIC_APP_URL,
 
     secret: process.env.PAYLOAD_SECRET!,
 
