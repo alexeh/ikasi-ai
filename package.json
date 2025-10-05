@@ -4,13 +4,18 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 9002",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev --turbopack -p 9002",
+    "build": "cross-env NODE_OPTIONS=--no-deprecation NODE_ENV=production next build",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
+    "typecheck": "tsc --noEmit",
+
+    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
+    "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
+
     "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
-    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
-    "build": "NODE_ENV=production next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.20.0",
@@ -49,23 +54,24 @@
     "genkit": "^1.20.0",
     "graphql": "^16.11.0",
     "lucide-react": "^0.475.0",
-    "next": "15.3.3",
+    "next": "15.5.4",
     "patch-package": "^8.0.0",
     "payload": "^3.58.0",
-    "react": "^18.3.1",
+    "react": "19.2.0",
     "react-day-picker": "^8.10.1",
-    "react-dom": "^18.3.1",
+    "react-dom": "19.2.0",
     "react-hook-form": "^7.54.2",
     "recharts": "^2.15.1",
     "sharp": "^0.34.4",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.24.2"
+    "zod": "^3.24.2",
+    "cross-env": "^7.0.3"
   },
   "devDependencies": {
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "19.2.0",
+    "@types/react-dom": "19.2.0",
     "genkit-cli": "^1.20.0",
     "jest": "^30.2.0",
     "postcss": "^8",
