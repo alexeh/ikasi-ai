@@ -1,0 +1,62 @@
+[
+  {
+    "id": "att_0001",
+    "studentId": "stu_001",
+    "sessionId": "sess_20251011_001",
+    "exerciseId": "ex_1001",
+    "topic": "dinero",
+    "operation": "suma",
+    "difficulty": "easy",
+    "attemptedAt": "2025-10-11T10:16:04Z",
+    "isCorrect": true,
+    "responseTimeMs": 3100
+  },
+  {
+    "id": "att_0002",
+    "studentId": "stu_001",
+    "sessionId": "sess_20251011_001",
+    "exerciseId": "ex_2007",
+    "topic": "medidas",
+    "operation": "resta",
+    "difficulty": "medium",
+    "attemptedAt": "2025-10-11T10:16:18Z",
+    "isCorrect": false,
+    "responseTimeMs": 2900
+  },
+  {
+    "id": "att_0003",
+    "studentId": "stu_001",
+    "sessionId": "sess_20251011_001",
+    "exerciseId": "ex_1012",
+    "topic": "dinero",
+    "operation": "suma",
+    "difficulty": "easy",
+    "attemptedAt": "2025-10-11T10:17:03Z",
+    "isCorrect": true,
+    "responseTimeMs": 900
+  },
+  {
+    "id": "att_0004",
+    "studentId": "stu_001",
+    "sessionId": "sess_20251011_001",
+    "exerciseId": "ex_3010",
+    "topic": "tiempo",
+    "operation": "suma",
+    "difficulty": "medium",
+    "attemptedAt": "2025-10-11T10:18:16Z",
+    "isCorrect": false,
+    "responseTimeMs": 6400
+  },
+  {
+    "id": "att_0005",
+    "studentId": "stu_001",
+    "sessionId": "sess_20251011_001",
+    "exerciseId": "ex_1020",
+    "topic": "dinero",
+    "operation": "resta",
+    "difficulty": "easy",
+    "attemptedAt": "2025-10-11T10:19:03Z",
+    "isCorrect": true,
+    "responseTimeMs": 2700
+  }
+]
