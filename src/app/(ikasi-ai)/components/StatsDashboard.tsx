@@ -1,7 +1,7 @@
 // ----- Client Component: interacción, filtros y gráficas SVG -----
 "use client";
 
-import { useMemo, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 // import {Attempt, Student, TopicMeta} from "../estadistikak/page";
 
@@ -43,11 +43,11 @@ export function DashboardClient({
     const byDay = useMemo(() => {
         const bucket = new Map<
             string,
-            { total: number; correct: number; avgRt: number; sumRt: number }
+            { total: number; correct: number; sumRt: number }
         >();
         for (const a of filtered) {
             const day = a.attemptedAt.slice(0, 10); // YYYY-MM-DD
-            const row = bucket.get(day) ?? { total: 0, correct: 0, avgRt: 0, sumRt: 0 };
+            const row = bucket.get(day) ?? { total: 0, correct: 0, sumRt: 0 };
             row.total += 1;
             row.correct += a.isCorrect ? 1 : 0;
             row.sumRt += a.responseTimeMs;
@@ -58,6 +58,8 @@ export function DashboardClient({
                 day,
                 accuracy: total ? correct / total : 0,
                 avgRt: total ? sumRt / total : 0,
+                total,
+                correct,
             }))
             .sort((a, b) => (a.day < b.day ? -1 : 1));
     }, [filtered]);
@@ -83,6 +85,7 @@ export function DashboardClient({
             accuracy: total ? correct / total : 0,
             avgRt: total ? sumRt / total : 0,
             total,
+            correct,
         }));
         // orden por volumen
         rows.sort((a, b) => b.total - a.total);
@@ -140,7 +143,16 @@ export function DashboardClient({
                     <LineChart
                         width={560}
                         height={220}
-                        data={byDay.map((d) => ({ x: d.day, y: d.accuracy }))}
+                        data={byDay.map((d) => ({
+                            x: d.day,
+                            y: d.accuracy,
+                            meta: {
+                                "Intentos": d.total,
+                                "Correctos": d.correct,
+                                "Incorrectos": d.total - d.correct,
+                                "Tiempo medio": `${Math.round(d.avgRt)} ms`,
+                            },
+                        }))}
                         yMax={1}
                         formatY={(y) => `${Math.round(y * 100)}%`}
                     />
@@ -149,7 +161,16 @@ export function DashboardClient({
                     <LineChart
                         width={560}
                         height={220}
-                        data={byDay.map((d) => ({ x: d.day, y: d.avgRt }))}
+                        data={byDay.map((d) => ({
+                            x: d.day,
+                            y: d.avgRt,
+                            meta: {
+                                "Intentos": d.total,
+                                "Correctos": d.correct,
+                                "Incorrectos": d.total - d.correct,
+                                "Accuracy": fmtPerc(d.accuracy),
+                            },
+                        }))}
                         formatY={(y) => `${Math.round(y)} ms`}
                     />
                 </ChartCard>
@@ -158,7 +179,17 @@ export function DashboardClient({
                     <BarChart
                         width={560}
                         height={240}
-                        data={byTopic.map((d) => ({ x: d.label, y: d.accuracy, color: d.color }))}
+                        data={byTopic.map((d) => ({
+                            x: d.label,
+                            y: d.accuracy,
+                            color: d.color,
+                            meta: {
+                                "Intentos": d.total,
+                                "Correctos": d.correct,
+                                "Incorrectos": d.total - d.correct,
+                                "Tiempo medio": `${Math.round(d.avgRt)} ms`,
+                            },
+                        }))}
                         yMax={1}
                         formatY={(y) => `${Math.round(y * 100)}%`}
                     />
@@ -167,7 +198,17 @@ export function DashboardClient({
                     <BarChart
                         width={560}
                         height={240}
-                        data={byTopic.map((d) => ({ x: d.label, y: d.avgRt, color: d.color }))}
+                        data={byTopic.map((d) => ({
+                            x: d.label,
+                            y: d.avgRt,
+                            color: d.color,
+                            meta: {
+                                "Intentos": d.total,
+                                "Correctos": d.correct,
+                                "Incorrectos": d.total - d.correct,
+                                "Accuracy": fmtPerc(d.accuracy),
+                            },
+                        }))}
                         formatY={(y) => `${Math.round(y)} ms`}
                     />
                 </ChartCard>
@@ -204,7 +245,7 @@ function ChartCard({ title, children }: { title: string; children: React.ReactNo
 }
 
 // ---- Lightweight SVG charts (sin librerías externas) ----
-type XY = { x: string; y: number; color?: string };
+type XY = { x: string; y: number; color?: string; meta?: Record<string, string | number> };
 
 function LineChart({
                        data,
@@ -227,17 +268,47 @@ function LineChart({
     const innerW = W - pad * 2;
     const innerH = H - pad * 2;
     const stepX = data.length > 1 ? innerW / (data.length - 1) : innerW;
-
-    const points = data.map((d, i) => {
-        const x = pad + i * stepX;
-        const y = pad + innerH - ((d.y - minY) / (maxY - minY || 1)) * innerH;
-        return `${x},${y}`;
+    const [hovered, setHovered] = useState<number | null>(null);
+    const coords = data.map((d, i) => {
+        const xCoord = pad + i * stepX;
+        const yCoord = pad + innerH - ((d.y - minY) / (maxY - minY || 1)) * innerH;
+        return { data: d, x: xCoord, y: yCoord };
     });
-
+    const points = coords.map((d) => `${d.x},${d.y}`);
     const yTicks = [0, 0.25, 0.5, 0.75, 1].map((t) => t * maxY);
+    const tooltipEntry = hovered !== null ? coords[hovered] ?? null : null;
+    const tooltipValue = tooltipEntry ? (formatY ? formatY(tooltipEntry.data.y) : Math.round(tooltipEntry.data.y)) : null;
+    const tooltipMeta = tooltipEntry?.data.meta ? Object.entries(tooltipEntry.data.meta) : [];
+    const tooltipLines = tooltipEntry
+        ? [
+              { text: tooltipEntry.data.x, color: "white", fontWeight: 600, fontSize: 12 },
+              ...(tooltipValue
+                  ? [{ text: tooltipValue, color: "#D1FAE5", fontWeight: 600, fontSize: 12 }]
+                  : []),
+              ...tooltipMeta.map(([key, value]) => ({
+                  text: `${key}: ${typeof value === "number" ? value.toLocaleString() : value}`,
+                  color: "#E5E7EB",
+                  fontWeight: 400,
+                  fontSize: 11,
+              })),
+          ]
+        : [];
+    const tooltipHeight = tooltipLines.length ? 16 + tooltipLines.length * 16 : 0;
+    const tooltipWidth = 200;
+    const tooltipYPosition = tooltipEntry ? Math.max(pad + tooltipHeight, tooltipEntry.y - 12) : 0;
+
+    if (!coords.length) {
+        return (
+            <svg width={W} height={H} className="w-full">
+                <text x={W / 2} y={H / 2} textAnchor="middle" fontSize="12" fill="#999">
+                    No hay datos
+                </text>
+            </svg>
+        );
+    }
 
     return (
-        <svg width={W} height={H} className="w-full">
+        <svg width={W} height={H} className="w-full" onMouseLeave={() => setHovered(null)}>
             {/* grid + axes */}
             {yTicks.map((t, i) => {
                 const y = pad + innerH - ((t - minY) / (maxY - minY || 1)) * innerH;
@@ -260,10 +331,22 @@ function LineChart({
                 strokeLinecap="round"
             />
             {/* dots */}
-            {data.map((d, i) => {
-                const x = pad + i * stepX;
-                const y = pad + innerH - ((d.y - minY) / (maxY - minY || 1)) * innerH;
-                return <circle key={i} cx={x} cy={y} r="3" fill="black" />;
+            {coords.map((d, i) => {
+                const isHovered = hovered === i;
+                return (
+                    <circle
+                        key={i}
+                        cx={d.x}
+                        cy={d.y}
+                        r={isHovered ? 5 : 3.5}
+                        fill={isHovered ? "#111" : "#222"}
+                        onMouseEnter={() => setHovered(i)}
+                        onFocus={() => setHovered(i)}
+                        onMouseLeave={() => setHovered(null)}
+                        onBlur={() => setHovered(null)}
+                        tabIndex={0}
+                    />
+                );
             })}
             {/* x labels */}
             {data.map((d, i) => {
@@ -274,6 +357,31 @@ function LineChart({
                     </text>
                 );
             })}
+            {tooltipEntry && tooltipLines.length > 0 && (
+                <g transform={`translate(${tooltipEntry.x}, ${tooltipYPosition})`} pointerEvents="none">
+                    <rect
+                        x={-tooltipWidth / 2}
+                        y={-tooltipHeight}
+                        width={tooltipWidth}
+                        height={tooltipHeight}
+                        rx={10}
+                        fill="rgba(17,17,17,0.92)"
+                    />
+                    {tooltipLines.map((line, index) => (
+                        <text
+                            key={index}
+                            x={0}
+                            y={-tooltipHeight + 14 + index * 16}
+                            fontSize={line.fontSize}
+                            fill={line.color}
+                            textAnchor="middle"
+                            fontWeight={line.fontWeight}
+                        >
+                            {line.text}
+                        </text>
+                    ))}
+                </g>
+            )}
         </svg>
     );
 }
@@ -299,9 +407,44 @@ function BarChart({
     const innerH = H - pad * 2;
     const barW = innerW / (data.length || 1) * 0.7;
     const yTicks = [0, 0.25, 0.5, 0.75, 1].map((t) => t * maxY);
+    const [hovered, setHovered] = useState<number | null>(null);
+    const step = innerW / (data.length || 1);
+    const hoveredIndex = hovered ?? -1;
+    const tooltipEntry = hoveredIndex >= 0 ? data[hoveredIndex] : null;
+    const tooltipValue = tooltipEntry ? (formatY ? formatY(tooltipEntry.y) : Math.round(tooltipEntry.y)) : null;
+    const tooltipX = tooltipEntry ? pad + hoveredIndex * step + step / 2 : 0;
+    const tooltipY = tooltipEntry ? pad + innerH - (tooltipEntry.y / (maxY || 1)) * innerH : 0;
+    const tooltipMeta = tooltipEntry?.meta ? Object.entries(tooltipEntry.meta) : [];
+    const tooltipLines = tooltipEntry
+        ? [
+              { text: tooltipEntry.x, color: "white", fontWeight: 600, fontSize: 12 },
+              ...(tooltipValue
+                  ? [{ text: tooltipValue, color: "#BFDBFE", fontWeight: 600, fontSize: 12 }]
+                  : []),
+              ...tooltipMeta.map(([key, value]) => ({
+                  text: `${key}: ${typeof value === "number" ? value.toLocaleString() : value}`,
+                  color: "#E5E7EB",
+                  fontWeight: 400,
+                  fontSize: 11,
+              })),
+          ]
+        : [];
+    const tooltipHeight = tooltipLines.length ? 16 + tooltipLines.length * 16 : 0;
+    const tooltipWidth = 220;
+    const tooltipYPosition = tooltipEntry ? Math.max(pad + tooltipHeight, tooltipY - 12) : 0;
+
+    if (!data.length) {
+        return (
+            <svg width={W} height={H} className="w-full">
+                <text x={W / 2} y={H / 2} textAnchor="middle" fontSize="12" fill="#999">
+                    No hay datos
+                </text>
+            </svg>
+        );
+    }
 
     return (
-        <svg width={W} height={H} className="w-full">
+        <svg width={W} height={H} className="w-full" onMouseLeave={() => setHovered(null)}>
             {/* grid + y labels */}
             {yTicks.map((t, i) => {
                 const y = pad + innerH - (t / (maxY || 1)) * innerH;
@@ -316,18 +459,59 @@ function BarChart({
             })}
             {/* bars */}
             {data.map((d, i) => {
-                const x = pad + i * (innerW / (data.length || 1)) + (innerW / (data.length || 1) - barW) / 2;
+                const x = pad + i * step + (step - barW) / 2;
                 const h = (d.y / (maxY || 1)) * innerH;
                 const y = pad + innerH - h;
+                const isHovered = hovered === i;
                 return (
                     <g key={i}>
-                        <rect x={x} y={y} width={barW} height={h} fill={d.color || "black"} rx="4" />
+                        <rect
+                            x={x}
+                            y={y}
+                            width={barW}
+                            height={h}
+                            fill={d.color || "black"}
+                            opacity={hovered === null || isHovered ? 1 : 0.45}
+                            stroke={isHovered ? "#111" : "transparent"}
+                            strokeWidth={isHovered ? 1.5 : 0}
+                            rx="4"
+                            onMouseEnter={() => setHovered(i)}
+                            onMouseLeave={() => setHovered(null)}
+                            onFocus={() => setHovered(i)}
+                            onBlur={() => setHovered(null)}
+                            tabIndex={0}
+                        />
                         <text x={x + barW / 2} y={H - 6} fontSize="10" fill="#666" textAnchor="middle">
                             {d.x}
                         </text>
                     </g>
                 );
             })}
+            {tooltipEntry && tooltipLines.length > 0 && (
+                <g transform={`translate(${tooltipX}, ${tooltipYPosition})`} pointerEvents="none">
+                    <rect
+                        x={-tooltipWidth / 2}
+                        y={-tooltipHeight}
+                        width={tooltipWidth}
+                        height={tooltipHeight}
+                        rx={10}
+                        fill="rgba(17,17,17,0.92)"
+                    />
+                    {tooltipLines.map((line, index) => (
+                        <text
+                            key={index}
+                            x={0}
+                            y={-tooltipHeight + 14 + index * 16}
+                            fontSize={line.fontSize}
+                            fill={line.color}
+                            textAnchor="middle"
+                            fontWeight={line.fontWeight}
+                        >
+                            {line.text}
+                        </text>
+                    ))}
+                </g>
+            )}
         </svg>
     );
 }
