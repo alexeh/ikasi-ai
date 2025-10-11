@@ -1,0 +1,96 @@
+{
+  "id": "sess_20251011_001",
+  "studentId": "stu_001",
+  "startedAt": "2025-10-11T10:15:23Z",
+  "endedAt": "2025-10-11T10:25:46Z",
+  "durationMs": 623000,
+
+  "attempts": [
+    {
+      "id": "att_0001",
+      "exerciseId": "ex_1001",
+      "topic": "dinero",
+      "operation": "suma",
+      "difficulty": "easy",
+      "presentedAt": "2025-10-11T10:16:01Z",
+      "answeredAt": "2025-10-11T10:16:04Z",
+      "responseTimeMs": 3100,
+      "question": "Si tienes 2€ y te dan 3€, ¿cuánto tienes en total?",
+      "answerGiven": 5,
+      "correctAnswer": 5,
+      "isCorrect": true
+    },
+    {
+      "id": "att_0002",
+      "exerciseId": "ex_2007",
+      "topic": "medidas",
+      "operation": "resta",
+      "difficulty": "medium",
+      "presentedAt": "2025-10-11T10:16:15Z",
+      "answeredAt": "2025-10-11T10:16:18Z",
+      "responseTimeMs": 2900,
+      "question": "Tenías 15 cm de cuerda y cortas 4 cm. ¿Cuánto queda?",
+      "answerGiven": 12,
+      "correctAnswer": 11,
+      "isCorrect": false
+    },
+    {
+      "id": "att_0003",
+      "exerciseId": "ex_1012",
+      "topic": "dinero",
+      "operation": "suma",
+      "difficulty": "easy",
+      "presentedAt": "2025-10-11T10:17:02Z",
+      "answeredAt": "2025-10-11T10:17:03Z",
+      "responseTimeMs": 900,
+      "question": "4€ + 1€ = ?",
+      "answerGiven": 5,
+      "correctAnswer": 5,
+      "isCorrect": true
+    },
+    {
+      "id": "att_0004",
+      "exerciseId": "ex_3010",
+      "topic": "tiempo",
+      "operation": "suma",
+      "difficulty": "medium",
+      "presentedAt": "2025-10-11T10:18:10Z",
+      "answeredAt": "2025-10-11T10:18:16Z",
+      "responseTimeMs": 6400,
+      "question": "25 min + 40 min = ?",
+      "answerGiven": 70,
+      "correctAnswer": 65,
+      "isCorrect": false
+    },
+    {
+      "id": "att_0005",
+      "exerciseId": "ex_1020",
+      "topic": "dinero",
+      "operation": "resta",
+      "difficulty": "easy",
+      "presentedAt": "2025-10-11T10:19:00Z",
+      "answeredAt": "2025-10-11T10:19:03Z",
+      "responseTimeMs": 2700,
+      "question": "Si tienes 10€ y gastas 4€, ¿cuánto te queda?",
+      "answerGiven": 6,
+      "correctAnswer": 6,
+      "isCorrect": true
+    }
+  ],
+
+  "summary": {
+    "totalAttempts": 5,
+    "correctAnswers": 3,
+    "wrongAnswers": 2,
+    "accuracy": 0.6,
+    "averageResponseTimeMs": 3200,
+    "topics": ["dinero", "medidas", "tiempo"],
+    "operations": ["suma", "resta"]
+  },
+
+  "device": {
+    "type": "tablet",
+    "os": "iOS",
+    "appVersion": "1.0.3"
+  }
+}
