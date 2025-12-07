@@ -1,5 +1,0 @@
-[
-  { "id": "dinero",  "label": "Dinero",  "color": "#10B981", "icon": "💶", "displayOrder": 1 },
-  { "id": "medidas", "label": "Medidas", "color": "#3B82F6", "icon": "📏", "displayOrder": 2 },
-  { "id": "tiempo",  "label": "Tiempo",  "color": "#F59E0B", "icon": "⏱️", "displayOrder": 3 }
-]
