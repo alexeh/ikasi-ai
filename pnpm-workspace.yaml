@@ -2,3 +2,6 @@ packages:
   - 'web'
   - 'api'
   - 'shared'
+
+catalog:
+  typescript: ^5.9.3
