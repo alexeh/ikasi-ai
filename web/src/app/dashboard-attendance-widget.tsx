@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Check, Clock, Users, X, ArrowDownAZ } from 'lucide-react';
 
 import type { Student } from './dashboard-types';
@@ -10,8 +10,6 @@ interface AttendanceWidgetProps {
 }
 
 export function DashboardAttendanceWidget({ students: initialStudents }: AttendanceWidgetProps) {
-  const [studentStates, setStudentStates] = useState<Student[]>([]);
-
   const sortBySurname = (students: Student[]) =>
     [...students].sort((a, b) => {
       const surnameA = a.name.split(' ').slice(-1)[0];
@@ -19,9 +17,8 @@ export function DashboardAttendanceWidget({ students: initialStudents }: Attenda
       return surnameA.localeCompare(surnameB);
     });
 
-  useEffect(() => {
-    setStudentStates(sortBySurname(initialStudents));
-  }, [initialStudents]);
+  const [studentStates, setStudentStates] = useState<Student[]>(() => sortBySurname(initialStudents));
+
 
   const updateStatus = (id: string, status: Student['status']) => {
     setStudentStates((prev) => prev.map((student) => (student.id === id ? { ...student, status } : student)));

@@ -13,7 +13,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Clock,
   Database,
   Ear,
   FileAudio,
@@ -49,8 +48,8 @@ import {
   WholeWord,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
-import type { FormEvent, JSX } from 'react';
+import { useMemo, useState } from 'react';
+import type { ComponentType, FormEvent, JSX } from 'react';
 import {
   Area,
   AreaChart,
@@ -132,7 +131,7 @@ const BANK_EXERCISES: BankExercise[] = [
 
 const LANGUAGE_SUBJECTS = ['Euskara', 'Gaztelera', 'Ingelesa'];
 
-type IconComponent = (props: { className?: string }) => JSX.Element;
+type IconComponent = ComponentType<{ className?: string }>;
 
 const SUBJECT_CATEGORIES: Record<string, Array<{ id: string; label: string; icon: IconComponent; color: string }>> = {
   Matematika: [
@@ -195,7 +194,7 @@ const BANK_LABELS = {
 };
 
 export function DashboardApp() {
-  const [selectedClassId, setSelectedClassId] = useState(MOCK_CLASSES[0]?.id ?? '');
+  const [selectedClassId, setSelectedClassId] = useState(() => MOCK_CLASSES[0]?.id ?? '');
   const [currentView, setCurrentView] = useState('dashboard');
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState('ulermena');
@@ -226,12 +225,6 @@ export function DashboardApp() {
   const [exercises, setExercises] = useState<Exercise[]>(DEFAULT_EXERCISES);
 
   const selectedClass = useMemo(() => MOCK_CLASSES.find((c) => c.id === selectedClassId) ?? MOCK_CLASSES[0], [selectedClassId]);
-
-  useEffect(() => {
-    if (!selectedClassId && MOCK_CLASSES[0]) {
-      setSelectedClassId(MOCK_CLASSES[0].id);
-    }
-  }, [selectedClassId]);
 
   const getViewTitle = () => {
     switch (currentView) {
@@ -1668,7 +1661,7 @@ export function DashboardApp() {
                   </div>
                 </div>
                 <div className="h-[500px]">
-                  <DashboardAttendanceWidget students={selectedClass.students as Student[]} />
+                  <DashboardAttendanceWidget key={selectedClass.id} students={selectedClass.students as Student[]} />
                 </div>
               </div>
               <div className="col-span-12 min-h-[500px] xl:col-span-4">

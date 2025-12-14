@@ -51,22 +51,23 @@ export function DashboardHeader({ classes, selectedClassId, onSelectClass, title
   }, []);
 
   useEffect(() => {
-    if (!isTimerRunning || timerSeconds === 0) {
+    if (!isTimerRunning) {
       return undefined;
     }
 
     const interval = window.setInterval(() => {
-      setTimerSeconds((value) => value - 1);
+      setTimerSeconds((value) => {
+        if (value <= 1) {
+          window.clearInterval(interval);
+          setIsTimerRunning(false);
+          return 0;
+        }
+        return value - 1;
+      });
     }, 1000);
 
     return () => window.clearInterval(interval);
-  }, [isTimerRunning, timerSeconds]);
-
-  useEffect(() => {
-    if (timerSeconds === 0) {
-      setIsTimerRunning(false);
-    }
-  }, [timerSeconds]);
+  }, [isTimerRunning]);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
