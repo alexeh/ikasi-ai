@@ -1,36 +1,23 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+yarn dev
+## Overview
+
+This package hosts the Next.js client for the Ikasi teacher dashboard. The previously standalone Vite demo that lived under `web/to-integrate` has been migrated into the main application and is rendered from `app/DashboardApp.tsx`.
+
+Visiting [http://localhost:3000](http://localhost:3000) now loads the full teacher experience (sidebar, header tools, agenda, attendance, calendar, meetings, etc.). All React components, mock data and helpers were lifted from `to-integrate` and converted to idiomatic Next.js client components that live under `src/app`.
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm dev --filter @ikasi/web
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development Notes
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- The primary entry point is `src/app/DashboardApp.tsx`, which stitches together the migrated dashboard widgets.
+- Shared data models and mocks can be found in `src/app/dashboard-*.ts` files.
+- UI primitives rely on `lucide-react` for icons and `recharts` for charts.
+- Tailwind CSS v4 (via the `@tailwindcss/postcss` preset) powers the utility classes.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Feel free to add new routes or components following the existing patterns. The legacy Vite scaffold remains under `web/to-integrate` for reference; remove it once it’s no longer needed.
