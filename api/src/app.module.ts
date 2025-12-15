@@ -5,6 +5,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiConfigModule } from './modules/config/api-config.module';
 import { ApiConfigService } from './modules/config/api-config.service';
 import { UsersModule } from './modules/users/users.module';
+import { AssignmentsModule } from './modules/assignments/assignments.module';
+import { InputsModule } from './modules/inputs/inputs.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { UsersModule } from './modules/users/users.module';
         configService.getDBConfig(),
     }),
     UsersModule,
+    AssignmentsModule,
+    InputsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
