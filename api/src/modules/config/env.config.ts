@@ -28,6 +28,21 @@ export class EnvConfig {
 
   @IsString()
   DB_DATABASE: string;
+
+  @IsString()
+  AWS_REGION: string;
+
+  @IsString()
+  S3_BUCKET_NAME: string;
+
+  @IsString()
+  S3_ENDPOINT: string;
+
+  @IsString()
+  AWS_ACCESS_KEY: string;
+
+  @IsString()
+  AWS_SECRET_ACCESS_KEY: string;
 }
 
 export function validate(config: Record<string, unknown>) {

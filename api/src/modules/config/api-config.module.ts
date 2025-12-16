@@ -3,6 +3,7 @@ import { validate } from './env.config';
 import databaseConfig from './database.config';
 import { Global, Module } from '@nestjs/common';
 import { ApiConfigService } from './api-config.service';
+import s3Config from './s3.config';
 
 @Global()
 @Module({
@@ -10,7 +11,7 @@ import { ApiConfigService } from './api-config.service';
     ConfigModule.forRoot({
       isGlobal: true,
       validate,
-      load: [databaseConfig],
+      load: [databaseConfig, s3Config],
     }),
   ],
   providers: [ApiConfigService],
