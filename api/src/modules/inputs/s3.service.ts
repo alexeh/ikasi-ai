@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { ApiConfigService } from '../config/api-config.service';
 
 @Injectable()
 export class S3Service {
+  logger = new Logger(S3Service.name);
   s3Client: S3Client;
   bucketName: string;
   constructor(private readonly apiConfigService: ApiConfigService) {
@@ -12,12 +13,18 @@ export class S3Service {
   }
 
   async upload(file: Express.Multer.File) {
-    const uploadCommand = new PutObjectCommand({
-      Bucket: this.bucketName,
-      Key: file.originalname,
-      Body: file.buffer,
-    });
+    try {
+      const uploadCommand = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: file.originalname,
+        Body: file.buffer,
+      });
 
-    return this.s3Client.send(uploadCommand);
+      const response = await this.s3Client.send(uploadCommand);
+      this.logger.log('File uploaded successfully.');
+      this.logger.log(response);
+    } catch (error) {
+      this.logger.error(`Upload failed: ${error}`);
+    }
   }
 }
