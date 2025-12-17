@@ -7,6 +7,8 @@ import { ApiConfigService } from './modules/config/api-config.service';
 import { UsersModule } from './modules/users/users.module';
 import { AssignmentsModule } from './modules/assignments/assignments.module';
 import { InputsModule } from './modules/inputs/inputs.module';
+import { LlmModule } from './modules/llm/llm.module';
+import { LlmService } from './modules/llm/llm.service';
 
 @Module({
   imports: [
@@ -19,8 +21,9 @@ import { InputsModule } from './modules/inputs/inputs.module';
     UsersModule,
     AssignmentsModule,
     InputsModule,
+    LlmModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, LlmService],
 })
 export class AppModule {}
