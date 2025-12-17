@@ -15,11 +15,14 @@ export class ApiConfigService {
   }
 
   getS3Config(): S3ClientConfig {
-    const config: S3ClientConfig = {
+    return {
       forcePathStyle: true,
       region: this.configService.get('AWS_REGION'),
       endpoint: this.configService.get('S3_ENDPOINT'),
+      credentials: {
+        accessKeyId: this.configService.get('AWS_ACCESS_KEY')!,
+        secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY')!,
+      },
     };
-    return config;
   }
 }
