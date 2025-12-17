@@ -7,10 +7,7 @@ export class S3Service {
   s3Client: S3Client;
   bucketName: string;
   constructor(private readonly apiConfigService: ApiConfigService) {
-    this.s3Client = new S3Client({
-      region: 'eu-west-3',
-      credentials: { accessKeyId: '', secretAccessKey: '' },
-    });
+    this.s3Client = new S3Client(this.apiConfigService.getS3Config());
     this.bucketName = 'ikasi-ai-inputs';
   }
 

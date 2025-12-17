@@ -1,7 +1,7 @@
 import { plainToInstance } from 'class-transformer';
 import { IsEnum, IsNumber, IsString, validateSync } from 'class-validator';
 
-enum Environment {
+export enum Environment {
   Development = 'development',
   Production = 'production',
   Test = 'test',
@@ -46,7 +46,30 @@ export class EnvConfig {
 }
 
 export function validate(config: Record<string, unknown>) {
-  const validatedConfig = plainToInstance(EnvConfig, config, {
+  const normalizedConfig: Record<string, unknown> = {
+    ...config,
+  };
+
+  const nodeEnv =
+    typeof normalizedConfig.NODE_ENV === 'string'
+      ? normalizedConfig.NODE_ENV
+      : undefined;
+
+  if (!nodeEnv) {
+    normalizedConfig.NODE_ENV = Environment.Development;
+  }
+
+  const nodeEnvValue = String(normalizedConfig.NODE_ENV).toLowerCase();
+
+  if (nodeEnvValue === Environment.Development) {
+    normalizedConfig.DB_HOST ??= 'localhost';
+    normalizedConfig.DB_PORT ??= 5432;
+    normalizedConfig.DB_USERNAME ??= 'ikasi-ai';
+    normalizedConfig.DB_PASSWORD ??= 'ikasi-ai';
+    normalizedConfig.DB_DATABASE ??= 'ikasi-ai';
+  }
+
+  const validatedConfig = plainToInstance(EnvConfig, normalizedConfig, {
     enableImplicitConversion: true,
   });
 
