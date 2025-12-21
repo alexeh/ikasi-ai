@@ -1,4 +1,8 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import {
   ChatSession,
   GenerativeModel,
@@ -7,16 +11,47 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { GetAiMessageDTO, ILLMProvider } from '../llm-provider.interface';
 import { v4 as uuid } from 'uuid';
+import {
+  createPartFromUri,
+  createUserContent,
+  GoogleGenAI,
+} from '@google/genai';
 
 export enum GEMINI_MODELS {
   LAST = 'gemini-2.5-flash',
 }
 
+export type GenerateQuestionsInput = {
+  locale: 'eu' | 'es' | 'en' | string;
+  sourceText: string;
+  numQuestions?: number; // default 8
+};
+
+export type GeneratedQuestion = {
+  type: 'single_choice';
+  question: string;
+  options: { text: string }[];
+  suggestedCorrectIndex?: number;
+  explanation?: string;
+};
+
+type GeminiJsonResponse = {
+  questions: Array<{
+    type: 'single_choice';
+    question: string;
+    options: string[];
+    suggestedCorrectIndex?: number;
+    explanation?: string;
+  }>;
+};
+
 @Injectable()
-export class GeminiProvider implements ILLMProvider {
+export class GeminiProvider {
   private readonly googleAI: GoogleGenerativeAI;
   private readonly model: GenerativeModel;
+  private readonly ai: GoogleGenAI;
   private readonly sessions: { [sessionId: string]: ChatSession } = {};
+  logger: Logger = new Logger(GeminiProvider.name);
 
   constructor(private readonly config: ConfigService) {
     const apiKey = this.config.get<string>('GEMINI_API_KEY');
@@ -26,6 +61,7 @@ export class GeminiProvider implements ILLMProvider {
       );
     }
     this.googleAI = new GoogleGenerativeAI(apiKey);
+    this.ai = new GoogleGenAI({ apiKey });
     this.model = this.googleAI.getGenerativeModel({
       model: GEMINI_MODELS.LAST,
     });
@@ -44,7 +80,59 @@ export class GeminiProvider implements ILLMProvider {
     };
   }
 
-  async getAIMessage(dto: GetAiMessageDTO): Promise<string> {
-    this.model.generateContent();
+  async uploadFileAndGenerateQuestions(params: { file: Express.Multer.File }) {
+    const locale = 'eu';
+    const numQuestions = 10;
+    const { file } = params;
+    this.logger.debug(`Uploading file`, file);
+    const uploaded = await this.ai.files.upload({
+      file: file.path,
+      config: { mimeType: file.mimetype },
+    });
+    this.logger.log('Uploaded file:', uploaded);
+
+    const prompt = this.buildPrompt({ locale, numQuestions });
+
+    const result = await this.ai.models.generateContent({
+      model: GEMINI_MODELS.LAST,
+      config: {
+        candidateCount: 1,
+        responseMimeType: 'application/json',
+      },
+      contents: createUserContent([
+        createPartFromUri(uploaded.uri!, uploaded.mimeType!),
+        prompt,
+      ]),
+    });
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    const text = (result as any).candidates![0].content!.parts![0]
+      .text! as string;
+    const parsed = JSON.parse(text);
+    return result;
+  }
+
+  private buildPrompt(params: {
+    locale: string;
+    numQuestions: number;
+  }): string {
+    const { locale, numQuestions } = params;
+
+    return [
+      `You are an assistant that generates multiple-choice quiz questions from a source document.`,
+      ``,
+      `Output MUST be valid JSON ONLY (no markdown, no backticks).`,
+      `Language: ${locale}.`,
+      ``,
+      `Constraints:`,
+      `- Create exactly ${numQuestions} questions.`,
+      `- Each question MUST have exactly 4 answer options.`,
+      `- Only one option should be correct.`,
+      `- Include suggestedCorrectIndex (0..3) when you are confident.`,
+      `- Keep questions grounded in the source text; avoid external facts.`,
+      ``,
+      `JSON schema:`,
+      `{"questions":[{"type":"single_choice","question":"...","options":["...","...","...","..."],"suggestedCorrectIndex":0,"explanation":"..."}]}`,
+      ``,
+    ].join('\n');
   }
 }

@@ -9,6 +9,18 @@ import {
 import { InputsService } from './inputs.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { S3Service } from './s3.service';
+import { LlmService } from '../llm/llm.service';
+import { diskStorage } from 'multer';
+import { extname, join } from 'path';
+import { existsSync, mkdirSync } from 'fs';
+import { v4 as uuidv4 } from 'uuid';
+
+const uploadDir = join(process.cwd(), 'tmp', 'uploads');
+
+// ensure dir exists at startup
+if (!existsSync(uploadDir)) {
+  mkdirSync(uploadDir, { recursive: true });
+}
 
 @Controller('inputs')
 export class InputsController {
@@ -16,16 +28,31 @@ export class InputsController {
   constructor(
     private readonly inputsService: InputsService,
     private readonly s3Service: S3Service,
+    private readonly llm: LlmService,
   ) {}
 
   @Post('/pdf')
-  @UseInterceptors(FileInterceptor('file'))
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: (_req, _file, cb) => {
+          cb(null, uploadDir);
+        },
+        filename: (_req, file, cb) => {
+          const name = `${uuidv4()}${file.originalname}`;
+          cb(null, name);
+        },
+      }),
+    }),
+  )
   async uploadPdfInput(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('File not found');
     }
-    this.logger.log(file);
-    const res = await this.s3Service.upload(file);
+    //const res = await this.s3Service.upload(file);
+
+    const res = await this.llm.generateFromFile(file);
     this.logger.log(res);
+    return res;
   }
 }
