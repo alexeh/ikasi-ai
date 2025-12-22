@@ -22,7 +22,7 @@ export class S3Service {
 
       const response = await this.s3Client.send(uploadCommand);
       this.logger.log('File uploaded successfully.');
-      this.logger.log(response);
+      return response;
     } catch (error) {
       this.logger.error(`Upload failed: ${error}`);
     }
