@@ -15,7 +15,7 @@ export class ExercisesService {
   }
 
   async findOne(id: string): Promise<Exercise | null> {
-    return this.exercisesRepository.findOneBy({ id });
+    return this.exercisesRepository.findOneBy({ id: parseInt(id, 10) });
   }
 
   async create(exercise: Partial<Exercise>): Promise<Exercise> {

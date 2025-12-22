@@ -32,13 +32,16 @@ describe('RolesGuard', () => {
 
   describe('canActivate', () => {
     let mockExecutionContext: ExecutionContext;
-    let mockRequest: any;
+    let mockRequest: {
+      user: { userId: string; email: string; role: UserRole } | null;
+    };
 
     beforeEach(() => {
       mockRequest = {
         user: null,
       };
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       mockExecutionContext = {
         switchToHttp: jest.fn().mockReturnValue({
           getRequest: jest.fn().mockReturnValue(mockRequest),
@@ -57,7 +60,9 @@ describe('RolesGuard', () => {
     });
 
     it('should throw ForbiddenException when user is not authenticated', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.TEACHER]);
+      jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue([UserRole.TEACHER]);
       mockRequest.user = null;
 
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(
@@ -66,7 +71,9 @@ describe('RolesGuard', () => {
     });
 
     it('should return true when user has the required teacher role', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.TEACHER]);
+      jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue([UserRole.TEACHER]);
       mockRequest.user = {
         userId: '123',
         email: 'teacher@example.com',
@@ -79,7 +86,9 @@ describe('RolesGuard', () => {
     });
 
     it('should throw ForbiddenException when user does not have required role', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([UserRole.TEACHER]);
+      jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue([UserRole.TEACHER]);
       mockRequest.user = {
         userId: '123',
         email: 'student@example.com',
@@ -92,10 +101,9 @@ describe('RolesGuard', () => {
     });
 
     it('should return true when user has one of multiple required roles', () => {
-      jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue([
-        UserRole.TEACHER,
-        UserRole.ADMIN,
-      ]);
+      jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue([UserRole.TEACHER, UserRole.ADMIN]);
       mockRequest.user = {
         userId: '123',
         email: 'admin@example.com',
@@ -108,7 +116,9 @@ describe('RolesGuard', () => {
     });
 
     it('should call reflector with correct parameters', () => {
-      const getAllAndOverrideSpy = jest.spyOn(reflector, 'getAllAndOverride').mockReturnValue(undefined);
+      const getAllAndOverrideSpy = jest
+        .spyOn(reflector, 'getAllAndOverride')
+        .mockReturnValue(undefined);
 
       guard.canActivate(mockExecutionContext);
 

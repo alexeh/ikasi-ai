@@ -3,6 +3,7 @@ import { ExercisesService } from './exercises.service';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/users.entity';
+import { Exercise } from './exercise.entity';
 
 @Controller('exercises')
 @UseGuards(RolesGuard)
@@ -21,7 +22,7 @@ export class ExercisesController {
   }
 
   @Post()
-  create(@Body() createExerciseDto: any) {
+  create(@Body() createExerciseDto: Partial<Exercise>) {
     return this.exercisesService.create(createExerciseDto);
   }
 }

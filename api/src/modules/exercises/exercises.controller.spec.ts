@@ -1,15 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExercisesController } from '../src/modules/exercises/exercises.controller';
-import { ExercisesService } from '../src/modules/exercises/exercises.service';
-import { RolesGuard } from '../src/modules/auth/roles.guard';
+import { ExercisesController } from './exercises.controller';
+import { ExercisesService } from './exercises.service';
+import { RolesGuard } from '../auth/roles.guard';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from '../src/modules/users/users.entity';
-import { ForbiddenException } from '@nestjs/common';
+import { UserRole } from '../users/users.entity';
 
 describe('ExercisesController', () => {
   let controller: ExercisesController;
-  let service: ExercisesService;
-  let rolesGuard: RolesGuard;
 
   const mockExercisesService = {
     findAll: jest.fn(),
@@ -31,8 +28,6 @@ describe('ExercisesController', () => {
     }).compile();
 
     controller = module.get<ExercisesController>(ExercisesController);
-    service = module.get<ExercisesService>(ExercisesService);
-    rolesGuard = module.get<RolesGuard>(RolesGuard);
   });
 
   afterEach(() => {
@@ -45,11 +40,13 @@ describe('ExercisesController', () => {
 
   describe('Role-based access control', () => {
     it('should have RolesGuard applied', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const guards = Reflect.getMetadata('__guards__', ExercisesController);
       expect(guards).toBeDefined();
     });
 
     it('should require TEACHER role', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const roles = Reflect.getMetadata('roles', ExercisesController);
       expect(roles).toContain(UserRole.TEACHER);
     });
@@ -61,7 +58,7 @@ describe('ExercisesController', () => {
       mockExercisesService.findAll.mockResolvedValue(result);
 
       expect(await controller.findAll()).toBe(result);
-      expect(service.findAll).toHaveBeenCalled();
+      expect(mockExercisesService.findAll).toHaveBeenCalled();
     });
   });
 
@@ -71,7 +68,7 @@ describe('ExercisesController', () => {
       mockExercisesService.findOne.mockResolvedValue(result);
 
       expect(await controller.findOne('1')).toBe(result);
-      expect(service.findOne).toHaveBeenCalledWith('1');
+      expect(mockExercisesService.findOne).toHaveBeenCalledWith('1');
     });
   });
 
@@ -82,7 +79,7 @@ describe('ExercisesController', () => {
       mockExercisesService.create.mockResolvedValue(result);
 
       expect(await controller.create(dto)).toBe(result);
-      expect(service.create).toHaveBeenCalledWith(dto);
+      expect(mockExercisesService.create).toHaveBeenCalledWith(dto);
     });
   });
 });

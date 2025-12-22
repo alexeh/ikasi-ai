@@ -34,7 +34,9 @@ describe('Auth (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ whitelist: true, transform: true }),
+    );
     await app.init();
   });
 
@@ -63,7 +65,7 @@ describe('Auth (e2e)', () => {
 
     it('should fail with duplicate email', async () => {
       const email = `duplicate-${Date.now()}@example.com`;
-      
+
       await request(app.getHttpServer())
         .post('/auth/signup')
         .send({
