@@ -43,6 +43,9 @@ export class EnvConfig {
 
   @IsString()
   AWS_SECRET_ACCESS_KEY: string;
+
+  @IsString()
+  JWT_SECRET: string;
 }
 
 export function validate(config: Record<string, unknown>) {
@@ -67,6 +70,7 @@ export function validate(config: Record<string, unknown>) {
     normalizedConfig.DB_USERNAME ??= 'ikasi-ai';
     normalizedConfig.DB_PASSWORD ??= 'ikasi-ai';
     normalizedConfig.DB_DATABASE ??= 'ikasi-ai';
+    normalizedConfig.JWT_SECRET ??= 'dev-secret-change-in-production';
   }
 
   const validatedConfig = plainToInstance(EnvConfig, normalizedConfig, {
