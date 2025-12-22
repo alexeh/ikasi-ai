@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { IsEnum, IsNumber, IsString, validateSync } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString, validateSync } from 'class-validator';
 
 export enum Environment {
   Development = 'development',
@@ -29,20 +29,25 @@ export class EnvConfig {
   @IsString()
   DB_DATABASE: string;
 
+  @IsOptional()
   @IsString()
-  AWS_REGION: string;
+  AWS_REGION?: string;
 
+  @IsOptional()
   @IsString()
-  S3_BUCKET_NAME: string;
+  S3_BUCKET_NAME?: string;
 
+  @IsOptional()
   @IsString()
-  S3_ENDPOINT: string;
+  S3_ENDPOINT?: string;
 
+  @IsOptional()
   @IsString()
-  AWS_ACCESS_KEY: string;
+  AWS_ACCESS_KEY?: string;
 
+  @IsOptional()
   @IsString()
-  AWS_SECRET_ACCESS_KEY: string;
+  AWS_SECRET_ACCESS_KEY?: string;
 
   @IsString()
   JWT_SECRET: string;
