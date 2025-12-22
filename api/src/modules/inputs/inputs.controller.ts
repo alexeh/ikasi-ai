@@ -8,11 +8,10 @@ import {
 } from '@nestjs/common';
 import { InputsService } from './inputs.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { S3Service } from './s3.service';
-import { LlmService } from '../llm/llm.service';
 import { diskStorage } from 'multer';
-import { extname, join } from 'path';
 import { existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
+
 import { v4 as uuidv4 } from 'uuid';
 
 const uploadDir = join(process.cwd(), 'tmp', 'uploads');
@@ -25,11 +24,7 @@ if (!existsSync(uploadDir)) {
 @Controller('inputs')
 export class InputsController {
   logger: Logger = new Logger(InputsController.name);
-  constructor(
-    private readonly inputsService: InputsService,
-    private readonly s3Service: S3Service,
-    private readonly llm: LlmService,
-  ) {}
+  constructor(private readonly inputsService: InputsService) {}
 
   @Post('/pdf')
   @UseInterceptors(
@@ -51,7 +46,7 @@ export class InputsController {
     }
     //const res = await this.s3Service.upload(file);
 
-    const res = await this.llm.generateFromFile(file);
+    const res = await this.inputsService.create(file);
     this.logger.log(res);
     return res;
   }

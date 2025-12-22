@@ -1,6 +1,7 @@
 // src/modules/llm/llm.service.ts
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { GeminiProvider } from './providers/gemini.provider';
+import { CreateFileParameters } from '@google/genai';
 
 export type LlmProvider = 'gemini' | 'openai';
 
@@ -23,12 +24,15 @@ export type GeneratedQuestion = {
 
 @Injectable()
 export class LlmService {
-  private provider: LlmProvider =
-    (process.env.LLM_PROVIDER as LlmProvider) || 'gemini';
-
   constructor(private readonly gemini: GeminiProvider) {}
 
-  async generateFromFile(file: Express.Multer.File): Promise<any> {
-    return this.gemini.uploadFileAndGenerateQuestions({ file });
+  async uploadFileToLLM(file: Express.Multer.File) {
+    return this.gemini.uploadFileToLLM({ file });
+  }
+
+  async generateExerciseFromLLMUpload(
+    llmFile: CreateFileParameters['file'],
+  ): Promise<any> {
+    return this.gemini.generate(llmFile);
   }
 }

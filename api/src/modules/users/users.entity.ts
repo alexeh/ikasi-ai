@@ -5,7 +5,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Input } from '../inputs/inputs.entity';
 
 export enum UserRole {
   TEACHER = 'teacher',
@@ -41,4 +43,7 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Input, (input: Input) => input.user)
+  inputs: Input[];
 }
