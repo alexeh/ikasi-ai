@@ -28,8 +28,14 @@ export async function signup(data: SignupData): Promise<AuthResponse> {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Signup failed');
+    let errorMessage = 'Signup failed';
+    try {
+      const error = await response.json();
+      errorMessage = error.message || errorMessage;
+    } catch {
+      // If JSON parsing fails, use default message
+    }
+    throw new Error(errorMessage);
   }
 
   return response.json();
@@ -45,8 +51,14 @@ export async function login(data: LoginData): Promise<AuthResponse> {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Login failed');
+    let errorMessage = 'Login failed';
+    try {
+      const error = await response.json();
+      errorMessage = error.message || errorMessage;
+    } catch {
+      // If JSON parsing fails, use default message
+    }
+    throw new Error(errorMessage);
   }
 
   return response.json();

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { signup, saveToken, SignupData } from '@/lib/auth';
 
 export default function SignupPage() {
@@ -26,8 +27,8 @@ export default function SignupPage() {
       const { access_token } = await signup(formData);
       saveToken(access_token);
       router.push('/');
-    } catch (err: any) {
-      setError(err.message || 'Signup failed');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Signup failed');
     } finally {
       setLoading(false);
     }
@@ -151,9 +152,9 @@ export default function SignupPage() {
 
           <div className="text-center text-sm">
             <span className="text-gray-600">Already have an account? </span>
-            <a href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
               Sign in
-            </a>
+            </Link>
           </div>
         </form>
       </div>
