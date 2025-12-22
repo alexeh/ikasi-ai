@@ -1,5 +1,5 @@
 // src/modules/llm/llm.service.ts
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { GeminiProvider } from './providers/gemini.provider';
 import { CreateFileParameters } from '@google/genai';
 

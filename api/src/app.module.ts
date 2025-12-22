@@ -10,6 +10,7 @@ import { AssignmentsModule } from './modules/assignments/assignments.module';
 import { InputsModule } from './modules/inputs/inputs.module';
 import { LlmModule } from './modules/llm/llm.module';
 import { LlmService } from './modules/llm/llm.service';
+import { ExercisesModule } from './modules/exercises/exercises.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 
@@ -26,6 +27,7 @@ import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
     AssignmentsModule,
     InputsModule,
     LlmModule,
+    ExercisesModule,
   ],
   controllers: [AppController],
   providers: [
