@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,6 +10,8 @@ import { AssignmentsModule } from './modules/assignments/assignments.module';
 import { InputsModule } from './modules/inputs/inputs.module';
 import { LlmModule } from './modules/llm/llm.module';
 import { LlmService } from './modules/llm/llm.service';
+import { AuthModule } from './modules/auth/auth.module';
+import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 
 @Module({
   imports: [
@@ -18,12 +21,20 @@ import { LlmService } from './modules/llm/llm.service';
       useFactory: (configService: ApiConfigService) =>
         configService.getDBConfig(),
     }),
+    AuthModule,
     UsersModule,
     AssignmentsModule,
     InputsModule,
     LlmModule,
   ],
   controllers: [AppController],
-  providers: [AppService, LlmService],
+  providers: [
+    AppService,
+    LlmService,
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+  ],
 })
 export class AppModule {}
