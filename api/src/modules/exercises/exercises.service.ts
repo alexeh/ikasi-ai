@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Exercise } from './exercise.entity';
@@ -14,8 +14,15 @@ export class ExercisesService {
     return this.exercisesRepository.find();
   }
 
-  async findOne(id: string): Promise<Exercise | null> {
-    return this.exercisesRepository.findOneBy({ id: parseInt(id, 10) });
+  async findOne(id: string): Promise<Exercise | undefined> {
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      throw new BadRequestException('Invalid exercise ID');
+    }
+    const result = await this.exercisesRepository.findOneBy({
+      id: numericId,
+    });
+    return result ?? undefined;
   }
 
   async create(exercise: Partial<Exercise>): Promise<Exercise> {

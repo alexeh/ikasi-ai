@@ -3,8 +3,10 @@ import { ExercisesService } from './exercises.service';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { UserRole } from '../users/users.entity';
-import { Exercise } from './exercise.entity';
+import { CreateExerciseDto } from './dto/create-exercise.dto';
 
+// RolesGuard works in conjunction with the globally configured JwtAuthGuard
+// The JwtAuthGuard runs first to authenticate the user, then RolesGuard checks roles
 @Controller('exercises')
 @UseGuards(RolesGuard)
 @Roles(UserRole.TEACHER)
@@ -22,7 +24,7 @@ export class ExercisesController {
   }
 
   @Post()
-  create(@Body() createExerciseDto: Partial<Exercise>) {
+  create(@Body() createExerciseDto: CreateExerciseDto) {
     return this.exercisesService.create(createExerciseDto);
   }
 }
