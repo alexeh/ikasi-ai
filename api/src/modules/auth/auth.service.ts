@@ -56,7 +56,7 @@ export class AuthService {
     return { access_token };
   }
 
-  async validateUser(userId: number): Promise<User | null> {
+  async validateUser(userId: string): Promise<User | null> {
     return this.usersService.findById(userId);
   }
 }
