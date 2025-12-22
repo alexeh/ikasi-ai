@@ -1,11 +1,10 @@
-// src/modules/questions/question.entity.ts
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToOne,
   CreateDateColumn,
-  JoinColumn,
+  JoinTable,
+  ManyToMany,
 } from 'typeorm';
 import { Exercise } from './exercise.entity';
 
@@ -22,14 +21,27 @@ export enum QuestionTopic {
   MATHER = 'MATH',
 }
 
+// TODO: Probably exercises and questions should be relatable N to N, so we can have a pool of questions that can be assigned to a new exercises
+//       created in-app
+
 @Entity({ name: 'questions' })
 export class Question {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Exercise, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'exercise_id' })
-  exercise: Exercise;
+  @ManyToMany(() => Exercise)
+  @JoinTable({
+    name: 'exercise_questions',
+    joinColumn: {
+      name: 'questions',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'exercises',
+      referencedColumnName: 'id',
+    },
+  })
+  exercises: Exercise[];
 
   @Column({ type: 'enum', enum: QuestionType })
   type: QuestionType;
