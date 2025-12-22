@@ -1,12 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AssignmentsController } from '../src/modules/assignments/assignments.controller';
-import { RolesGuard } from '../src/modules/auth/roles.guard';
+import { AssignmentsController } from './assignments.controller';
+import { RolesGuard } from '../auth/roles.guard';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from '../src/modules/users/users.entity';
+import { UserRole } from '../users/users.entity';
 
 describe('AssignmentsController', () => {
   let controller: AssignmentsController;
-  let rolesGuard: RolesGuard;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -15,7 +14,6 @@ describe('AssignmentsController', () => {
     }).compile();
 
     controller = module.get<AssignmentsController>(AssignmentsController);
-    rolesGuard = module.get<RolesGuard>(RolesGuard);
   });
 
   it('should be defined', () => {
@@ -24,11 +22,13 @@ describe('AssignmentsController', () => {
 
   describe('Role-based access control', () => {
     it('should have RolesGuard applied', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const guards = Reflect.getMetadata('__guards__', AssignmentsController);
       expect(guards).toBeDefined();
     });
 
     it('should require TEACHER role', () => {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const roles = Reflect.getMetadata('roles', AssignmentsController);
       expect(roles).toContain(UserRole.TEACHER);
     });
