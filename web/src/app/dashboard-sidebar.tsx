@@ -1,19 +1,38 @@
 'use client';
 
-import { BookOpen, Calendar, GraduationCap, LayoutDashboard, LogOut, MessageSquare, Settings, Users } from 'lucide-react';
+import Link from 'next/link';
+import {
+  BookOpen,
+  Calendar,
+  GraduationCap,
+  LayoutDashboard,
+  LogOut,
+  MessageSquare,
+  Settings,
+  Upload,
+  Users,
+} from 'lucide-react';
 
 interface SidebarProps {
   currentView: string;
   onNavigate: (view: string) => void;
 }
 
-const navItems = [
+type NavItem = {
+  id: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  href?: string;
+};
+
+const navItems: NavItem[] = [
   { id: 'dashboard', label: 'Arbela', icon: LayoutDashboard },
   { id: 'subjects', label: 'Ikasgaiak', icon: BookOpen },
   { id: 'students', label: 'Ikasleak', icon: Users },
   { id: 'calendar', label: 'Egutegia', icon: Calendar },
   { id: 'meetings', label: 'Bilerak', icon: MessageSquare },
   { id: 'settings', label: 'Ezarpenak', icon: Settings },
+  { id: 'create-exercise', label: 'Ariketa Sortu', icon: Upload, href: '/?view=create-exercise' },
 ];
 
 export function DashboardSidebar({ currentView, onNavigate }: SidebarProps) {
@@ -29,18 +48,29 @@ export function DashboardSidebar({ currentView, onNavigate }: SidebarProps) {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;
-          return (
-            <button
-              key={item.id}
-              onClick={() => onNavigate(item.id)}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
-                isActive
-                  ? 'bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-200'
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-              }`}
-            >
+          const classNames = `flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
+            isActive
+              ? 'bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-200'
+              : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+          }`;
+          const content = (
+            <>
               <Icon className={`h-5 w-5 transition-colors ${isActive ? 'text-indigo-600' : 'text-slate-400'}`} />
               {item.label}
+            </>
+          );
+
+          if (item.href) {
+            return (
+              <Link key={item.id} href={item.href} replace onClick={() => onNavigate(item.id)} className={classNames}>
+                {content}
+              </Link>
+            );
+          }
+
+          return (
+            <button key={item.id} onClick={() => onNavigate(item.id)} className={classNames}>
+              {content}
             </button>
           );
         })}
