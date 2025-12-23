@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ExercisesController } from './exercises.controller';
-import { ExercisesService } from './exercises.service';
-import { RolesGuard } from '../auth/roles.guard';
+import { ExercisesController } from '../src/modules/exercises/exercises.controller';
+import { ExercisesService } from '../src/modules/exercises/exercises.service';
+import { RolesGuard } from '../src/modules/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from '../users/users.entity';
+import { UserRole } from '../src/modules/users/users.entity';
 
 describe('ExercisesController', () => {
   let controller: ExercisesController;

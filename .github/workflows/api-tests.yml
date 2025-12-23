@@ -1,0 +1,93 @@
+name: API Tests
+
+on:
+  push:
+    paths:
+      - 'api/**'
+      - 'package.json'
+      - '.github/workflows/testing-api.yml'
+
+  workflow_dispatch:
+
+env:
+  DB_HOST: localhost
+  DB_PORT: 5432
+  DB_USERNAME: ikasi-ai
+  DB_PASSWORD: ikasi-ai
+  DB_DATABASE: ikasi-ai
+  JWT_SECRET: my-secret
+  GEMINI_API_KEY: my-fake-key
+
+jobs:
+  testing-api:
+    name: api tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: ikasi-ai
+          POSTGRES_PASSWORD: ikasi-ai
+          POSTGRES_DB: ikasi-ai
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ikasi-ai -d ikasi-ai"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v6.1.0
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install deps
+        working-directory: api
+        run: pnpm install
+
+      - name: Run tests
+        working-directory: api
+        run: test
+
+  testing-api-e2e:
+    name: api e2e tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: ikasi-ai
+          POSTGRES_PASSWORD: ikasi-ai
+          POSTGRES_DB: ikasi-ai
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ikasi-ai -d ikasi-ai"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6.0.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v6.1.0
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Install deps
+        working-directory: api
+        run: pnpm install
+
+      - name: Run tests
+        working-directory: api
+        run: test:e2e
+
+
+
