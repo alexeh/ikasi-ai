@@ -1,44 +1,23 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { AuthModule } from '../src/modules/auth/auth.module';
-import { UsersModule } from '../src/modules/users/users.module';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ConfigModule } from '@nestjs/config';
-import { validate } from '../src/modules/config/env.config';
+import { AppModule } from '../src/app.module';
+
+console.log('starttt');
 
 describe('Auth (e2e)', () => {
   let app: INestApplication<App>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [
-        ConfigModule.forRoot({
-          validate,
-          isGlobal: true,
-        }),
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: 'localhost',
-          port: 5432,
-          username: 'ikasi-ai',
-          password: 'ikasi-ai',
-          database: 'ikasi-ai-test',
-          autoLoadEntities: true,
-          synchronize: true,
-        }),
-        AuthModule,
-        UsersModule,
-      ],
+      imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({ whitelist: true, transform: true }),
-    );
     await app.init();
-  });
+    // TODO: Optimize timeout@@
+  }, 30000);
 
   afterAll(async () => {
     await app.close();
