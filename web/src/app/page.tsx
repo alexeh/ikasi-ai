@@ -1,5 +1,10 @@
-import { DashboardApp } from "./DashboardApp";
+import { Suspense } from 'react';
+import { DashboardApp } from './DashboardApp';
 
 export default function Home() {
-  return <DashboardApp />;
+  return (
+      <Suspense fallback={null}>
+        <DashboardApp />
+      </Suspense>
+  );
 }

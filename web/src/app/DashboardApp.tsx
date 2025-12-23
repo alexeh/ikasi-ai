@@ -48,7 +48,8 @@ import {
   WholeWord,
   X,
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 import type { ComponentType, FormEvent, JSX } from 'react';
 import {
   Area,
@@ -70,6 +71,7 @@ import {
   DashboardAgendaWidget,
 } from './dashboard-agenda-widget';
 import { DashboardAttendanceWidget } from './dashboard-attendance-widget';
+import { DashboardCreateExercise } from './dashboard-create-exercise';
 import { DashboardHeader } from './dashboard-header';
 import {
   INITIAL_TASKS,
@@ -162,6 +164,8 @@ const STRENGTH_COLORS = {
   weaknesses: 'border-rose-100 bg-rose-50 text-rose-700',
 };
 
+const VALID_VIEWS = new Set(['dashboard', 'subjects', 'students', 'calendar', 'meetings', 'settings', 'create-exercise']);
+
 const DEFAULT_ASSIGNMENTS: Assignment[] = [
   { id: 'a1', title: '1. Ebaluazioa', date: '2023-10-15', maxScore: 10 },
   { id: 'a2', title: 'Zatikiak', date: '2023-10-22', maxScore: 10 },
@@ -194,8 +198,12 @@ const BANK_LABELS = {
 };
 
 export function DashboardApp() {
+  const searchParams = useSearchParams();
   const [selectedClassId, setSelectedClassId] = useState(() => MOCK_CLASSES[0]?.id ?? '');
-  const [currentView, setCurrentView] = useState('dashboard');
+  const [currentView, setCurrentView] = useState(() => {
+    const paramView = searchParams.get('view');
+    return paramView && VALID_VIEWS.has(paramView) ? paramView : 'dashboard';
+  });
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState('ulermena');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -224,6 +232,30 @@ export function DashboardApp() {
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [exercises, setExercises] = useState<Exercise[]>(DEFAULT_EXERCISES);
 
+  useEffect(() => {
+    const paramView = searchParams.get('view');
+    if (paramView && VALID_VIEWS.has(paramView)) {
+      setCurrentView(paramView);
+    }
+  }, [searchParams]);
+
+  const handleNavigate = (view: string) => {
+    const targetView = VALID_VIEWS.has(view) ? view : 'dashboard';
+    setCurrentView(targetView);
+
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (targetView === 'dashboard') {
+        params.delete('view');
+      } else {
+        params.set('view', targetView);
+      }
+      const query = params.toString();
+      const newUrl = query ? `/?${query}` : '/';
+      window.history.replaceState({}, '', newUrl);
+    }
+  };
+
   const selectedClass = useMemo(() => MOCK_CLASSES.find((c) => c.id === selectedClassId) ?? MOCK_CLASSES[0], [selectedClassId]);
 
   const getViewTitle = () => {
@@ -238,6 +270,8 @@ export function DashboardApp() {
         return 'Egutegia';
       case 'meetings':
         return 'Bilerak eta Aktak';
+      case 'create-exercise':
+        return 'Ariketa sortzailea';
       case 'settings':
         return 'Ezarpenak';
       default:
@@ -1640,7 +1674,7 @@ export function DashboardApp() {
 
   return (
     <div className="flex h-screen bg-slate-50 font-sans text-slate-900">
-      <DashboardSidebar currentView={currentView} onNavigate={setCurrentView} />
+      <DashboardSidebar currentView={currentView} onNavigate={handleNavigate} />
       <div className="ml-64 flex h-full flex-1 flex-col transition-all duration-300">
         <DashboardHeader
           classes={MOCK_CLASSES}
@@ -1670,6 +1704,7 @@ export function DashboardApp() {
             </div>
           )}
           {currentView === 'subjects' && renderSubjectsSection()}
+          {currentView === 'create-exercise' && <DashboardCreateExercise />}
           {currentView === 'calendar' && renderCalendarView()}
           {currentView === 'meetings' && renderMeetingsView()}
           {currentView === 'students' && renderStudentsView()}
