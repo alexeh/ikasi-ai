@@ -67,12 +67,25 @@ export async function login(data: LoginData): Promise<AuthResponse> {
 export function saveToken(token: string): void {
   if (typeof window !== 'undefined') {
     localStorage.setItem('access_token', token);
+    // Also set as cookie for server-side middleware access
+    document.cookie = `access_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
   }
 }
 
 export function getToken(): string | null {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('access_token');
+    // First try localStorage
+    const token = localStorage.getItem('access_token');
+    if (token) return token;
+    
+    // Fallback to cookie
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [name, value] = cookie.trim().split('=');
+      if (name === 'access_token') {
+        return value;
+      }
+    }
   }
   return null;
 }
@@ -80,5 +93,11 @@ export function getToken(): string | null {
 export function removeToken(): void {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('access_token');
+    // Also remove the cookie
+    document.cookie = 'access_token=; path=/; max-age=0; SameSite=Lax';
   }
+}
+
+export function isAuthenticated(): boolean {
+  return getToken() !== null;
 }
