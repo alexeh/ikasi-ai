@@ -37,15 +37,13 @@ export class ExercisesService {
     return this.exercisesRepository.save(newExercise);
   }
 
-  async createFromInput(
-    file: Express.Multer.File,
-    user: User,
-  ): Promise<Exercise> {
+  async createFromInput(file: Express.Multer.File, user: User): Promise<any> {
     const savedInput = await this.input.create(file);
     this.logger.log(`Generating exercise....`);
     const exercisePreview: Partial<Exercise> =
       await this.llm.generateExerciseFromLLMUpload(savedInput.llmUploadData);
     this.logger.log(`Generated exercise`);
-    return this.create({ ...exercisePreview, createdBy: user });
+    const exercise = await this.create({ ...exercisePreview, createdBy: user });
+    return exercisePreview;
   }
 }

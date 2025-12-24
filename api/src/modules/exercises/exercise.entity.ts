@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { Input } from '../inputs/inputs.entity';
 import { User } from '../users/users.entity';
+import { Question } from './questions.entity';
 
 export enum ExerciseStatus {
   DRAFT = 'DRAFT',
@@ -33,6 +34,9 @@ export class Exercise {
 
   @Column({ type: 'enum', enum: ExerciseStatus, default: ExerciseStatus.DRAFT })
   status: ExerciseStatus;
+
+  @ManyToOne(() => Question, (questions) => questions.exercises)
+  questions: Question[];
 
   @Column({ nullable: true })
   title?: string;
