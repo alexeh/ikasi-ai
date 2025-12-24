@@ -30,7 +30,10 @@ export interface TaskItem {
 }
 
 // Extend the shared IExercise with frontend-specific properties
-export interface Exercise extends IExercise {
+// Note: Frontend exercises always have a title (required for display),
+// even though the backend allows optional titles for draft exercises
+export interface Exercise extends Omit<IExercise, 'title'> {
+  title: string; // Required in frontend for display purposes
   description: string;
   category:
     | "ulermena"
