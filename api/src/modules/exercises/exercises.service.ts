@@ -1,13 +1,19 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Exercise } from './exercise.entity';
+import { CreateExerciseDto } from './dto/create-exercise.dto';
+import { InputsService } from '../inputs/inputs.service';
+import { LlmService } from '../llm/llm.service';
 
 @Injectable()
 export class ExercisesService {
+  logger = new Logger(ExercisesService.name);
   constructor(
     @InjectRepository(Exercise)
     private exercisesRepository: Repository<Exercise>,
+    private readonly input: InputsService,
+    private readonly llm: LlmService,
   ) {}
 
   async findAll(): Promise<Exercise[]> {
@@ -28,5 +34,14 @@ export class ExercisesService {
   async create(exercise: Partial<Exercise>): Promise<Exercise> {
     const newExercise = this.exercisesRepository.create(exercise);
     return this.exercisesRepository.save(newExercise);
+  }
+
+  async createFromInput(file: Express.Multer.File): Promise<Exercise> {
+    const llmUploadedData = await this.input.create(file);
+    this.logger.log(`Generating exercise....`);
+    const exercisePreview =
+      await this.llm.generateExerciseFromLLMUpload(llmUploadedData);
+
+    return exercisePreview as Exercise;
   }
 }
