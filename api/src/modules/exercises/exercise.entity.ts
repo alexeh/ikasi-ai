@@ -12,7 +12,7 @@ import {
 import { Input } from '../inputs/inputs.entity';
 import { User } from '../users/users.entity';
 import { Question } from './questions.entity';
-import { ExerciseStatus, IExercise } from '../../../../shared/src/entities/exercise';
+import { ExerciseStatus, IExercise } from '@shared/entities/exercise';
 
 @Entity({ name: 'exercises' })
 export class Exercise implements IExercise {
