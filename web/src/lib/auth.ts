@@ -68,7 +68,8 @@ export function saveToken(token: string): void {
   if (typeof window !== 'undefined') {
     localStorage.setItem('access_token', token);
     // Also set as cookie for server-side middleware access
-    document.cookie = `access_token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+    // URL-encode the token to safely handle special characters
+    document.cookie = `access_token=${encodeURIComponent(token)}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
   }
 }
 
@@ -78,12 +79,17 @@ export function getToken(): string | null {
     const token = localStorage.getItem('access_token');
     if (token) return token;
     
-    // Fallback to cookie
+    // Fallback to cookie - properly parse cookie values that may contain '='
     const cookies = document.cookie.split(';');
     for (const cookie of cookies) {
-      const [name, value] = cookie.trim().split('=');
-      if (name === 'access_token') {
-        return value;
+      const trimmedCookie = cookie.trim();
+      const equalsIndex = trimmedCookie.indexOf('=');
+      if (equalsIndex > 0) {
+        const name = trimmedCookie.substring(0, equalsIndex);
+        const value = trimmedCookie.substring(equalsIndex + 1);
+        if (name === 'access_token') {
+          return decodeURIComponent(value);
+        }
       }
     }
   }
