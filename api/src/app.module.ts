@@ -13,6 +13,7 @@ import { LlmService } from './modules/llm/llm.service';
 import { ExercisesModule } from './modules/exercises/exercises.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
+import { AcademicsModule } from './modules/academics/academics.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
     InputsModule,
     LlmModule,
     ExercisesModule,
+    AcademicsModule,
   ],
   controllers: [AppController],
   providers: [
