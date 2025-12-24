@@ -1,7 +1,7 @@
 import { IsString, IsOptional, IsEnum } from 'class-validator';
-import { ExerciseStatus, ICreateExerciseDto } from '@ikasi-ai/shared';
+import { ExerciseStatus } from '../../../../../shared/src/entities/exercise';
 
-export class CreateExerciseDto implements ICreateExerciseDto {
+export class CreateExerciseDto {
   @IsOptional()
   @IsString()
   title?: string;

@@ -1,4 +1,4 @@
-import { ExerciseStatus, IExercise } from '@ikasi-ai/shared';
+import { ExerciseStatus, IExercise } from '../../../shared/src/entities/exercise';
 
 export interface Student {
   id: string;
