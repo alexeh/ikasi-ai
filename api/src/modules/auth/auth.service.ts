@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -12,6 +13,7 @@ import { User } from '../users/users.entity';
 
 @Injectable()
 export class AuthService {
+  logger = new Logger(AuthService.name);
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
@@ -36,6 +38,8 @@ export class AuthService {
     // Generate JWT token
     const payload = { sub: user.id, email: user.email, role: user.role };
     const access_token = this.jwtService.sign(payload);
+
+    this.logger.warn(`New user with email: ${user.email} signed up`);
 
     return { access_token };
   }

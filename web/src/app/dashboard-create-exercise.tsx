@@ -69,7 +69,7 @@ export function DashboardCreateExercise() {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-slate-900">Dokumentua igo</h2>
-                <p className="text-sm text-slate-600">Igo dokumentua eta bidali gure backend zerbitzura.</p>
+                <p className="text-sm text-slate-600">Igo dokumentua prozesamentua hasteko.</p>
               </div>
             </div>
 
@@ -105,7 +105,7 @@ export function DashboardCreateExercise() {
               className="flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 font-semibold text-white shadow-md transition-all hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
-              {isUploading ? 'Bidaltzen...' : 'Bidali input kontrolagailura'}
+              {isUploading ? 'Bidaltzen...' : 'Bidali'}
             </button>
 
             {error && (
@@ -117,7 +117,7 @@ export function DashboardCreateExercise() {
             {result && !error && (
               <div className="flex items-center gap-2 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
                 <CheckCircle2 className="h-4 w-4" />
-                <span>Fitxategia zuzen bidali da eta input kontrolagailuak erantzun du.</span>
+                <span>Fitxategia zuzen bidali da eta prozesatua izanda.</span>
               </div>
             )}
           </form>
@@ -128,7 +128,7 @@ export function DashboardCreateExercise() {
             <div className="mb-4 flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Erantzuna</p>
-                <h3 className="text-lg font-bold text-slate-900">Backend-etik jasotakoa</h3>
+                <h3 className="text-lg font-bold text-slate-900">Prebisualizazioa</h3>
               </div>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">Live</span>
             </div>
@@ -140,7 +140,7 @@ export function DashboardCreateExercise() {
               ) : (
                 <div className="flex h-full flex-col items-center justify-center gap-2 text-center text-slate-500">
                   <Upload className="h-6 w-6 text-slate-400" />
-                  <p>Igo dokumentua eta hemen ikusiko duzu input kontrolagailuaren erantzuna.</p>
+                  <p>Igo dokumentua eta hemen ikusiko duzu prebisualizazioa.</p>
                 </div>
               )}
             </div>
