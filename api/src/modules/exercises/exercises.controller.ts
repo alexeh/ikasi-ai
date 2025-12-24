@@ -70,6 +70,6 @@ export class ExercisesController {
     @GetUser() user: User,
   ) {
     console.log({ user });
-    return this.exercisesService.createFromInput(file);
+    return this.exercisesService.createFromInput(file, user);
   }
 }

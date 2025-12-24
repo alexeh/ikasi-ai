@@ -18,7 +18,7 @@ export async function uploadExerciseInput(file: File): Promise<InputUploadRespon
     headers.Authorization = `Bearer ${token}`;
   }
 
-  const response = await fetch(`${API_URL}/inputs/pdf`, {
+  const response = await fetch(`${API_URL}/exercises/input`, {
     method: 'POST',
     headers,
     body: formData,

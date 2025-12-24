@@ -5,6 +5,7 @@ import { Exercise } from './exercise.entity';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { InputsService } from '../inputs/inputs.service';
 import { LlmService } from '../llm/llm.service';
+import { User } from '../users/users.entity';
 
 @Injectable()
 export class ExercisesService {
@@ -36,12 +37,15 @@ export class ExercisesService {
     return this.exercisesRepository.save(newExercise);
   }
 
-  async createFromInput(file: Express.Multer.File): Promise<Exercise> {
-    const llmUploadedData = await this.input.create(file);
+  async createFromInput(
+    file: Express.Multer.File,
+    user: User,
+  ): Promise<Exercise> {
+    const savedInput = await this.input.create(file);
     this.logger.log(`Generating exercise....`);
-    const exercisePreview =
-      await this.llm.generateExerciseFromLLMUpload(llmUploadedData);
-
-    return exercisePreview as Exercise;
+    const exercisePreview: Partial<Exercise> =
+      await this.llm.generateExerciseFromLLMUpload(savedInput.llmUploadData);
+    this.logger.log(`Generated exercise`);
+    return this.create({ ...exercisePreview, createdBy: user });
   }
 }
