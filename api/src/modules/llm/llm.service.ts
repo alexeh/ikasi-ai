@@ -1,6 +1,6 @@
 // src/modules/llm/llm.service.ts
 import { Injectable } from '@nestjs/common';
-import { GeminiProvider } from './providers/gemini.provider';
+import { FileUploadedToLLM, GeminiProvider } from './providers/gemini.provider';
 import { CreateFileParameters } from '@google/genai';
 
 export type LlmProvider = 'gemini' | 'openai';
@@ -31,7 +31,7 @@ export class LlmService {
   }
 
   async generateExerciseFromLLMUpload(
-    llmFile: CreateFileParameters['file'],
+    llmFile: FileUploadedToLLM,
   ): Promise<any> {
     return this.gemini.generate(llmFile);
   }

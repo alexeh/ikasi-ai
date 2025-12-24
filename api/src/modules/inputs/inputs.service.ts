@@ -18,7 +18,7 @@ export class InputsService {
     @InjectRepository(Input) private readonly repo: Repository<Input>,
   ) {}
 
-  async create(inputs: Express.Multer.File) {
+  async create(inputs: Express.Multer.File): Promise<Input> {
     this.logger.log(`Uploading file: ${inputs.filename}`);
     try {
       const s3UploadData = await this.s3Service.upload(inputs);
@@ -27,10 +27,8 @@ export class InputsService {
         s3UploadData,
         llmUploadData,
       });
-      // const exercise: any =
-      //   await this.llm.generateExerciseFromLLMUpload(llmUploadData);
-      this.logger.log(`Input created: `, savedInput);
-      return llmUploadData;
+      this.logger.log(`Input created: `);
+      return savedInput;
     } catch (error) {
       this.logger.error(`Error creating input: `, error);
       throw new ServiceUnavailableException(error);

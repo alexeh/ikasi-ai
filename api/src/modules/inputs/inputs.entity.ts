@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../users/users.entity';
+import { type FileUploadedToLLM } from '../llm/providers/gemini.provider';
 
 @Entity({ name: 'inputs' })
 export class Input {
@@ -24,7 +25,7 @@ export class Input {
   s3UploadData: any;
 
   @Column({ type: 'jsonb', name: 'llm_upload_data' })
-  llmUploadData: any;
+  llmUploadData: FileUploadedToLLM;
 
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   createDate: Date;
