@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.13.1",
   "engines": {
-    "node": ">=22.0.0"
+    "node": "24.12.0"
   },
   "scripts": {
     "dev": "pnpm run --parallel dev",

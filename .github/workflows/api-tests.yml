@@ -46,13 +46,16 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Install deps
         working-directory: api
         run: pnpm install
 
       - name: Run tests
         working-directory: api
-        run: test
+        run: pnpm run test
 
   testing-api-e2e:
     name: api e2e tests
@@ -81,13 +84,16 @@ jobs:
         with:
           node-version-file: '.nvmrc'
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
       - name: Install deps
         working-directory: api
         run: pnpm install
 
       - name: Run tests
         working-directory: api
-        run: test:e2e
+        run: pnpm run test:e2e
 
 
 
