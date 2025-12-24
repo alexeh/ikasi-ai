@@ -1,3 +1,5 @@
+import { ExerciseStatus, IExercise } from '@ikasi-ai/shared';
+
 export interface Student {
   id: string;
   name: string;
@@ -27,9 +29,8 @@ export interface TaskItem {
   category: "work" | "coordination" | "event";
 }
 
-export interface Exercise {
-  id: string;
-  title: string;
+// Extend the shared IExercise with frontend-specific properties
+export interface Exercise extends IExercise {
   description: string;
   category:
     | "ulermena"
@@ -39,9 +40,11 @@ export interface Exercise {
     | "kalkulu_mentala"
     | "aritmetika"
     | "buruketak";
-  status: "draft" | "published";
   date: string;
 }
+
+// Re-export ExerciseStatus for convenience
+export { ExerciseStatus };
 
 export interface DashboardData {
   classes: ClassGroup[];

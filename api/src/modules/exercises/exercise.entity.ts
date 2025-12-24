@@ -12,15 +12,10 @@ import {
 import { Input } from '../inputs/inputs.entity';
 import { User } from '../users/users.entity';
 import { Question } from './questions.entity';
-
-export enum ExerciseStatus {
-  DRAFT = 'DRAFT',
-  APPROVED = 'APPROVED',
-  ARCHIVED = 'ARCHIVED',
-}
+import { ExerciseStatus, IExercise } from '@ikasi-ai/shared';
 
 @Entity({ name: 'exercises' })
-export class Exercise {
+export class Exercise implements IExercise {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
