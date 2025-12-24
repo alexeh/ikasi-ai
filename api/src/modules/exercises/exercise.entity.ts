@@ -21,8 +21,8 @@ export enum ExerciseStatus {
 
 @Entity({ name: 'exercises' })
 export class Exercise {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
   @JoinColumn({ name: 'created_by' })
