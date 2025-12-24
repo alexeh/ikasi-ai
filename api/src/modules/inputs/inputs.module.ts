@@ -10,5 +10,6 @@ import { Input } from './inputs.entity';
   imports: [TypeOrmModule.forFeature([Input]), LlmModule],
   controllers: [InputsController],
   providers: [InputsService, S3Service],
+  exports: [InputsService],
 })
 export class InputsModule {}
