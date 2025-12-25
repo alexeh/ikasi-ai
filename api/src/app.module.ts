@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnModuleInit } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -14,6 +14,7 @@ import { ExercisesModule } from './modules/exercises/exercises.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 import { AcademicsModule } from './modules/academics/academics.module';
+import { CatalogSeeder } from './modules/academics/catalog/catalog.seeder';
 
 @Module({
   imports: [
@@ -40,4 +41,10 @@ import { AcademicsModule } from './modules/academics/academics.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private readonly seeder: CatalogSeeder) {}
+
+  async onModuleInit(): Promise<void> {
+    await this.seeder.seed();
+  }
+}

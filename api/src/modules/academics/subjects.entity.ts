@@ -26,6 +26,9 @@ export class Subject {
   @OneToMany(
     () => SubjectCategory,
     (categories: SubjectCategory) => categories.subject,
+    {
+      cascade: ['insert'],
+    },
   )
   categories: SubjectCategory[];
 }
