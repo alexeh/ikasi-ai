@@ -17,6 +17,11 @@ export enum SubjectCategoryCode {
   IDAZMENA = 'idazmena',
   GRAMATIKA = 'gramatika',
   LEXIKOA = 'lexikoa',
+
+  READING = 'reading',
+  WRITING = 'writing',
+  GRAMMAR = 'grammar',
+  VOCABULARY = 'vocabulary',
 }
 
 @Entity('subject_categories')
