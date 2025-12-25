@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RolesGuard } from './roles.guard';
-import { UserRole } from '../users/users.entity';
-import { ROLES_KEY } from './decorators/roles.decorator';
+import { RolesGuard } from '../src/modules/auth/roles.guard';
+import { UserRole } from '../src/modules/users/users.entity';
+import { ROLES_KEY } from '../src/modules/auth/decorators/roles.decorator';
 
 describe('RolesGuard Integration Tests', () => {
   let guard: RolesGuard;
@@ -77,9 +77,7 @@ describe('RolesGuard Integration Tests', () => {
   });
 
   // Helper function to create mock execution context
-  function createMockContext(
-    userRole: UserRole | null,
-  ): ExecutionContext {
+  function createMockContext(userRole: UserRole | null): ExecutionContext {
     const user = userRole
       ? {
           userId: 'test-user-id',
@@ -89,8 +87,7 @@ describe('RolesGuard Integration Tests', () => {
       : null;
 
     const mockRequest = { user };
-    
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
     return {
       switchToHttp: jest.fn().mockReturnValue({
         getRequest: jest.fn().mockReturnValue(mockRequest),

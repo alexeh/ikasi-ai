@@ -1,16 +1,17 @@
-import {
-  Injectable,
-  BadRequestException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Exercise } from './exercise.entity';
-import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { InputsService } from '../inputs/inputs.service';
 import { LlmService } from '../llm/llm.service';
 import { User } from '../users/users.entity';
+
+export interface CreateExerciseFromInputDTO {
+  file: Express.Multer.File;
+  subject: string;
+  category: string;
+  user: User;
+}
 
 @Injectable()
 export class ExercisesService {
@@ -41,7 +42,8 @@ export class ExercisesService {
     return this.exercisesRepository.save(newExercise);
   }
 
-  async createFromInput(file: Express.Multer.File, user: User): Promise<any> {
+  async createFromInput(dto: CreateExerciseFromInputDTO): Promise<any> {
+    const { file, subject, user, category } = dto;
     const savedInput = await this.input.create(file);
     this.logger.log(`Generating exercise....`);
     const exercisePreview: Partial<Exercise> =
