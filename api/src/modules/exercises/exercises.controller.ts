@@ -5,7 +5,6 @@ import {
   Body,
   Param,
   UseGuards,
-  UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
 import { ExercisesService } from './exercises.service';
@@ -13,22 +12,10 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { User, UserRole } from '../users/users.entity';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import { existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
-
-// RolesGuard works in conjunction with the globally configured JwtAuthGuard
-// The JwtAuthGuard runs first to authenticate the user, then RolesGuard checks roles
-import { v4 as uuidv4 } from 'uuid';
 import { GetUser } from '../auth/decorators/get-user.decorator';
-
-const uploadDir = join(process.cwd(), 'tmp', 'uploads');
-
-// ensure dir exists at startup
-if (!existsSync(uploadDir)) {
-  mkdirSync(uploadDir, { recursive: true });
-}
+import { SubjectCode } from '../academics/subjects.entity';
+import { SubjectCategoryCode } from '../academics/subject-categories.entity';
+import { UploadInput } from '../../decorators/inpurt-upload.decorator';
 
 @Controller('exercises')
 @UseGuards(RolesGuard)
@@ -51,25 +38,23 @@ export class ExercisesController {
     return this.exercisesService.create(createExerciseDto);
   }
 
-  @Post('/input')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: (_req, _file, cb) => {
-          cb(null, uploadDir);
-        },
-        filename: (_req, file, cb) => {
-          const name = `${uuidv4()}${file.originalname}`;
-          cb(null, name);
-        },
-      }),
-    }),
-  )
+  @Post(':subject/:category/input')
+  @UploadInput()
   createByInput(
     @UploadedFile() file: Express.Multer.File,
+    @Param('subject') subject: SubjectCode,
+    @Param('category') category: SubjectCategoryCode,
     @GetUser() user: User,
   ) {
     console.log({ user });
-    return this.exercisesService.createFromInput(file, user);
+    console.log('subject', subject);
+    console.log('category', category);
+    console.log(file);
+    return this.exercisesService.createFromInput({
+      file,
+      subject,
+      category,
+      user,
+    });
   }
 }
