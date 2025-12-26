@@ -5,13 +5,16 @@ import {
   CreateDateColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Exercise } from './exercise.entity';
+import { Subject } from '../academics/subjects.entity';
 
 export enum QuestionType {
-  SINGLE_CHOICE = 'SINGLE_CHOICE',
-  MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
-  OPEN = 'OPEN',
+  SINGLE_CHOICE = 'single_choice',
+  MULTIPLE_CHOICE = 'multiple_choice',
+  OPEN = 'open',
 }
 
 export enum QuestionTopic {
@@ -26,21 +29,10 @@ export enum QuestionTopic {
 
 @Entity({ name: 'questions' })
 export class Question {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn({ primaryKeyConstraintName: 'PK_questions' })
   id: number;
 
   @ManyToMany(() => Exercise)
-  @JoinTable({
-    name: 'exercise_questions',
-    joinColumn: {
-      name: 'questions',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'exercises',
-      referencedColumnName: 'id',
-    },
-  })
   exercises: Exercise[];
 
   @Column({ type: 'enum', enum: QuestionType })
@@ -56,6 +48,16 @@ export class Question {
   @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
   createdAt: Date;
 
-  @Column({ type: 'enum', enum: QuestionTopic })
-  topic: QuestionTopic;
+  @ManyToOne(() => Subject, (subject) => subject.questions)
+  @JoinColumn({
+    name: 'subject_id',
+    foreignKeyConstraintName: 'FK_questions_subject_id',
+  })
+  subject: Subject;
+
+  @Column({ type: 'varchar', array: true, nullable: true })
+  options?: string[];
+
+  @Column({ type: 'int', nullable: true, name: 'correct_answer_idx' })
+  correctAnswerIndex: number;
 }

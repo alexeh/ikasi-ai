@@ -3,7 +3,7 @@ import { Subject, SubjectCode } from '../subjects.entity';
 export const ACADEMIC_CATALOG: { subjects: Subject[] } = {
   subjects: [
     {
-      code: 'euskara',
+      id: 'euskara',
       name: 'Euskara',
       categories: [
         { code: 'ulermena', label: 'Ulermena' },
@@ -13,7 +13,7 @@ export const ACADEMIC_CATALOG: { subjects: Subject[] } = {
       ],
     },
     {
-      code: 'gaztelera',
+      id: 'gaztelera',
       name: 'Gaztelera',
       categories: [
         { code: 'ulermena', label: 'Ulermena' },
@@ -23,7 +23,7 @@ export const ACADEMIC_CATALOG: { subjects: Subject[] } = {
       ],
     },
     {
-      code: 'inguru',
+      id: 'inguru',
       name: 'Inguru',
       categories: [
         { code: 'ulermena', label: 'Ulermena' },
@@ -32,7 +32,7 @@ export const ACADEMIC_CATALOG: { subjects: Subject[] } = {
       ],
     },
     {
-      code: 'matematika',
+      id: 'matematika',
       name: 'Matematika',
       categories: [
         { code: 'kalkulu_mentala', label: 'Kalkulu Mentala' },
@@ -41,7 +41,7 @@ export const ACADEMIC_CATALOG: { subjects: Subject[] } = {
       ],
     },
     {
-      code: 'ingelesa',
+      id: 'ingelesa',
       name: 'Ingelesa',
       categories: [
         { code: 'reading', label: 'Reading' },
