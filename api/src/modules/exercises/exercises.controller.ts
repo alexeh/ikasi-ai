@@ -33,10 +33,10 @@ export class ExercisesController {
     return this.exercisesService.findOne(id);
   }
 
-  @Post()
-  create(@Body() createExerciseDto: CreateExerciseDto) {
-    return this.exercisesService.create(createExerciseDto);
-  }
+  // @Post()
+  // create(@Body() createExerciseDto: CreateExerciseDto) {
+  //   return this.exercisesService.create(createExerciseDto);
+  // }
 
   @Post(':subject/:category/input')
   @UploadInput()
@@ -46,10 +46,6 @@ export class ExercisesController {
     @Param('category') category: SubjectCategoryCode,
     @GetUser() user: User,
   ) {
-    console.log({ user });
-    console.log('subject', subject);
-    console.log('category', category);
-    console.log(file);
     return this.exercisesService.createFromInput({
       file,
       subject,

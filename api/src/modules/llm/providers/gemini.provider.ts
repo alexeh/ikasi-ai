@@ -17,6 +17,8 @@ import {
   createUserContent,
   GoogleGenAI,
 } from '@google/genai';
+import { Question } from '../../exercises/questions.entity';
+import { LLMQuestionResponseDTO } from '../dtos/llm-questions.dto';
 
 export enum GEMINI_MODELS {
   LAST = 'gemini-2.5-flash',
@@ -141,12 +143,12 @@ export class GeminiProvider {
 
   async uploadFileToLLM(params: { file: Express.Multer.File }) {
     const { file } = params;
-    this.logger.debug(`Uploading file`, file);
+    this.logger.debug(`Uploading file to LLM`);
     const uploaded = await this.ai.files.upload({
       file: file.path,
       config: { mimeType: file.mimetype },
     });
-    this.logger.log('Uploaded file:', uploaded);
+    this.logger.log('Uploaded file to LLM');
     return uploaded;
   }
 
@@ -170,6 +172,6 @@ export class GeminiProvider {
     const text = (result as any).candidates![0].content!.parts![0]
       .text! as string;
     const parsed = JSON.parse(text);
-    return parsed;
+    return parsed as LLMQuestionResponseDTO;
   }
 }

@@ -16,6 +16,7 @@ export default registerAs(DATABASE_CONFIG_TOKEN, (): TypeOrmModuleOptions => {
       autoLoadEntities: true,
       synchronize: true,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      logging: ['error', 'warn'],
     };
   }
 

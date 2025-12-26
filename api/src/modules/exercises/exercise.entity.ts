@@ -8,6 +8,8 @@ import {
   UpdateDateColumn,
   JoinColumn,
   OneToOne,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Input } from '../inputs/inputs.entity';
 import { User } from '../users/users.entity';
@@ -25,7 +27,7 @@ export class Exercise {
   id: string;
 
   @ManyToOne(() => User, { onDelete: 'SET NULL', nullable: true })
-  @JoinColumn({ name: 'created_by' })
+  @JoinColumn({ name: 'created_by', referencedColumnName: 'email' })
   createdBy?: User;
 
   @OneToOne(() => Input, { onDelete: 'SET NULL', nullable: true })
@@ -35,7 +37,18 @@ export class Exercise {
   @Column({ type: 'enum', enum: ExerciseStatus, default: ExerciseStatus.DRAFT })
   status: ExerciseStatus;
 
-  @ManyToOne(() => Question, (questions) => questions.exercises)
+  @ManyToMany(() => Question, (questions) => questions, { cascade: ['insert'] })
+  @JoinTable({
+    name: 'exercise_questions',
+    joinColumn: {
+      name: 'questions_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'exercises_id',
+      referencedColumnName: 'id',
+    },
+  })
   questions: Question[];
 
   @Column({ nullable: true })

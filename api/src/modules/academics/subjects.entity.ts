@@ -1,5 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToMany,
+  PrimaryColumn,
+} from 'typeorm';
 import { SubjectCategory } from './subject-categories.entity';
+import { Question } from '../exercises/questions.entity';
 
 export enum SubjectCode {
   EUSKARA = 'euskara',
@@ -11,14 +18,11 @@ export enum SubjectCode {
 
 @Entity('subjects')
 export class Subject {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryColumn({ type: 'varchar', name: 'id' })
+  id: SubjectCode;
 
   @Column({ unique: true })
   name: string;
-
-  @Column({ unique: true, type: 'enum', enum: SubjectCode })
-  code: SubjectCode;
 
   @Column({ name: 'is_active', default: true })
   isActive: boolean;
@@ -31,4 +35,7 @@ export class Subject {
     },
   )
   categories: SubjectCategory[];
+
+  @OneToMany(() => Question, (question: Question) => question.subject)
+  questions: Question[];
 }
