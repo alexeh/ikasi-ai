@@ -69,10 +69,10 @@ import {
 
 import {
   DashboardAgendaWidget,
-} from './dashboard-agenda-widget';
-import { DashboardAttendanceWidget } from './dashboard-attendance-widget';
-import { DashboardCreateExercise } from './dashboard-create-exercise';
-import { DashboardHeader } from './dashboard-header';
+} from './agenda-widget';
+import { DashboardAttendanceWidget } from './attendance-widget';
+import { DashboardCreateExercise } from './create-exercise';
+import { DashboardHeader } from './header';
 import {
   INITIAL_TASKS,
   MOCK_CLASSES,
@@ -80,11 +80,11 @@ import {
   MOCK_MEETINGS,
   MOCK_STUDENT_STATS,
   TODAY_SCHEDULE,
-} from './dashboard-constants';
-import { DashboardScheduleWidget } from './dashboard-schedule-widget';
-import { DashboardSidebar } from './dashboard-sidebar';
-import { DashboardStatsCard } from './dashboard-stats-card';
-import type { Exercise, Meeting, Student } from './dashboard-types';
+} from '@/mocks/dashboard-data';
+import { DashboardScheduleWidget } from './schedule-widget';
+import { DashboardSidebar } from './sidebar';
+import { DashboardStatsCard } from './stats-card';
+import type { Exercise, Meeting, Student } from '@/types/dashboard';
 
 interface Assignment {
   id: string;

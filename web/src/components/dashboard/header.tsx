@@ -15,7 +15,7 @@ import {
   X,
 } from 'lucide-react';
 
-import type { ClassGroup, Student } from './dashboard-types';
+import type { ClassGroup, Student } from '@/types/dashboard';
 
 interface HeaderProps {
   classes: ClassGroup[];

@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { CheckCircle2, Circle, ListTodo, Plus } from 'lucide-react';
 
-import type { TaskItem } from './dashboard-types';
+import type { TaskItem } from '@/types/dashboard';
 
 interface AgendaWidgetProps {
   tasks: TaskItem[];
