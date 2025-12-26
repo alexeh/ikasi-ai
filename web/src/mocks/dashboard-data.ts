@@ -5,7 +5,7 @@ import {
   ScheduleItem,
   StudentDetail,
   TaskItem,
-} from "./dashboard-types";
+} from "@/types/dashboard";
 
 export const MOCK_CLASSES: ClassGroup[] = [
   {

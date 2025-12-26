@@ -3,9 +3,7 @@
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import { AlertCircle, CheckCircle2, FileText, Loader2, Upload } from 'lucide-react';
-import { InputUploadResponse, uploadExerciseInput } from "../lib/inputs";
-
-// import { uploadExerciseInput, type InputUploadResponse } from '@/lib/inputs';
+import { uploadExerciseInput, type InputUploadResponse } from '@/lib/inputs';
 
 export function DashboardCreateExercise() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);

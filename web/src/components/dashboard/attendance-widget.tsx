@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Check, Clock, Users, X, ArrowDownAZ } from 'lucide-react';
 
-import type { Student } from './dashboard-types';
+import type { Student } from '@/types/dashboard';
 
 interface AttendanceWidgetProps {
   students: Student[];

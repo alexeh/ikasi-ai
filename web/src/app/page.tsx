@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { DashboardApp } from './DashboardApp';
+import { DashboardApp } from '@/components/dashboard/DashboardApp';
 
 export default function Home() {
   return (

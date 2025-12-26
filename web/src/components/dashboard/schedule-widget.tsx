@@ -2,7 +2,7 @@
 
 import { CalendarClock, MapPin } from 'lucide-react';
 
-import type { ScheduleItem } from './dashboard-types';
+import type { ScheduleItem } from '@/types/dashboard';
 
 interface ScheduleWidgetProps {
   schedule: ScheduleItem[];
