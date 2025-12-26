@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsEnum } from 'class-validator';
-import { ExerciseStatus } from '../exercise.entity';
+import { ExerciseStatus } from '@shared/entities/exercise';
 
 export class CreateExerciseDto {
   @IsOptional()

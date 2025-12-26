@@ -1,3 +1,5 @@
+import { ExerciseStatus, IExercise } from '../../../shared/src/entities/exercise';
+
 export interface Student {
   id: string;
   name: string;
@@ -27,9 +29,11 @@ export interface TaskItem {
   category: "work" | "coordination" | "event";
 }
 
-export interface Exercise {
-  id: string;
-  title: string;
+// Extend the shared IExercise with frontend-specific properties
+// Note: Frontend exercises always have a title (required for display),
+// even though the backend allows optional titles for draft exercises
+export interface Exercise extends Omit<IExercise, 'title'> {
+  title: string; // Required in frontend for display purposes
   description: string;
   category:
     | "ulermena"
@@ -39,9 +43,11 @@ export interface Exercise {
     | "kalkulu_mentala"
     | "aritmetika"
     | "buruketak";
-  status: "draft" | "published";
   date: string;
 }
+
+// Re-export ExerciseStatus for convenience
+export { ExerciseStatus };
 
 export interface DashboardData {
   classes: ClassGroup[];

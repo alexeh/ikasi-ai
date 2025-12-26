@@ -85,6 +85,7 @@ import { DashboardScheduleWidget } from './dashboard-schedule-widget';
 import { DashboardSidebar } from './dashboard-sidebar';
 import { DashboardStatsCard } from './dashboard-stats-card';
 import type { Exercise, Meeting, Student } from './dashboard-types';
+import { ExerciseStatus } from './dashboard-types';
 
 interface Assignment {
   id: string;
@@ -174,10 +175,10 @@ const DEFAULT_ASSIGNMENTS: Assignment[] = [
 ];
 
 const DEFAULT_EXERCISES: Exercise[] = [
-  { id: '1', title: 'Ipuinaren ulermena: "Basoko Misterioa"', description: 'Fitxategia aztertuta - 5 Galdera', category: 'ulermena', status: 'published', date: '2023-10-24' },
-  { id: '2', title: 'Aditz laguntzailea: NOR-NORI-NORK', description: 'Bete hutsuneak taulan.', category: 'gramatika', status: 'published', date: '2023-10-22' },
-  { id: '3', title: 'Sinonimoak eta Antonimoak', description: 'Lotu hitzak bere bikotearekin.', category: 'lexikoa', status: 'draft', date: '2023-10-25' },
-  { id: '4', title: 'Biderketa taulak errepasatzen', description: '3, 4 eta 6ko taulak', category: 'aritmetika', status: 'published', date: '2023-10-26' },
+  { id: '1', title: 'Ipuinaren ulermena: "Basoko Misterioa"', description: 'Fitxategia aztertuta - 5 Galdera', category: 'ulermena', status: ExerciseStatus.APPROVED, date: '2023-10-24', createdAt: new Date('2023-10-24'), updatedAt: new Date('2023-10-24') },
+  { id: '2', title: 'Aditz laguntzailea: NOR-NORI-NORK', description: 'Bete hutsuneak taulan.', category: 'gramatika', status: ExerciseStatus.APPROVED, date: '2023-10-22', createdAt: new Date('2023-10-22'), updatedAt: new Date('2023-10-22') },
+  { id: '3', title: 'Sinonimoak eta Antonimoak', description: 'Lotu hitzak bere bikotearekin.', category: 'lexikoa', status: ExerciseStatus.DRAFT, date: '2023-10-25', createdAt: new Date('2023-10-25'), updatedAt: new Date('2023-10-25') },
+  { id: '4', title: 'Biderketa taulak errepasatzen', description: '3, 4 eta 6ko taulak', category: 'aritmetika', status: ExerciseStatus.APPROVED, date: '2023-10-26', createdAt: new Date('2023-10-26'), updatedAt: new Date('2023-10-26') },
 ];
 
 const BANK_LABELS = {
@@ -340,8 +341,10 @@ export function DashboardApp() {
         ? `Analitika Automatik - ${formData.get('questionCount')} Qs`
         : ((formData.get('description') as string) ?? ''),
       category: activeCategory as Exercise['category'],
-      status: 'published',
+      status: ExerciseStatus.APPROVED,
       date: new Date().toISOString().split('T')[0],
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
     setExercises((prev) => [newExercise, ...prev]);
     setShowCreateModal(false);
@@ -974,10 +977,10 @@ export function DashboardApp() {
                           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{exercise.date}</span>
                           <span
                             className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                              exercise.status === 'published' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                              exercise.status === ExerciseStatus.APPROVED ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                             }`}
                           >
-                            {exercise.status === 'published' ? BANK_LABELS.published : BANK_LABELS.draft}
+                            {exercise.status === ExerciseStatus.APPROVED ? BANK_LABELS.published : BANK_LABELS.draft}
                           </span>
                         </div>
                         <h5 className="mb-1 text-sm font-bold text-slate-800">{exercise.title}</h5>
@@ -1023,7 +1026,7 @@ export function DashboardApp() {
                           <p className="mb-1 text-sm text-slate-500">{exercise.description}</p>
                           <div className="flex items-center gap-3 text-xs">
                             <span className="text-slate-400">{exercise.date}</span>
-                            {exercise.status === 'published' ? (
+                            {exercise.status === ExerciseStatus.APPROVED ? (
                               <span className="flex items-center gap-1 rounded bg-emerald-50 px-2 py-0.5 font-medium text-emerald-600">
                                 <Send className="h-3 w-3" /> {BANK_LABELS.published}
                               </span>
