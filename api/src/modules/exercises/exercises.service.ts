@@ -32,7 +32,7 @@ export class ExercisesService {
     return this.exercisesRepository.find();
   }
 
-  async findOne(id: string): Promise<Exercise | undefined> {
+  async findOne(id: string): Promise<Exercise> {
     const result = await this.exercisesRepository.findOne({
       where: { id },
       relations: ['questions', 'questions.subject', 'createdBy'],
