@@ -11,9 +11,16 @@ export interface InputUploadResponse {
  * Upload an exercise input file
  * @param file - The file to upload
  * @param accessToken - The user's access token from NextAuth session (required)
+ * @param subject - Optional subject code (e.g., 'euskara', 'matematika'). If provided, category is also required.
+ * @param category - Optional category code (e.g., 'ulermena', 'kalkulu_mentala'). Required if subject is provided.
  * @throws Error if accessToken is not provided
  */
-export async function uploadExerciseInput(file: File, accessToken: string): Promise<InputUploadResponse> {
+export async function uploadExerciseInput(
+  file: File, 
+  accessToken: string,
+  subject?: string,
+  category?: string
+): Promise<InputUploadResponse> {
   if (!accessToken) {
     throw new Error('Authentication required. Please log in to upload files.');
   }
@@ -25,7 +32,12 @@ export async function uploadExerciseInput(file: File, accessToken: string): Prom
     Authorization: `Bearer ${accessToken}`,
   };
 
-  const response = await fetch(`${API_URL}/exercises/input`, {
+  // Use subject-specific endpoint if both subject and category are provided
+  const endpoint = subject && category 
+    ? `${API_URL}/exercises/${subject}/${category}/input`
+    : `${API_URL}/exercises/input`;
+
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers,
     body: formData,
