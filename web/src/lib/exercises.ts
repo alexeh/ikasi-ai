@@ -78,6 +78,40 @@ export async function getExercise(
 }
 
 /**
+ * Fetch all exercises
+ * @param accessToken - The user's access token from NextAuth session (required)
+ * @throws Error if accessToken is not provided
+ */
+export async function listExercises(
+  accessToken: string
+): Promise<Exercise[]> {
+  if (!accessToken) {
+    throw new Error('Authentication required. Please log in.');
+  }
+
+  const response = await fetch(`${API_URL}/exercises`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Failed to fetch exercises';
+    try {
+      const error = await response.json();
+      errorMessage = error.message || errorMessage;
+    } catch {
+      // keep default
+    }
+    throw new Error(errorMessage);
+  }
+
+  return response.json();
+}
+
+/**
  * Update an exercise
  * @param id - Exercise ID
  * @param data - Update data
