@@ -51,6 +51,7 @@ import {
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentType, FormEvent, JSX } from 'react';
+import { useSession } from 'next-auth/react';
 import {
   Area,
   AreaChart,
@@ -87,6 +88,7 @@ import { DashboardScheduleWidget } from './schedule-widget';
 import { DashboardSidebar } from './sidebar';
 import { DashboardStatsCard } from './stats-card';
 import type { Exercise, Meeting, Student } from '@/types/dashboard';
+import { listExercises, Exercise as ApiExercise, ExerciseStatus } from '@/lib/exercises';
 
 interface Assignment {
   id: string;
@@ -201,6 +203,7 @@ const BANK_LABELS = {
 
 export function DashboardApp() {
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
   const [selectedClassId, setSelectedClassId] = useState(() => MOCK_CLASSES[0]?.id ?? '');
   const [currentView, setCurrentView] = useState(() => {
     const paramView = searchParams.get('view');
@@ -232,7 +235,9 @@ export function DashboardApp() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [assignments, setAssignments] = useState<Assignment[]>(DEFAULT_ASSIGNMENTS);
   const [currentDate, setCurrentDate] = useState(() => new Date());
-  const [exercises, setExercises] = useState<Exercise[]>(DEFAULT_EXERCISES);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [exercisesLoading, setExercisesLoading] = useState(false);
+  const [exercisesError, setExercisesError] = useState<string | null>(null);
   const [validatingExerciseId, setValidatingExerciseId] = useState<string | null>(null);
   const exerciseTitleInputRef = useRef<HTMLInputElement>(null);
 
@@ -243,6 +248,91 @@ export function DashboardApp() {
       setCurrentView(paramView);
     }
   }, [searchParams]);
+
+  // Fetch exercises from API
+  useEffect(() => {
+    async function fetchExercises() {
+      if (!session?.user?.accessToken) {
+        // User not authenticated yet, skip fetching
+        return;
+      }
+
+      setExercisesLoading(true);
+      setExercisesError(null);
+      
+      try {
+        const apiExercises = await listExercises(session.user.accessToken);
+        
+        // Map API exercises to UI format
+        const mappedExercises: Exercise[] = apiExercises.map((apiEx: ApiExercise) => {
+          // Determine category based on subject if available
+          // For now, use a default category or derive from questions
+          const category = 'ulermena' as Exercise['category']; // Default category
+          
+          // Map status
+          const status = apiEx.status === ExerciseStatus.APPROVED ? 'published' : 'draft';
+          
+          // Format date
+          const date = new Date(apiEx.createdAt).toISOString().split('T')[0];
+          
+          return {
+            id: apiEx.id,
+            title: apiEx.title || 'Izenik gabeko ariketa',
+            description: `${apiEx.questions.length} galdera`,
+            category,
+            status: status as Exercise['status'],
+            date,
+          };
+        });
+        
+        setExercises(mappedExercises);
+      } catch (error) {
+        console.error('Error fetching exercises:', error);
+        setExercisesError(error instanceof Error ? error.message : 'Errorea ariketak kargatzerakoan');
+      } finally {
+        setExercisesLoading(false);
+      }
+    }
+
+    fetchExercises();
+  }, [session]);
+
+  // Function to manually refetch exercises
+  const refetchExercises = async () => {
+    if (!session?.user?.accessToken) {
+      return;
+    }
+
+    setExercisesLoading(true);
+    setExercisesError(null);
+    
+    try {
+      const apiExercises = await listExercises(session.user.accessToken);
+      
+      // Map API exercises to UI format
+      const mappedExercises: Exercise[] = apiExercises.map((apiEx: ApiExercise) => {
+        const category = 'ulermena' as Exercise['category'];
+        const status = apiEx.status === ExerciseStatus.APPROVED ? 'published' : 'draft';
+        const date = new Date(apiEx.createdAt).toISOString().split('T')[0];
+        
+        return {
+          id: apiEx.id,
+          title: apiEx.title || 'Izenik gabeko ariketa',
+          description: `${apiEx.questions.length} galdera`,
+          category,
+          status: status as Exercise['status'],
+          date,
+        };
+      });
+      
+      setExercises(mappedExercises);
+    } catch (error) {
+      console.error('Error fetching exercises:', error);
+      setExercisesError(error instanceof Error ? error.message : 'Errorea ariketak kargatzerakoan');
+    } finally {
+      setExercisesLoading(false);
+    }
+  };
 
   const handleNavigate = (view: string) => {
     const targetView = VALID_VIEWS.has(view) ? view : 'dashboard';
@@ -955,7 +1045,18 @@ export function DashboardApp() {
                   </h4>
                 </div>
                 <div className="flex-1 space-y-3 overflow-y-auto p-4">
-                  {filteredExercises.length === 0 ? (
+                  {exercisesLoading ? (
+                    <div className="flex h-64 flex-col items-center justify-center text-center text-slate-400">
+                      <div className="mb-3 h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600"></div>
+                      <p>Ariketak kargatzen...</p>
+                    </div>
+                  ) : exercisesError ? (
+                    <div className="flex h-64 flex-col items-center justify-center text-center text-rose-500">
+                      <AlertCircle className="mb-3 h-12 w-12 opacity-50" />
+                      <p className="font-semibold">Errorea</p>
+                      <p className="text-xs mt-1">{exercisesError}</p>
+                    </div>
+                  ) : filteredExercises.length === 0 ? (
                     <div className="flex h-64 flex-col items-center justify-center text-center text-slate-400">
                       <FileText className="mb-3 h-12 w-12 opacity-20" />
                       <p>{BANK_LABELS.emptyState}</p>
@@ -975,7 +1076,13 @@ export function DashboardApp() {
                         </div>
                         <h5 className="mb-1 text-sm font-bold text-slate-800">{exercise.title}</h5>
                         <p className="mb-4 text-xs text-slate-500 line-clamp-2">{exercise.description}</p>
-                        <button className="w-full rounded-lg bg-indigo-50 py-2 text-xs font-bold text-indigo-600 transition-colors hover:bg-indigo-100">
+                        <button 
+                          onClick={() => {
+                            setValidatingExerciseId(exercise.id);
+                            handleNavigate('validate-exercise');
+                          }}
+                          className="w-full rounded-lg bg-indigo-50 py-2 text-xs font-bold text-indigo-600 transition-colors hover:bg-indigo-100"
+                        >
                           {BANK_LABELS.viewBtn}
                         </button>
                       </div>
@@ -994,7 +1101,18 @@ export function DashboardApp() {
                 <span className="rounded-full bg-slate-200 px-2 py-1 text-xs text-slate-600">{filteredExercises.length}</span>
               </div>
               <div className="divide-y divide-slate-100">
-                {filteredExercises.length === 0 ? (
+                {exercisesLoading ? (
+                  <div className="flex flex-col items-center justify-center p-12 text-center text-slate-400">
+                    <div className="mb-3 h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-indigo-600"></div>
+                    <p>Ariketak kargatzen...</p>
+                  </div>
+                ) : exercisesError ? (
+                  <div className="flex flex-col items-center justify-center p-12 text-center text-rose-500">
+                    <AlertCircle className="mb-3 h-12 w-12 opacity-50" />
+                    <p className="font-semibold">Errorea</p>
+                    <p className="text-xs mt-1">{exercisesError}</p>
+                  </div>
+                ) : filteredExercises.length === 0 ? (
                   <div className="p-12 text-center text-slate-400">
                     <p>{BANK_LABELS.emptyState}</p>
                     <button
@@ -1006,7 +1124,14 @@ export function DashboardApp() {
                   </div>
                 ) : (
                   filteredExercises.map((exercise) => (
-                    <div key={exercise.id} className="group flex items-center justify-between p-4 transition-colors hover:bg-slate-50">
+                    <div 
+                      key={exercise.id} 
+                      className="group flex items-center justify-between p-4 transition-colors hover:bg-slate-50 cursor-pointer"
+                      onClick={() => {
+                        setValidatingExerciseId(exercise.id);
+                        handleNavigate('validate-exercise');
+                      }}
+                    >
                       <div className="flex items-start gap-4">
                         <div className="mt-1 rounded bg-slate-100 p-2 text-slate-400">
                           <FileText className="h-5 w-5" />
@@ -1703,10 +1828,12 @@ export function DashboardApp() {
               exerciseId={validatingExerciseId}
               onBack={() => {
                 setValidatingExerciseId(null);
+                refetchExercises();
                 handleNavigate('subjects');
               }}
               onSuccess={() => {
                 setValidatingExerciseId(null);
+                refetchExercises();
                 handleNavigate('subjects');
               }}
             />
