@@ -49,7 +49,7 @@ import {
   X,
 } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { ComponentType, FormEvent, JSX } from 'react';
 import {
   Area,
@@ -232,6 +232,7 @@ export function DashboardApp() {
   const [assignments, setAssignments] = useState<Assignment[]>(DEFAULT_ASSIGNMENTS);
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [exercises, setExercises] = useState<Exercise[]>(DEFAULT_EXERCISES);
+  const exerciseTitleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const paramView = searchParams.get('view');
@@ -908,6 +909,7 @@ export function DashboardApp() {
                   <label className="block text-sm font-semibold text-slate-700">
                     {BANK_LABELS.titleLabel}
                     <input
+                      ref={exerciseTitleInputRef}
                       name="title"
                       required
                       type="text"
@@ -920,10 +922,9 @@ export function DashboardApp() {
                     category={activeCategory}
                     onUploadSuccess={(result) => {
                       // Create exercise entry after successful upload
-                      const titleInput = document.querySelector<HTMLInputElement>('input[name="title"]');
                       const newExercise: Exercise = {
                         id: result.id,
-                        title: titleInput?.value || 'Ariketa berria',
+                        title: exerciseTitleInputRef.current?.value || 'Ariketa berria',
                         description: `Analitika Automatik - Prozesatuta`,
                         category: activeCategory as Exercise['category'],
                         status: 'published',
@@ -931,7 +932,9 @@ export function DashboardApp() {
                       };
                       setExercises((prev) => [newExercise, ...prev]);
                       // Clear the title input
-                      if (titleInput) titleInput.value = '';
+                      if (exerciseTitleInputRef.current) {
+                        exerciseTitleInputRef.current.value = '';
+                      }
                     }}
                   />
                 </div>

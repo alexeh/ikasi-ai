@@ -101,7 +101,7 @@ export function FileUpload({ subject, category, onUploadSuccess, onUploadError }
         }`}
       >
         <div className="rounded-full bg-white p-3 shadow-sm">
-          <Upload className={`h-6 w-6 ${isDragging ? 'text-indigo-600' : 'text-indigo-600'}`} />
+          <Upload className="h-6 w-6 text-indigo-600" />
         </div>
         <div className="text-center">
           <p className="text-sm font-medium text-slate-700">
