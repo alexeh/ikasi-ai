@@ -10,16 +10,20 @@ export interface InputUploadResponse {
 /**
  * Upload an exercise input file
  * @param file - The file to upload
- * @param accessToken - The user's access token from NextAuth session
+ * @param accessToken - The user's access token from NextAuth session (required)
+ * @throws Error if accessToken is not provided
  */
-export async function uploadExerciseInput(file: File, accessToken?: string): Promise<InputUploadResponse> {
+export async function uploadExerciseInput(file: File, accessToken: string): Promise<InputUploadResponse> {
+  if (!accessToken) {
+    throw new Error('Authentication required. Please log in to upload files.');
+  }
+
   const formData = new FormData();
   formData.append('file', file);
 
-  const headers: Record<string, string> = {};
-  if (accessToken) {
-    headers.Authorization = `Bearer ${accessToken}`;
-  }
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${accessToken}`,
+  };
 
   const response = await fetch(`${API_URL}/exercises/input`, {
     method: 'POST',
