@@ -22,13 +22,11 @@ describe('AssignmentsController', () => {
 
   describe('Role-based access control', () => {
     it('should have RolesGuard applied', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const guards = Reflect.getMetadata('__guards__', AssignmentsController);
       expect(guards).toBeDefined();
     });
 
     it('should require TEACHER role', () => {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const roles = Reflect.getMetadata('roles', AssignmentsController);
       expect(roles).toContain(UserRole.TEACHER);
     });

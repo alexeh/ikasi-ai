@@ -5,8 +5,9 @@ import { Exercise } from './exercise.entity';
 import { InputsService } from '../inputs/inputs.service';
 import { LlmService } from '../llm/llm.service';
 import { User } from '../users/users.entity';
-import { Question, QuestionType } from './questions.entity';
+import { Question } from './questions.entity';
 import { Subject, SubjectCode } from '../academics/subjects.entity';
+import { UpdateExerciseDto } from './dto/update-exercise.dto';
 
 export interface CreateExerciseFromInputDTO {
   file: Express.Multer.File;
@@ -32,8 +33,9 @@ export class ExercisesService {
   }
 
   async findOne(id: string): Promise<Exercise | undefined> {
-    const result = await this.exercisesRepository.findOneBy({
-      id,
+    const result = await this.exercisesRepository.findOne({
+      where: { id },
+      relations: ['questions', 'questions.subject', 'createdBy'],
     });
     if (!result) {
       throw new NotFoundException(`Exercises with id: ${id} not found`);
@@ -51,12 +53,12 @@ export class ExercisesService {
   //   return this.exercisesRepository.save(newExercise);
   // }
 
-  async createQuestion(question: Question): Promise<Question> {
+  createQuestion(question: Question): Question {
     return this.questionRepository.create(question);
   }
 
-  async createFromInput(dto: CreateExerciseFromInputDTO): Promise<any> {
-    const { file, subject, user, category } = dto;
+  async createFromInput(dto: CreateExerciseFromInputDTO): Promise<Exercise> {
+    const { file, subject, user } = dto;
     const savedInput = await this.input.create(file);
     this.logger.log(`Generating questions....`);
     const llmGeneratedQuestions = await this.llm.generateQuestionsFromLLMUpload(
@@ -71,6 +73,10 @@ export class ExercisesService {
         options: question.options,
         subject: { id: subject } as Subject,
         type: question.type,
+        correctAnswerIndex:
+          'suggestedCorrectIndex' in question
+            ? question.suggestedCorrectIndex
+            : undefined,
       });
       questions.push(created);
     });
@@ -80,5 +86,32 @@ export class ExercisesService {
       createdBy: user,
     });
     return exercise;
+  }
+
+  async update(id: string, dto: UpdateExerciseDto): Promise<Exercise> {
+    const exercise = await this.findOne(id);
+
+    // Update exercise properties
+    if (dto.title !== undefined) {
+      exercise.title = dto.title;
+    }
+    if (dto.status !== undefined) {
+      exercise.status = dto.status;
+    }
+
+    // Update questions' correct answer indices
+    if (dto.questions && dto.questions.length > 0) {
+      for (const questionUpdate of dto.questions) {
+        const question = exercise.questions.find(
+          (q) => q.id === questionUpdate.id,
+        );
+        if (question && questionUpdate.correctAnswerIndex !== undefined) {
+          question.correctAnswerIndex = questionUpdate.correctAnswerIndex;
+          await this.questionRepository.save(question);
+        }
+      }
+    }
+
+    return this.exercisesRepository.save(exercise);
   }
 }
