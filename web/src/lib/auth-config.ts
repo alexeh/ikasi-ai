@@ -59,15 +59,34 @@ export const authOptions: NextAuthOptions = {
 
           const data = await response.json();
           
-          // Decode JWT to get user info
-          const tokenPayload = JSON.parse(
-            Buffer.from(data.access_token.split('.')[1], 'base64').toString()
-          );
+          // Validate and decode JWT to get user info
+          if (!data.access_token || typeof data.access_token !== 'string') {
+            throw new Error("Invalid token format");
+          }
+
+          const tokenParts = data.access_token.split('.');
+          if (tokenParts.length !== 3) {
+            throw new Error("Invalid JWT structure");
+          }
+
+          let tokenPayload;
+          try {
+            tokenPayload = JSON.parse(
+              Buffer.from(tokenParts[1], 'base64').toString()
+            );
+          } catch (error) {
+            throw new Error("Failed to decode JWT payload");
+          }
+
+          // Validate required fields
+          if (!tokenPayload.sub || !tokenPayload.email || !tokenPayload.role) {
+            throw new Error("Missing required user information in token");
+          }
 
           return {
             id: tokenPayload.sub,
             email: tokenPayload.email,
-            name: tokenPayload.name || tokenPayload.email.split('@')[0],
+            name: tokenPayload.name || (tokenPayload.email ? tokenPayload.email.split('@')[0] : 'User'),
             lname: tokenPayload.lname || '',
             role: tokenPayload.role,
             locale: tokenPayload.locale || 'eu',

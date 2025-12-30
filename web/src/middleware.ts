@@ -1,6 +1,26 @@
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 
+// Paths that should be excluded from authentication
+const PUBLIC_PATHS = [
+  'api/auth',
+  '_next/static',
+  '_next/image',
+  'favicon.ico',
+  'login',
+  'signup',
+];
+
+// File extensions that should be excluded
+const PUBLIC_FILE_EXTENSIONS = ['svg', 'png', 'jpg', 'jpeg', 'gif', 'webp'];
+
+// Build the matcher regex dynamically
+const buildMatcherPattern = () => {
+  const pathsPattern = PUBLIC_PATHS.join('|');
+  const extensionsPattern = PUBLIC_FILE_EXTENSIONS.join('|');
+  return `/((?!${pathsPattern}|.*\\.(?:${extensionsPattern})$).*)`;
+};
+
 export default withAuth(
   function middleware(req) {
     return NextResponse.next();
@@ -17,16 +37,5 @@ export default withAuth(
 
 // Configure which routes the middleware should run on
 export const config = {
-  matcher: [
-    /*
-     * Match all request paths except:
-     * - api/auth (NextAuth API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder
-     * - login and signup pages
-     */
-    '/((?!api/auth|_next/static|_next/image|favicon.ico|login|signup|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  matcher: [buildMatcherPattern()],
 };

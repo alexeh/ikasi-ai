@@ -27,12 +27,17 @@ export function DashboardCreateExercise() {
       return;
     }
 
+    if (!session?.user?.accessToken) {
+      setError('Autentifikazioa beharrezkoa da. Mesedez, hasi saioa.');
+      return;
+    }
+
     setIsUploading(true);
     setError(null);
     setResult(null);
 
     try {
-      const uploadResult = await uploadExerciseInput(selectedFile, session?.user?.accessToken);
+      const uploadResult = await uploadExerciseInput(selectedFile, session.user.accessToken);
       setResult(uploadResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ezin izan da fitxategia bidali.');
