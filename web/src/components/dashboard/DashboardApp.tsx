@@ -73,6 +73,7 @@ import {
 import { DashboardAttendanceWidget } from './attendance-widget';
 import { DashboardCreateExercise } from './create-exercise';
 import { DashboardHeader } from './header';
+import { ExerciseValidation } from './exercise-validation';
 import { FileUpload } from './file-upload';
 import {
   INITIAL_TASKS,
@@ -165,7 +166,7 @@ const STRENGTH_COLORS = {
   weaknesses: 'border-rose-100 bg-rose-50 text-rose-700',
 };
 
-const VALID_VIEWS = new Set(['dashboard', 'subjects', 'students', 'calendar', 'meetings', 'settings', 'create-exercise']);
+const VALID_VIEWS = new Set(['dashboard', 'subjects', 'students', 'calendar', 'meetings', 'settings', 'create-exercise', 'validate-exercise']);
 
 const DEFAULT_ASSIGNMENTS: Assignment[] = [
   { id: 'a1', title: '1. Ebaluazioa', date: '2023-10-15', maxScore: 10 },
@@ -232,11 +233,13 @@ export function DashboardApp() {
   const [assignments, setAssignments] = useState<Assignment[]>(DEFAULT_ASSIGNMENTS);
   const [currentDate, setCurrentDate] = useState(() => new Date());
   const [exercises, setExercises] = useState<Exercise[]>(DEFAULT_EXERCISES);
+  const [validatingExerciseId, setValidatingExerciseId] = useState<string | null>(null);
   const exerciseTitleInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const paramView = searchParams.get('view');
     if (paramView && VALID_VIEWS.has(paramView)) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrentView(paramView);
     }
   }, [searchParams]);
@@ -274,6 +277,8 @@ export function DashboardApp() {
         return 'Bilerak eta Aktak';
       case 'create-exercise':
         return 'Ariketa sortzailea';
+      case 'validate-exercise':
+        return 'Ariketa balioztatu';
       case 'settings':
         return 'Ezarpenak';
       default:
@@ -927,7 +932,7 @@ export function DashboardApp() {
                         title: exerciseTitleInputRef.current?.value || 'Ariketa berria',
                         description: `Analitika Automatik - Prozesatuta`,
                         category: activeCategory as Exercise['category'],
-                        status: 'published',
+                        status: 'draft',
                         date: new Date().toISOString().split('T')[0],
                       };
                       setExercises((prev) => [newExercise, ...prev]);
@@ -935,6 +940,9 @@ export function DashboardApp() {
                       if (exerciseTitleInputRef.current) {
                         exerciseTitleInputRef.current.value = '';
                       }
+                      // Navigate to validation
+                      setValidatingExerciseId(result.id);
+                      handleNavigate('validate-exercise');
                     }}
                   />
                 </div>
@@ -1690,6 +1698,19 @@ export function DashboardApp() {
           )}
           {currentView === 'subjects' && renderSubjectsSection()}
           {currentView === 'create-exercise' && <DashboardCreateExercise />}
+          {currentView === 'validate-exercise' && validatingExerciseId && (
+            <ExerciseValidation
+              exerciseId={validatingExerciseId}
+              onBack={() => {
+                setValidatingExerciseId(null);
+                handleNavigate('subjects');
+              }}
+              onSuccess={() => {
+                setValidatingExerciseId(null);
+                handleNavigate('subjects');
+              }}
+            />
+          )}
           {currentView === 'calendar' && renderCalendarView()}
           {currentView === 'meetings' && renderMeetingsView()}
           {currentView === 'students' && renderStudentsView()}

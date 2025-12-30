@@ -6,12 +6,13 @@ import {
   Param,
   UseGuards,
   UploadedFile,
+  Patch,
 } from '@nestjs/common';
 import { ExercisesService } from './exercises.service';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { User, UserRole } from '../users/users.entity';
-import { CreateExerciseDto } from './dto/create-exercise.dto';
+import { UpdateExerciseDto } from './dto/update-exercise.dto';
 import { GetUser } from '../auth/decorators/get-user.decorator';
 import { SubjectCode } from '../academics/subjects.entity';
 import { SubjectCategoryCode } from '../academics/subject-categories.entity';
@@ -31,6 +32,14 @@ export class ExercisesController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.exercisesService.findOne(id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id') id: string,
+    @Body() updateExerciseDto: UpdateExerciseDto,
+  ) {
+    return this.exercisesService.update(id, updateExerciseDto);
   }
 
   // @Post()
