@@ -32,6 +32,11 @@ export async function uploadExerciseInput(
     Authorization: `Bearer ${accessToken}`,
   };
 
+  // Validate that both subject and category are provided together
+  if ((subject && !category) || (!subject && category)) {
+    throw new Error('Both subject and category must be provided together or both omitted.');
+  }
+
   // Use subject-specific endpoint if both subject and category are provided
   const endpoint = subject && category 
     ? `${API_URL}/exercises/${subject}/${category}/input`
