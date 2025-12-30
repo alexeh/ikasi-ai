@@ -67,8 +67,8 @@ export const authOptions: NextAuthOptions = {
           return {
             id: tokenPayload.sub,
             email: tokenPayload.email,
-            name: tokenPayload.name || tokenPayload.email,
-            lname: tokenPayload.lname,
+            name: tokenPayload.name || tokenPayload.email.split('@')[0],
+            lname: tokenPayload.lname || '',
             role: tokenPayload.role,
             locale: tokenPayload.locale || 'eu',
             accessToken: data.access_token,
