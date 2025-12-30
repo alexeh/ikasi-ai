@@ -54,7 +54,7 @@ This document summarizes the implementation of NextAuth.js authentication in the
 ### 3. Route Protection
 
 #### Middleware
-- **`web/src/middleware.ts`**: NextAuth middleware integration
+- **`web/src/proxy.ts`**: NextAuth middleware integration
   - Uses `withAuth` wrapper for authentication
   - Configurable public paths and file extensions
   - Automatic redirect to login for unauthenticated users
@@ -215,7 +215,7 @@ lib/
 ├── session.ts (Server-side helpers)
 └── inputs.ts (API utilities with auth)
 
-middleware.ts (Route protection)
+proxy.ts (Route protection)
 
 types/
 └── next-auth.d.ts (Type definitions)
@@ -224,7 +224,7 @@ types/
 ## Migration from Legacy System
 
 ### Removed/Deprecated
-- ❌ `web/src/proxy.ts` → Replaced with `web/src/middleware.ts`
+- ❌ `web/src/proxy.ts` → Replaced with `web/src/proxy.ts`
 - ⚠️ `web/src/lib/auth.ts` → Functions still exist but deprecated
 - ⚠️ `web/AUTHENTICATION.md` → Marked as deprecated
 

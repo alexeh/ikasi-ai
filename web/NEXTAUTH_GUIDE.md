@@ -52,7 +52,7 @@ web/src/
 │   └── session.ts                   # Server-side session utilities
 ├── types/
 │   └── next-auth.d.ts               # TypeScript type definitions
-└── middleware.ts                     # Route protection middleware
+└── proxy.ts                     # Route protection middleware
 ```
 
 ### Authentication Flow
@@ -556,7 +556,7 @@ module.exports = {
 **Symptoms**: Users can access protected routes without authentication
 
 **Solutions**:
-- Verify middleware.ts is in the correct location (`web/src/middleware.ts`)
+- Verify proxy.ts is in the correct location (`web/src/proxy.ts`)
 - Check the `matcher` configuration includes the routes to protect
 - Ensure NextAuth session cookie is being set correctly
 - Test with different browsers to rule out browser-specific issues
@@ -723,7 +723,7 @@ callbacks: {
 To implement granular role-based access control:
 
 ```typescript
-// In middleware.ts
+// In proxy.ts
 import { withAuth } from "next-auth/middleware";
 import { NextResponse } from "next/server";
 

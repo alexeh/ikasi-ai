@@ -15,7 +15,7 @@ The application has been migrated to use [NextAuth.js](https://next-auth.js.org/
 
 ### Key Changes
 
-1. **Middleware**: `proxy.ts` has been replaced with `middleware.ts` using NextAuth middleware
+1. **Middleware**: `proxy.ts` has been replaced with `proxy.ts` using NextAuth middleware
 2. **Authentication hooks**: Use `useSession()` from `next-auth/react` instead of custom auth functions
 3. **Server-side auth**: Use `getSession()` and `getCurrentUser()` from `@/lib/session`
 4. **Login/Signup**: Updated to use NextAuth's `signIn()` function
