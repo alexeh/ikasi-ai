@@ -3,8 +3,8 @@ import "./globals.css";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
-  title: "IrakasleArbel",
-  description: "Irakasleentzako kudeaketa arbela",
+  title: "IKASI AI",
+  description: "Kudeaketa Arbela",
 };
 
 export default function RootLayout({
