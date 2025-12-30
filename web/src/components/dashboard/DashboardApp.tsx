@@ -918,7 +918,7 @@ export function DashboardApp() {
                     />
                   </label>
                   <FileUpload 
-                    subject={selectedSubject?.toLowerCase()}
+                    subject={selectedSubject.toLowerCase()}
                     category={activeCategory}
                     onUploadSuccess={(result) => {
                       // Create exercise entry after successful upload
