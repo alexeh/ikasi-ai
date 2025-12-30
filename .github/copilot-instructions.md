@@ -61,7 +61,7 @@ pnpm typecheck
 ### Web Package Commands
 ```bash
 # From web/ directory or use --filter @ikasi-ai/web
-pnpm dev        # Start Next.js dev server on port 3001
+pnpm dev        # Start Next.js dev server (port 3001 when API runs on 3000)
 pnpm build      # Production build
 pnpm start      # Start production server
 pnpm lint       # ESLint check
@@ -70,7 +70,7 @@ pnpm lint       # ESLint check
 ### API Package Commands
 ```bash
 # From api/ directory or use --filter @ikasi-ai/api
-pnpm start:dev  # Start NestJS in watch mode on port 3000
+pnpm start:dev  # Start NestJS in watch mode (default port 3000)
 pnpm build      # Compile TypeScript
 pnpm lint       # ESLint with auto-fix
 pnpm test       # Run Jest unit tests
