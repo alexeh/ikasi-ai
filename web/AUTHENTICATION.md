@@ -1,8 +1,33 @@
 # Authentication Guidelines
 
-This document outlines the authentication strategy implemented in the Ikasi AI web application.
+**⚠️ DEPRECATED**: This document describes the legacy authentication system. The application now uses NextAuth.js for authentication. Please refer to `NEXTAUTH_GUIDE.md` for the current authentication implementation.
 
-## Overview
+## Migration to NextAuth
+
+The application has been migrated to use [NextAuth.js](https://next-auth.js.org/) for improved security, better session management, and easier extensibility. The new system provides:
+
+- **JWT-based session management**: Sessions stored as secure HTTP-only cookies
+- **Credentials provider**: Email/password authentication with backend API integration
+- **Automatic session handling**: No manual token management needed
+- **Role-based access control**: Built-in support for user roles (teacher, student, admin)
+- **Type-safe**: Full TypeScript support with custom type definitions
+- **Extensible**: Easy to add OAuth providers, MFA, and other features
+
+### Key Changes
+
+1. **Middleware**: `proxy.ts` has been replaced with `middleware.ts` using NextAuth middleware
+2. **Authentication hooks**: Use `useSession()` from `next-auth/react` instead of custom auth functions
+3. **Server-side auth**: Use `getSession()` and `getCurrentUser()` from `@/lib/session`
+4. **Login/Signup**: Updated to use NextAuth's `signIn()` function
+5. **Logout**: Use `signOut()` from `next-auth/react`
+
+### Legacy Documentation
+
+The following documentation is kept for historical reference only.
+
+---
+
+## Overview (Legacy)
 
 The application uses a token-based authentication system with Next.js 16's proxy (middleware) feature to protect routes and manage user sessions.
 
