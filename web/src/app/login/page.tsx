@@ -2,8 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login, saveToken } from '@/lib/auth';
-
+import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -19,9 +18,18 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const { access_token } = await login({ email, password });
-      saveToken(access_token);
-      router.push('/');
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError(result.error);
+      } else if (result?.ok) {
+        router.push('/');
+        router.refresh();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
     } finally {

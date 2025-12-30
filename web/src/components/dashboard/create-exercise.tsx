@@ -2,10 +2,12 @@
 
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
+import { useSession } from 'next-auth/react';
 import { AlertCircle, CheckCircle2, FileText, Loader2, Upload } from 'lucide-react';
 import { uploadExerciseInput, type InputUploadResponse } from '@/lib/inputs';
 
 export function DashboardCreateExercise() {
+  const { data: session } = useSession();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [result, setResult] = useState<InputUploadResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export function DashboardCreateExercise() {
     setResult(null);
 
     try {
-      const uploadResult = await uploadExerciseInput(selectedFile);
+      const uploadResult = await uploadExerciseInput(selectedFile, session?.user?.accessToken);
       setResult(uploadResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Ezin izan da fitxategia bidali.');
