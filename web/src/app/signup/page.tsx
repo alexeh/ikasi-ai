@@ -2,8 +2,17 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import Link from 'next/link';
-import { signup, saveToken, SignupData } from '@/lib/auth';
+
+interface SignupData {
+  email: string;
+  password: string;
+  name: string;
+  lname?: string;
+  role: 'teacher' | 'student';
+  locale?: string;
+}
 
 export default function SignupPage() {
   const router = useRouter();
@@ -24,9 +33,34 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      const { access_token } = await signup(formData);
-      saveToken(access_token);
-      router.push('/');
+      // First, register the user
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Signup failed');
+      }
+
+      // After successful registration, sign in the user
+      const signInResult = await signIn('credentials', {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (signInResult?.error) {
+        setError('Account created but login failed. Please try logging in.');
+      } else if (signInResult?.ok) {
+        router.push('/');
+        router.refresh();
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Signup failed');
     } finally {
