@@ -62,6 +62,7 @@ export async function getExercise(
       'Content-Type': 'application/json',
     },
   });
+  console.log('QUERY HECHA')
 
   if (!response.ok) {
     let errorMessage = 'Failed to fetch exercise';
@@ -73,8 +74,9 @@ export async function getExercise(
     }
     throw new Error(errorMessage);
   }
-
-  return response.json();
+  const res = await response.json();
+  console.log('EXERCISES', res)
+  return res
 }
 
 /**

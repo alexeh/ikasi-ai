@@ -29,7 +29,7 @@ export class ExercisesService {
   ) {}
 
   async findAll(): Promise<Exercise[]> {
-    return this.exercisesRepository.find();
+    return this.exercisesRepository.find({ relations: ['questions'] });
   }
 
   async findOne(id: string): Promise<Exercise> {

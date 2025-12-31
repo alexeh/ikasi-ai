@@ -39,7 +39,7 @@ export interface Exercise {
     | "kalkulu_mentala"
     | "aritmetika"
     | "buruketak";
-  status: "draft" | "published";
+  status: "draft" | "approved";
   date: string;
 }
 
