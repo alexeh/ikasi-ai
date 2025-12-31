@@ -177,12 +177,6 @@ const DEFAULT_ASSIGNMENTS: Assignment[] = [
   { id: 'a4', title: 'Kalkulua', date: '2023-11-05', maxScore: 10 },
 ];
 
-const DEFAULT_EXERCISES: Exercise[] = [
-  { id: '1', title: 'Ipuinaren ulermena: "Basoko Misterioa"', description: 'Fitxategia aztertuta - 5 Galdera', category: 'ulermena', status: 'published', date: '2023-10-24' },
-  { id: '2', title: 'Aditz laguntzailea: NOR-NORI-NORK', description: 'Bete hutsuneak taulan.', category: 'gramatika', status: 'published', date: '2023-10-22' },
-  { id: '3', title: 'Sinonimoak eta Antonimoak', description: 'Lotu hitzak bere bikotearekin.', category: 'lexikoa', status: 'draft', date: '2023-10-25' },
-  { id: '4', title: 'Biderketa taulak errepasatzen', description: '3, 4 eta 6ko taulak', category: 'aritmetika', status: 'published', date: '2023-10-26' },
-];
 
 const BANK_LABELS = {
   createTitle: 'Ariketa Sortzailea',
@@ -198,7 +192,7 @@ const BANK_LABELS = {
   emptyState: 'Ez dago ariketarik atal honetan oraindik.',
   viewBtn: 'Ikusi',
   draft: 'Zirriborroa',
-  published: 'Bidalita',
+  approved: 'Onartua',
 };
 
 export function DashboardApp() {
@@ -244,7 +238,7 @@ export function DashboardApp() {
   useEffect(() => {
     const paramView = searchParams.get('view');
     if (paramView && VALID_VIEWS.has(paramView)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+       
       setCurrentView(paramView);
     }
   }, [searchParams]);
@@ -437,7 +431,7 @@ export function DashboardApp() {
         ? `Analitika Automatik - ${formData.get('questionCount')} Qs`
         : ((formData.get('description') as string) ?? ''),
       category: activeCategory as Exercise['category'],
-      status: 'published',
+      status: 'approved',
       date: new Date().toISOString().split('T')[0],
     };
     setExercises((prev) => [newExercise, ...prev]);
@@ -1068,10 +1062,10 @@ export function DashboardApp() {
                           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{exercise.date}</span>
                           <span
                             className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                              exercise.status === 'published' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                              exercise.status === 'approved' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                             }`}
                           >
-                            {exercise.status === 'published' ? BANK_LABELS.published : BANK_LABELS.draft}
+                            {exercise.status === 'approved' ? BANK_LABELS.approved : BANK_LABELS.draft}
                           </span>
                         </div>
                         <h5 className="mb-1 text-sm font-bold text-slate-800">{exercise.title}</h5>
@@ -1141,9 +1135,9 @@ export function DashboardApp() {
                           <p className="mb-1 text-sm text-slate-500">{exercise.description}</p>
                           <div className="flex items-center gap-3 text-xs">
                             <span className="text-slate-400">{exercise.date}</span>
-                            {exercise.status === 'published' ? (
+                            {exercise.status === 'approved' ? (
                               <span className="flex items-center gap-1 rounded bg-emerald-50 px-2 py-0.5 font-medium text-emerald-600">
-                                <Send className="h-3 w-3" /> {BANK_LABELS.published}
+                                <Send className="h-3 w-3" /> {BANK_LABELS.approved}
                               </span>
                             ) : (
                               <span className="rounded bg-amber-50 px-2 py-0.5 font-medium text-amber-600">{BANK_LABELS.draft}</span>
