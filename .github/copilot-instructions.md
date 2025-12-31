@@ -156,9 +156,13 @@ const user = await getCurrentUser();
 
 1. **Preserve Existing Patterns**: Follow the established patterns in the codebase
 2. **Type Safety**: Always maintain strong TypeScript typing
-3. **Testing**: Run appropriate tests after changes (unit/e2e)
+3. **Testing**: 
+   - Run appropriate tests after changes (unit and e2e)
+   - All tests must pass before pushing commits
+   - If behavior changes require test updates, commit test changes separately
 4. **Linting**: Ensure code passes ESLint checks before committing
 5. **Documentation**: Update relevant README files if changing setup or architecture
+6. **CI/CD**: Verify all CI checks pass (tests, linting, builds, deployments)
 
 ### Environment Configuration
 
@@ -193,9 +197,20 @@ NEXT_PUBLIC_API_URL=http://localhost:3000
 ## Testing
 
 - **API**: Jest for unit and e2e tests
+- **Web**: To be configured (currently no test setup)
 - Test files use `.spec.ts` suffix
 - Run tests before committing significant changes
 - Aim for good test coverage on business logic
+
+### CI/CD Testing Requirements
+
+- **All tests run automatically** on each commit pushed to origin and in each PR
+- **API Tests**: Both unit (`pnpm test`) and e2e (`pnpm test:e2e`) tests run in CI
+- **Test Failures**: Must be analyzed and addressed before merging
+  - Not all failures are regressions - intended behavior changes may require test updates
+  - When updating tests due to behavior changes, do so in a **separate commit** to clearly track the change
+- **Deployment**: Vercel deployment failures must also be investigated and fixed
+- See `.github/workflows/api-tests.yml` for CI configuration
 
 ## Deployment
 
