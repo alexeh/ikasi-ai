@@ -9,12 +9,14 @@ import { UsersModule } from './modules/users/users.module';
 import { AssignmentsModule } from './modules/assignments/assignments.module';
 import { InputsModule } from './modules/inputs/inputs.module';
 import { LlmModule } from './modules/llm/llm.module';
-import { LlmService } from './modules/llm/llm.service';
 import { ExercisesModule } from './modules/exercises/exercises.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { JwtAuthGuard } from './modules/auth/jwt-auth.guard';
 import { AcademicsModule } from './modules/academics/academics.module';
 import { CatalogSeeder } from './modules/academics/catalog/catalog.seeder';
+import { ClassesModule } from './modules/classes/classes.module';
+import { StudentsModule } from './modules/students/students.module';
+import { TeachersModule } from './modules/teachers/teachers.module';
 
 @Module({
   imports: [
@@ -31,6 +33,9 @@ import { CatalogSeeder } from './modules/academics/catalog/catalog.seeder';
     LlmModule,
     ExercisesModule,
     AcademicsModule,
+    ClassesModule,
+    StudentsModule,
+    TeachersModule,
   ],
   controllers: [AppController],
   providers: [
