@@ -1,15 +1,17 @@
 import {
-  Injectable,
-  UnauthorizedException,
   ConflictException,
+  Injectable,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
 import { SignupDto } from './dto/signup.dto';
 import { LoginDto } from './dto/login.dto';
-import { User } from '../users/users.entity';
+import { User, UserRole } from '../users/users.entity';
+import { StudentsAuthService } from '../students/students-auth.service';
+import { TeachersAuthService } from '../teachers/teachers-auth.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +19,8 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly studentsAuth: StudentsAuthService,
+    private readonly teachersAuth: TeachersAuthService,
   ) {}
 
   async signup(signupDto: SignupDto): Promise<{ access_token: string }> {
@@ -34,6 +38,8 @@ export class AuthService {
       ...signupDto,
       password: hashedPassword,
     });
+
+    await this.setNewUserAsTeacherOrStudent(user);
 
     // Generate JWT token
     const payload = {
@@ -83,5 +89,16 @@ export class AuthService {
 
   async validateUser(userId: string): Promise<User | null> {
     return this.usersService.findById(userId);
+  }
+
+  async setNewUserAsTeacherOrStudent(user: User) {
+    switch (user.role) {
+      case UserRole.TEACHER:
+        return this.teachersAuth.addUserAsTeacher(user);
+      case UserRole.STUDENT:
+        return this.studentsAuth.addUserAsStudent(user);
+      default:
+        throw new Error(`Invalid role: ${user.role}`);
+    }
   }
 }
