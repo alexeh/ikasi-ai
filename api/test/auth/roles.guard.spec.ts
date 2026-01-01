@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { RolesGuard } from '../src/modules/auth/roles.guard';
+import { RolesGuard } from '../../src/modules/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
-import { UserRole } from '../src/modules/users/users.entity';
-import { ROLES_KEY } from '../src/modules/auth/decorators/roles.decorator';
+import { UserRole } from '../../src/modules/users/users.entity';
+import { ROLES_KEY } from '../../src/modules/auth/decorators/roles.decorator';
 
 describe('RolesGuard', () => {
   let guard: RolesGuard;

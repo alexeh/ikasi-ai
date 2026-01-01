@@ -19,7 +19,20 @@ export default registerAs(DATABASE_CONFIG_TOKEN, (): TypeOrmModuleOptions => {
       logging: ['error', 'warn'],
     };
   }
-
+  if (process.env.NODE_ENV === Environment.Test) {
+    return {
+      host: 'localhost',
+      port: 5432,
+      username: 'ikasi-ai',
+      password: 'ikasi-ai',
+      database: 'ikasi-ai-test',
+      type: 'postgres',
+      autoLoadEntities: true,
+      synchronize: true,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      logging: ['error', 'warn'],
+    };
+  }
   return {
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT!, 10) || 5432,
