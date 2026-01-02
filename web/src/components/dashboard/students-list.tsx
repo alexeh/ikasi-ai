@@ -16,7 +16,7 @@ export function StudentsList({ classId }: StudentsListProps) {
 
   useEffect(() => {
     async function fetchStudents() {
-      if (!session?.accessToken) {
+      if (!session?.user?.accessToken) {
         setLoading(false);
         return;
       }
@@ -24,7 +24,7 @@ export function StudentsList({ classId }: StudentsListProps) {
       try {
         setLoading(true);
         setError(null);
-        const data = await listStudents(session.accessToken, classId);
+        const data = await listStudents(session.user.accessToken, classId);
         setStudents(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch students');
@@ -34,7 +34,7 @@ export function StudentsList({ classId }: StudentsListProps) {
     }
 
     fetchStudents();
-  }, [session?.accessToken, classId]);
+  }, [session?.user?.accessToken, classId]);
 
   if (loading) {
     return (
@@ -52,7 +52,7 @@ export function StudentsList({ classId }: StudentsListProps) {
     );
   }
 
-  if (!session?.accessToken) {
+  if (!session?.user?.accessToken) {
     return (
       <div className="flex items-center justify-center p-8">
         <div className="text-gray-500">Please log in to view students</div>
