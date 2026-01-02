@@ -1,12 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder } from 'typeorm';
+import { Repository } from 'typeorm';
 import { StudentsService } from './students.service';
 import { Student } from './student.entity';
 
 describe('StudentsService', () => {
   let service: StudentsService;
-  let repository: Repository<Student>;
 
   const mockQueryBuilder = {
     leftJoinAndSelect: jest.fn().mockReturnThis(),
@@ -30,7 +29,6 @@ describe('StudentsService', () => {
     }).compile();
 
     service = module.get<StudentsService>(StudentsService);
-    repository = module.get<Repository<Student>>(getRepositoryToken(Student));
   });
 
   afterEach(() => {
