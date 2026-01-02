@@ -239,11 +239,24 @@ export function DashboardApp() {
   const [studentsError, setStudentsError] = useState<string | null>(null);
   const exerciseTitleInputRef = useRef<HTMLInputElement>(null);
 
+  // Helper function to format student name
+  const formatStudentName = (user: { name: string; lname?: string }) => {
+    return `${user.name}${user.lname ? ' ' + user.lname : ''}`;
+  };
+
+  // Helper function to get student initials
+  const getStudentInitials = (user: { name: string; lname?: string }) => {
+    if (!user.name || user.name.length === 0) return '?';
+    const firstInitial = user.name.charAt(0).toUpperCase();
+    const lastInitial = user.lname?.charAt(0).toUpperCase() || '';
+    return `${firstInitial}${lastInitial}`;
+  };
+
   // Convert API students to UI format for components that still use mock structure
   const uiStudents: Student[] = useMemo(() => {
     return apiStudents.map(apiStudent => ({
       id: apiStudent.id,
-      name: `${apiStudent.user.name}${apiStudent.user.lname ? ' ' + apiStudent.user.lname : ''}`,
+      name: formatStudentName(apiStudent.user),
       status: 'present' as const,
       photoUrl: undefined,
     }));
@@ -1814,8 +1827,8 @@ export function DashboardApp() {
         {!studentsLoading && !studentsError && apiStudents.length > 0 && (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {apiStudents.map((apiStudent) => {
-              const displayName = `${apiStudent.user.name}${apiStudent.user.lname ? ' ' + apiStudent.user.lname : ''}`;
-              const initials = apiStudent.user.name.charAt(0).toUpperCase() + (apiStudent.user.lname?.charAt(0).toUpperCase() || '');
+              const displayName = formatStudentName(apiStudent.user);
+              const initials = getStudentInitials(apiStudent.user);
               
               return (
                 <button
