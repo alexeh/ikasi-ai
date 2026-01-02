@@ -42,11 +42,14 @@ export function DashboardSidebar({ currentView, onNavigate }: SidebarProps) {
   // Generate user initials from name
   const getUserInitials = (name?: string) => {
     if (!name) return 'U';
-    const parts = name.split(' ');
+    const parts = name.trim().split(/\s+/).filter(part => part.length > 0);
     if (parts.length >= 2) {
       return (parts[0][0] + parts[1][0]).toUpperCase();
     }
-    return name.slice(0, 2).toUpperCase();
+    if (parts.length === 1 && parts[0].length > 0) {
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+    return 'U';
   };
 
   const handleSignOut = () => {
