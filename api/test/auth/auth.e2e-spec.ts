@@ -4,10 +4,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { AppModule } from '../../src/app.module';
 import { DataSource } from 'typeorm';
-import {
-  clearTablesByEntities,
-  clearTestDataFromDatabase,
-} from '../lib/db-helpers';
+import { clearTablesByEntities } from '../lib/db-helpers';
 import { Teacher } from '../../src/modules/teachers/teacher.entity';
 import { User } from '../../src/modules/users/users.entity';
 import { Student } from '../../src/modules/students/student.entity';
@@ -24,7 +21,6 @@ describe('Auth (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     dataSource = moduleFixture.get(DataSource);
-    await clearTablesByEntities(dataSource, [User]);
     await app.init();
     // TODO: Optimize timeout@@
   }, 30000);
@@ -142,7 +138,7 @@ describe('Auth (e2e)', () => {
       expect(user.email).toEqual(email);
     });
     it('should set user as student if the user role is student', async () => {
-      const email = `teacher@example.com`;
+      const email = `student@example.com`;
       const password = 'password123';
       await request(app.getHttpServer())
         .post('/auth/signup')
