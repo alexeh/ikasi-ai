@@ -1,0 +1,68 @@
+{
+  "users": [
+    {
+      "email": "alexurola@gmail.com",
+      "password": "12345678",
+      "name": "Admin",
+      "lname": "Ikasi",
+      "role": "admin",
+      "locale": "es"
+    },
+    {
+      "email": "admin@ikasi.ai",
+      "password": "AdminPass123!",
+      "name": "Admin",
+      "lname": "Ikasi",
+      "role": "admin",
+      "locale": "es"
+    },
+    {
+      "email": "irene.olaizola@ikasi.ai",
+      "password": "TeacherPass123!",
+      "name": "Irene",
+      "lname": "Olaizola",
+      "role": "teacher",
+      "locale": "eu"
+    },
+    {
+      "email": "mikel.iturri@ikasi.ai",
+      "password": "TeacherPass123!",
+      "name": "Mikel",
+      "lname": "Iturri",
+      "role": "teacher",
+      "locale": "es"
+    },
+    {
+      "email": "june.etxaniz@ikasi.ai",
+      "password": "StudentPass123!",
+      "name": "June",
+      "lname": "Etxaniz",
+      "role": "student",
+      "locale": "eu"
+    },
+    {
+      "email": "iker.sarasola@ikasi.ai",
+      "password": "StudentPass123!",
+      "name": "Iker",
+      "lname": "Sarasola",
+      "role": "student",
+      "locale": "es"
+    }
+  ],
+  "teachers": [
+    {
+      "userEmail": "irene.olaizola@ikasi.ai"
+    },
+    {
+      "userEmail": "mikel.iturri@ikasi.ai"
+    }
+  ],
+  "students": [
+    {
+      "userEmail": "june.etxaniz@ikasi.ai"
+    },
+    {
+      "userEmail": "iker.sarasola@ikasi.ai"
+    }
+  ]
+}

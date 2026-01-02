@@ -17,6 +17,7 @@ import { CatalogSeeder } from './modules/academics/catalog/catalog.seeder';
 import { ClassesModule } from './modules/classes/classes.module';
 import { StudentsModule } from './modules/students/students.module';
 import { TeachersModule } from './modules/teachers/teachers.module';
+import { SeedDbService } from './modules/seed/seed-db';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { TeachersModule } from './modules/teachers/teachers.module';
   controllers: [AppController],
   providers: [
     AppService,
+    SeedDbService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
@@ -47,9 +49,13 @@ import { TeachersModule } from './modules/teachers/teachers.module';
   ],
 })
 export class AppModule implements OnModuleInit {
-  constructor(private readonly seeder: CatalogSeeder) {}
+  constructor(
+    private readonly catalogSeeder: CatalogSeeder,
+    private readonly seedDbService: SeedDbService,
+  ) {}
 
   async onModuleInit(): Promise<void> {
-    await this.seeder.seed();
+    await this.catalogSeeder.seed();
+    await this.seedDbService.seed();
   }
 }
