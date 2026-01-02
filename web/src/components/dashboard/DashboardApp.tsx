@@ -264,7 +264,7 @@ export function DashboardApp() {
           const category = 'ulermena' as Exercise['category']; // Default category
           
           // Map status
-          const status = apiEx.status === ExerciseStatus.APPROVED ? 'published' : 'draft';
+          const status = apiEx.status === ExerciseStatus.APPROVED ? 'approved' : 'draft';
           
           // Format date
           const date = new Date(apiEx.createdAt).toISOString().split('T')[0];
@@ -306,7 +306,7 @@ export function DashboardApp() {
       // Map API exercises to UI format
       const mappedExercises: Exercise[] = apiExercises.map((apiEx: ApiExercise) => {
         const category = 'ulermena' as Exercise['category'];
-        const status = apiEx.status === ExerciseStatus.APPROVED ? 'published' : 'draft';
+        const status = apiEx.status === ExerciseStatus.APPROVED ? 'approved' : 'draft';
         const date = new Date(apiEx.createdAt).toISOString().split('T')[0];
         
         return {
