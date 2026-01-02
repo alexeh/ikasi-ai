@@ -14,7 +14,7 @@ env:
   DB_PORT: 5432
   DB_USERNAME: ikasi-ai
   DB_PASSWORD: ikasi-ai
-  DB_DATABASE: ikasi-ai
+  DB_DATABASE: ikasi-ai-test
   JWT_SECRET: my-secret
   GEMINI_API_KEY: my-fake-key
 
@@ -28,7 +28,7 @@ jobs:
         env:
           POSTGRES_USER: ikasi-ai
           POSTGRES_PASSWORD: ikasi-ai
-          POSTGRES_DB: ikasi-ai
+          POSTGRES_DB: ikasi-ai-test
         ports:
           - 5432:5432
         options: >-
@@ -66,7 +66,7 @@ jobs:
         env:
           POSTGRES_USER: ikasi-ai
           POSTGRES_PASSWORD: ikasi-ai
-          POSTGRES_DB: ikasi-ai
+          POSTGRES_DB: ikasi-ai-test
         ports:
           - 5432:5432
         options: >-
