@@ -89,6 +89,7 @@ import { DashboardSidebar } from './sidebar';
 import { DashboardStatsCard } from './stats-card';
 import type { Exercise, Meeting, Student } from '@/types/dashboard';
 import { listExercises, Exercise as ApiExercise, ExerciseStatus } from '@/lib/exercises';
+import { listStudents, Student as ApiStudent } from '@/lib/students';
 
 interface Assignment {
   id: string;
@@ -233,7 +234,20 @@ export function DashboardApp() {
   const [exercisesLoading, setExercisesLoading] = useState(false);
   const [exercisesError, setExercisesError] = useState<string | null>(null);
   const [validatingExerciseId, setValidatingExerciseId] = useState<string | null>(null);
+  const [apiStudents, setApiStudents] = useState<ApiStudent[]>([]);
+  const [studentsLoading, setStudentsLoading] = useState(false);
+  const [studentsError, setStudentsError] = useState<string | null>(null);
   const exerciseTitleInputRef = useRef<HTMLInputElement>(null);
+
+  // Convert API students to UI format for components that still use mock structure
+  const uiStudents: Student[] = useMemo(() => {
+    return apiStudents.map(apiStudent => ({
+      id: apiStudent.id,
+      name: `${apiStudent.user.name}${apiStudent.user.lname ? ' ' + apiStudent.user.lname : ''}`,
+      status: 'present' as const,
+      photoUrl: undefined,
+    }));
+  }, [apiStudents]);
 
   useEffect(() => {
     const paramView = searchParams.get('view');
@@ -290,6 +304,31 @@ export function DashboardApp() {
 
     fetchExercises();
   }, [session]);
+
+  // Fetch students from API
+  useEffect(() => {
+    async function fetchStudents() {
+      if (!session?.user?.accessToken) {
+        // User not authenticated yet, skip fetching
+        return;
+      }
+
+      setStudentsLoading(true);
+      setStudentsError(null);
+      
+      try {
+        const students = await listStudents(session.user.accessToken, selectedClassId);
+        setApiStudents(students);
+      } catch (error) {
+        console.error('Error fetching students:', error);
+        setStudentsError(error instanceof Error ? error.message : 'Errorea ikasleak kargatzerakoan');
+      } finally {
+        setStudentsLoading(false);
+      }
+    }
+
+    fetchStudents();
+  }, [session, selectedClassId]);
 
   // Function to manually refetch exercises
   const refetchExercises = async () => {
@@ -373,7 +412,7 @@ export function DashboardApp() {
   const generateReport = () => {
     setIsAiGenerating(true);
     setTimeout(() => {
-      const name = selectedClass.students.find((student) => student.id === selectedStudentId)?.name ?? 'Ikaslea';
+      const name = uiStudents.find((student) => student.id === selectedStudentId)?.name ?? 'Ikaslea';
       const subject = selectedStudentSubject;
       const aiText = `${name}k bilakaera positiboa erakutsi du hiruhileko honetan. ${subject}n bereziki ondo moldatzen da, nahiz eta arreta mantentzea kostatzen zaion batzuetan. Etxeko lanak orokorrean garaiz entregatzen ditu eta jarrera egokia du gelan. Gomendagarria litzateke irakurketan errefortzu txiki bat egitea etxean.`;
       setTeacherNote(aiText);
@@ -1318,7 +1357,7 @@ export function DashboardApp() {
 
   const renderStudentsView = () => {
     if (selectedStudentId) {
-      const student = selectedClass.students.find((item) => item.id === selectedStudentId);
+      const student = uiStudents.find((item) => item.id === selectedStudentId);
       if (!student) return null;
 
       const performanceData = [
@@ -1671,7 +1710,7 @@ export function DashboardApp() {
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                      {selectedClass.students.map((studentRow) => {
+                      {uiStudents.map((studentRow) => {
                         const mockGrades = assignments.map((assignment, index) => {
                           const seed = studentRow.name.length + assignment.title.length + index;
                           const base = (seed % 5) + 5;
@@ -1746,40 +1785,72 @@ export function DashboardApp() {
             </button>
           </div>
         </div>
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {selectedClass.students.map((student) => (
-            <button
-              key={student.id}
-              onClick={() => setSelectedStudentId(student.id)}
-              className="group relative flex cursor-pointer flex-col items-center rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all hover:border-indigo-200 hover:shadow-lg"
-            >
-              <div className="absolute right-4 top-4">
-                <div
-                  className={`h-2.5 w-2.5 rounded-full ${
-                    student.status === 'present' ? 'bg-emerald-500' : student.status === 'absent' ? 'bg-rose-500' : 'bg-amber-500'
-                  }`}
-                />
-              </div>
-              <img
-                src={student.photoUrl ?? `https://ui-avatars.com/api/?name=${encodeURIComponent(student.name)}`}
-                alt={student.name}
-                className="mb-4 h-24 w-24 rounded-full border-4 border-slate-50 object-cover transition-transform group-hover:scale-105"
-              />
-              <h3 className="mb-1 text-lg font-bold text-slate-800">{student.name}</h3>
-              <p className="mb-4 rounded-full bg-slate-100 px-2 py-1 text-xs font-medium text-slate-500">LH 5. Maila</p>
-              <div className="mt-auto grid w-full grid-cols-2 gap-2">
-                <div className="rounded-lg bg-slate-50 p-2">
-                  <span className="block text-xs uppercase text-slate-400">Nota</span>
-                  <span className="font-bold text-indigo-600">7.5</span>
-                </div>
-                <div className="rounded-lg bg-slate-50 p-2">
-                  <span className="block text-xs uppercase text-slate-400">Ariketak</span>
-                  <span className="font-bold text-indigo-600">85%</span>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
+
+        {studentsLoading && (
+          <div className="flex items-center justify-center p-12">
+            <div className="text-center">
+              <div className="mb-4 inline-block h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600"></div>
+              <p className="text-slate-600">Ikasleak kargatzen...</p>
+            </div>
+          </div>
+        )}
+
+        {studentsError && (
+          <div className="rounded-xl border border-rose-200 bg-rose-50 p-6 text-center">
+            <AlertCircle className="mx-auto mb-3 h-8 w-8 text-rose-500" />
+            <p className="font-medium text-rose-700">Errorea ikasleak kargatzerakoan</p>
+            <p className="mt-1 text-sm text-rose-600">{studentsError}</p>
+          </div>
+        )}
+
+        {!studentsLoading && !studentsError && apiStudents.length === 0 && (
+          <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
+            <Users className="mx-auto mb-3 h-12 w-12 text-slate-300" />
+            <p className="font-medium text-slate-700">Ez dago ikaslerik</p>
+            <p className="mt-1 text-sm text-slate-500">Klase honek ez du ikaslerik</p>
+          </div>
+        )}
+
+        {!studentsLoading && !studentsError && apiStudents.length > 0 && (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {apiStudents.map((apiStudent) => {
+              const displayName = `${apiStudent.user.name}${apiStudent.user.lname ? ' ' + apiStudent.user.lname : ''}`;
+              const initials = apiStudent.user.name.charAt(0).toUpperCase() + (apiStudent.user.lname?.charAt(0).toUpperCase() || '');
+              
+              return (
+                <button
+                  key={apiStudent.id}
+                  onClick={() => setSelectedStudentId(apiStudent.id)}
+                  className="group relative flex cursor-pointer flex-col items-center rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all hover:border-indigo-200 hover:shadow-lg"
+                >
+                  <div className="absolute right-4 top-4">
+                    <div className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+                  </div>
+                  <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full border-4 border-slate-50 bg-indigo-100 text-2xl font-bold text-indigo-600 transition-transform group-hover:scale-105">
+                    {initials}
+                  </div>
+                  <h3 className="mb-1 text-lg font-bold text-slate-800">{displayName}</h3>
+                  {apiStudent.studentClass && (
+                    <p className="mb-2 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
+                      {apiStudent.studentClass.name}
+                    </p>
+                  )}
+                  <p className="mb-4 text-xs text-slate-400">{apiStudent.user.email}</p>
+                  <div className="mt-auto grid w-full grid-cols-2 gap-2">
+                    <div className="rounded-lg bg-slate-50 p-2">
+                      <span className="block text-xs uppercase text-slate-400">Nota</span>
+                      <span className="font-bold text-indigo-600">--</span>
+                    </div>
+                    <div className="rounded-lg bg-slate-50 p-2">
+                      <span className="block text-xs uppercase text-slate-400">Ariketak</span>
+                      <span className="font-bold text-indigo-600">--</span>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   };
@@ -1807,7 +1878,7 @@ export function DashboardApp() {
                   </div>
                 </div>
                 <div className="h-[500px]">
-                  <DashboardAttendanceWidget key={selectedClass.id} students={selectedClass.students as Student[]} />
+                  <DashboardAttendanceWidget key={selectedClassId} students={uiStudents} />
                 </div>
               </div>
               <div className="col-span-12 min-h-[500px] xl:col-span-4">
