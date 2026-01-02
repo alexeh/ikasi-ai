@@ -7,7 +7,6 @@ import { UserRole } from '../users/users.entity';
 
 describe('StudentsController', () => {
   let controller: StudentsController;
-  let service: StudentsService;
 
   const mockStudentsService = {
     findAll: jest.fn(),
@@ -27,7 +26,6 @@ describe('StudentsController', () => {
     }).compile();
 
     controller = module.get<StudentsController>(StudentsController);
-    service = module.get<StudentsService>(StudentsService);
   });
 
   afterEach(() => {
