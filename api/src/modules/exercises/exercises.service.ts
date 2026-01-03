@@ -84,6 +84,7 @@ export class ExercisesService {
     const exercise = await this.exercisesRepository.save({
       questions,
       createdBy: user,
+      input: savedInput,
     });
     return exercise;
   }

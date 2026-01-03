@@ -1,9 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { StudentsController } from './students.controller';
-import { StudentsService } from './students.service';
-import { RolesGuard } from '../auth/roles.guard';
+import { StudentsController } from '../src/modules/students/students.controller';
+import { StudentsService } from '../src/modules/students/students.service';
+import { RolesGuard } from '../src/modules/auth/roles.guard';
 import { Reflector } from '@nestjs/core';
-import { UserRole } from '../users/users.entity';
+import { UserRole } from '../src/modules/users/users.entity';
 
 describe('StudentsController', () => {
   let controller: StudentsController;
