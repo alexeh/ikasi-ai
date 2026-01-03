@@ -6,7 +6,8 @@
       "name": "Admin",
       "lname": "Ikasi",
       "role": "admin",
-      "locale": "es"
+      "locale": "es",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=AdminIkasi"
     },
     {
       "email": "admin@ikasi.ai",
@@ -14,7 +15,8 @@
       "name": "Admin",
       "lname": "Ikasi",
       "role": "admin",
-      "locale": "es"
+      "locale": "es",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=AdminIkasiAI"
     },
     {
       "email": "irene.olaizola@ikasi.ai",
@@ -22,7 +24,8 @@
       "name": "Irene",
       "lname": "Olaizola",
       "role": "teacher",
-      "locale": "eu"
+      "locale": "eu",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=IreneOlaizola"
     },
     {
       "email": "mikel.iturri@ikasi.ai",
@@ -30,7 +33,17 @@
       "name": "Mikel",
       "lname": "Iturri",
       "role": "teacher",
-      "locale": "es"
+      "locale": "es",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=MikelIturri"
+    },
+    {
+      "email": "ane.lasa@ikasi.ai",
+      "password": "TeacherPass123!",
+      "name": "Ane",
+      "lname": "Lasa",
+      "role": "teacher",
+      "locale": "eu",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=AneLasa"
     },
     {
       "email": "june.etxaniz@ikasi.ai",
@@ -38,7 +51,8 @@
       "name": "June",
       "lname": "Etxaniz",
       "role": "student",
-      "locale": "eu"
+      "locale": "eu",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=JuneEtxaniz"
     },
     {
       "email": "iker.sarasola@ikasi.ai",
@@ -46,7 +60,44 @@
       "name": "Iker",
       "lname": "Sarasola",
       "role": "student",
-      "locale": "es"
+      "locale": "es",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=IkerSarasola"
+    },
+    {
+      "email": "maialen.arrieta@ikasi.ai",
+      "password": "StudentPass123!",
+      "name": "Maialen",
+      "lname": "Arrieta",
+      "role": "student",
+      "locale": "eu",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=MaialenArrieta"
+    },
+    {
+      "email": "unai.mendizabal@ikasi.ai",
+      "password": "StudentPass123!",
+      "name": "Unai",
+      "lname": "Mendizabal",
+      "role": "student",
+      "locale": "es",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=UnaiMendizabal"
+    },
+    {
+      "email": "leire.aguirre@ikasi.ai",
+      "password": "StudentPass123!",
+      "name": "Leire",
+      "lname": "Aguirre",
+      "role": "student",
+      "locale": "eu",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=LeireAguirre"
+    },
+    {
+      "email": "asier.lertxundi@ikasi.ai",
+      "password": "StudentPass123!",
+      "name": "Asier",
+      "lname": "Lertxundi",
+      "role": "student",
+      "locale": "es",
+      "avatar": "https://api.dicebear.com/7.x/adventurer/svg?seed=AsierLertxundi"
     }
   ],
   "teachers": [
@@ -55,14 +106,56 @@
     },
     {
       "userEmail": "mikel.iturri@ikasi.ai"
+    },
+    {
+      "userEmail": "ane.lasa@ikasi.ai"
     }
   ],
   "students": [
     {
-      "userEmail": "june.etxaniz@ikasi.ai"
+      "userEmail": "june.etxaniz@ikasi.ai",
+      "className": "LH1"
     },
     {
-      "userEmail": "iker.sarasola@ikasi.ai"
+      "userEmail": "iker.sarasola@ikasi.ai",
+      "className": "LH2"
+    },
+    {
+      "userEmail": "maialen.arrieta@ikasi.ai",
+      "className": "LH1"
+    },
+    {
+      "userEmail": "unai.mendizabal@ikasi.ai",
+      "className": "LH1"
+    },
+    {
+      "userEmail": "leire.aguirre@ikasi.ai",
+      "className": "LH2"
+    },
+    {
+      "userEmail": "asier.lertxundi@ikasi.ai",
+      "className": "LH3"
+    }
+  ],
+  "classes": [
+    {
+      "name": "LH1",
+      "teacherEmails": [
+        "irene.olaizola@ikasi.ai"
+      ]
+    },
+    {
+      "name": "LH2",
+      "teacherEmails": [
+        "mikel.iturri@ikasi.ai",
+        "ane.lasa@ikasi.ai"
+      ]
+    },
+    {
+      "name": "LH3",
+      "teacherEmails": [
+        "ane.lasa@ikasi.ai"
+      ]
     }
   ]
 }

@@ -69,7 +69,7 @@ export function DashboardSidebar({ currentView, onNavigate }: SidebarProps) {
         <div className="flex-shrink-0 rounded-lg bg-indigo-600 p-1.5">
           <GraduationCap className="h-5 w-5 text-white" />
         </div>
-        <span className="text-lg font-bold tracking-tight text-slate-800">IrakasleArbel</span>
+        <span className="text-lg font-bold tracking-tight text-slate-800">IKASI AI</span>
       </div>
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-6">
         {navItems.map((item) => {

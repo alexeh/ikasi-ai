@@ -2,12 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
-import { AppModule } from '../../src/app.module';
 import { DataSource } from 'typeorm';
-import { clearTablesByEntities } from '../lib/db-helpers';
-import { User, UserRole } from '../../src/modules/users/users.entity';
-import { Student } from '../../src/modules/students/student.entity';
-import { Class } from '../../src/modules/classes/class.entity';
+import { clearTablesByEntities } from './lib/db-helpers';
+import { Student } from '../src/modules/students/student.entity';
+import { Class } from '../src/modules/classes/class.entity';
+import { User, UserRole } from '../src/modules/users/users.entity';
+import { AppModule } from '../src/app.module';
 
 describe('Students (e2e)', () => {
   let app: INestApplication<App>;
