@@ -38,7 +38,7 @@ export function StudentDashboardApp() {
   const getViewTitle = () => {
     switch (currentView) {
       case 'estadistikak':
-        return 'Estatistikak';
+        return 'Estadistikak';
       case 'ariketak':
         return 'Ariketak';
       case 'ikasgaiak':
@@ -46,7 +46,7 @@ export function StudentDashboardApp() {
       case 'settings':
         return 'Ezarpenak';
       default:
-        return 'Estatistikak';
+        return 'Estadistikak';
     }
   };
 
