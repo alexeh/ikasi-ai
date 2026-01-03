@@ -49,6 +49,7 @@ export class AuthService {
       lname: user.lname,
       role: user.role,
       locale: user.locale,
+      avatar: user.avatar,
     };
     const access_token = this.jwtService.sign(payload);
 
@@ -81,6 +82,7 @@ export class AuthService {
       lname: user.lname,
       role: user.role,
       locale: user.locale,
+      avatar: user.avatar,
     };
     const access_token = this.jwtService.sign(payload);
 

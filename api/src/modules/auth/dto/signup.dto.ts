@@ -24,6 +24,10 @@ export class SignupDto {
   @IsString()
   lname?: string;
 
+  @IsOptional()
+  @IsString()
+  avatar?: string;
+
   @IsEnum(UserRole)
   role: UserRole;
 
