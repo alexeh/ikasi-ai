@@ -196,10 +196,14 @@ const BANK_LABELS = {
   approved: 'Onartua',
 };
 
+// Constants for the "All students" option
+const ALL_STUDENTS_ID = 'all';
+const ALL_STUDENTS_NAME = 'Guztiak';
+
 export function DashboardApp() {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const [selectedClassId, setSelectedClassId] = useState('all');
+  const [selectedClassId, setSelectedClassId] = useState(ALL_STUDENTS_ID);
   const [currentView, setCurrentView] = useState(() => {
     const paramView = searchParams.get('view');
     return paramView && VALID_VIEWS.has(paramView) ? paramView : 'dashboard';
@@ -331,7 +335,7 @@ export function DashboardApp() {
       
       try {
         // Pass undefined for classId when "all" is selected to fetch all students
-        const classIdParam = selectedClassId === 'all' ? undefined : selectedClassId;
+        const classIdParam = selectedClassId === ALL_STUDENTS_ID ? undefined : selectedClassId;
         const students = await listStudents(session.user.accessToken, classIdParam);
         setApiStudents(students);
       } catch (error) {
@@ -400,11 +404,11 @@ export function DashboardApp() {
   };
 
   const selectedClass = useMemo(() => {
-    if (selectedClassId === 'all') {
+    if (selectedClassId === ALL_STUDENTS_ID) {
       // Return a default class structure when "all" is selected
       return {
-        id: 'all',
-        name: 'Guztiak',
+        id: ALL_STUDENTS_ID,
+        name: ALL_STUDENTS_NAME,
         averageGrade: 0,
         students: uiStudents,
       };
@@ -1885,8 +1889,8 @@ export function DashboardApp() {
   const classesWithAll = useMemo(() => {
     return [
       {
-        id: 'all',
-        name: 'Guztiak',
+        id: ALL_STUDENTS_ID,
+        name: ALL_STUDENTS_NAME,
         averageGrade: 0,
         students: [],
       },
