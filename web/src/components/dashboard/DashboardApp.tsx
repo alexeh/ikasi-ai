@@ -199,7 +199,7 @@ const BANK_LABELS = {
 export function DashboardApp() {
   const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const [selectedClassId, setSelectedClassId] = useState(() => MOCK_CLASSES[0]?.id ?? '');
+  const [selectedClassId, setSelectedClassId] = useState('all');
   const [currentView, setCurrentView] = useState(() => {
     const paramView = searchParams.get('view');
     return paramView && VALID_VIEWS.has(paramView) ? paramView : 'dashboard';
@@ -330,7 +330,9 @@ export function DashboardApp() {
       setStudentsError(null);
       
       try {
-        const students = await listStudents(session.user.accessToken, selectedClassId);
+        // Pass undefined for classId when "all" is selected to fetch all students
+        const classIdParam = selectedClassId === 'all' ? undefined : selectedClassId;
+        const students = await listStudents(session.user.accessToken, classIdParam);
         setApiStudents(students);
       } catch (error) {
         console.error('Error fetching students:', error);
@@ -397,7 +399,18 @@ export function DashboardApp() {
     }
   };
 
-  const selectedClass = useMemo(() => MOCK_CLASSES.find((c) => c.id === selectedClassId) ?? MOCK_CLASSES[0], [selectedClassId]);
+  const selectedClass = useMemo(() => {
+    if (selectedClassId === 'all') {
+      // Return a default class structure when "all" is selected
+      return {
+        id: 'all',
+        name: 'Guztiak',
+        averageGrade: 0,
+        students: uiStudents,
+      };
+    }
+    return MOCK_CLASSES.find((c) => c.id === selectedClassId) ?? MOCK_CLASSES[0];
+  }, [selectedClassId, uiStudents]);
 
   const getViewTitle = () => {
     switch (currentView) {
@@ -1868,12 +1881,25 @@ export function DashboardApp() {
     );
   };
 
+  // Create extended class list with "Guztiak" (All) option
+  const classesWithAll = useMemo(() => {
+    return [
+      {
+        id: 'all',
+        name: 'Guztiak',
+        averageGrade: 0,
+        students: [],
+      },
+      ...MOCK_CLASSES,
+    ];
+  }, []);
+
   return (
     <div className="flex h-screen bg-slate-50 font-sans text-slate-900">
       <DashboardSidebar currentView={currentView} onNavigate={handleNavigate} />
       <div className="ml-64 flex h-full flex-1 flex-col transition-all duration-300">
         <DashboardHeader
-          classes={MOCK_CLASSES}
+          classes={classesWithAll}
           selectedClassId={selectedClassId}
           onSelectClass={setSelectedClassId}
           title={getViewTitle()}
